@@ -1,0 +1,63 @@
+# 2026-10-25 現場測試單
+
+## 先採集，再啟用跑圖
+
+先燒錄 `stationary_capture.xml`，馬達固定關閉。記錄白線、背景與文字三種情境。
+USB 是首選；無線已曾收到資料，但重連穩定性未證實，勿把連線問題混成循跡問題。
+
+每一段先標明用途，按 L=白線、G=背景、T=文字、R=跑圖、M=人工事件、U=未標記。
+切換標記並不控制車子。工具會保存完整原始 BIN、含主機時間和標籤的 CSV，以及雜湊收據。
+請留意前一段資料可能仍在系統接收緩衝區；換表面後等讀值穩定，再錄一段乾淨的標記資料。
+
+```powershell
+python tools/calibrate.py --line captures/line.csv --background captures/background.csv --out config.measured.json
+```
+
+校正工具要求每顆至少 100 ADC 中位數差與中央 80% 範圍不重疊，會拒絕跑動模式資料。
+它仍不能檢查你是否把感測器真正放在正確表面，必須核對 `.evidence.json`。
+結果保留 `drive_enabled=false`，避免未檢查就啟動。
+
+確認端點、表面及方向後，編輯 `config.measured.json` 的 `drive_enabled` 為 `true`。
+要以較低速度開始，可先把 `base_pwm` 改 70、`curve_pwm` 改 55，保持
+`min_pwm < uncertain_pwm <= curve_pwm <= base_pwm <= max_pwm`；預設上限仍是 100。
+
+```powershell
+python build.py --config config.measured.json --profile track --out build-output/field_track
+```
+
+將 `build-output/field_track/field_track.xml` 用 CAGEBOT 開啟並燒錄；同資料夾有同源 Arduino。
+若使用 CAGEBOT 現場直接調整，須依量測設定 setup 的 `line0..4` / `background0..4`
+（A5→A1），檢查無誤才把 `configReady` 從 0 改成 1，再保存 XML，勿只改啟用旗標。
+這只啟用循跡練習，並非正式賽路線策略。
+
+## 建議次序及通過條件
+
+| 測試 | 操作與記錄 | 必須確認 |
+|---|---|---|
+| 架空測試 | 左、中、右感測器對白線，按鈕釋放後再按 | 左右方向正確；再次按鈕 PWM=0 |
+| 直線 | 固定起點、速度、電池與感測器高度，重複 3 趟 | 不持續偏邊；對照 accepted_position / PWM |
+| 左右彎 | 逐步增加曲率，每次只改一個參數 | 不因跳邊確認過久出線；未失去足夠轉向能力 |
+| 短文字 | 相同文字分別以慢／中速經過，附錄影及標記 | 短干擾不突然轉向；確認拒絕計數與 UNCERTAIN |
+| 長文字／全亮 | 跨過不同長度與字形 | 超過不確定期限停止，而非無限直衝 |
+| 分裂與交替 | A4+A2、不含 A3；交替失線／有效片段 | 單一不確定計時不被短片段重設 |
+| 失線 | 人工移開車下白線，記錄實際停車距離 | 預設期限後停止；停車距離須實測，PWM=0不代表煞車 |
+| 重啟 | 故障後恢復白線 | 不自行復活；需釋放再按車上按鈕 |
+| 正式地圖 | 用馬達關閉模式沿實際路線推車，文字與標記逐一標記 | 先辨識需要路線上下文的區段，不直接當終點或升降台 |
+
+三顆全亮可能是白字、寬線或路口。對於比 120 ms 更長的文字，預設可能停車；
+不能只拉長時間就宣稱抗干擾變好。必須同時檢查速度、車長、感測器到輪軸距離與安全範圍。
+有必要時再加入經現場確認的路線階段或額外感測器。
+
+## 每次要保存
+
+- Git commit、XML/Arduino manifest、設定 JSON，確認實際燒錄版本。
+- 原始 BIN、CSV、`.capture.json`；相機畫面與人工路段標籤。
+- 感測器離地高度、輪距、感測器到輪軸距離、白線寬、電池電壓（能量測才填）。
+- 干擾發生位置、當時速度設定、是否出線／停車及大約距離。
+
+```powershell
+python tools/analyze.py captures/run.csv --out captures/run.analysis.json
+```
+
+分析是裝置時間及實際記錄的統計，不能拿接收筆數直接當控制迴圈頻率。
+跑圖檔是抽樣紀錄；非常短的干擾可能只反映在累積拒絕計數，沒有完整原始波形。

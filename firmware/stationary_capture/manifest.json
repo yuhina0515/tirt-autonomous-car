@@ -1,0 +1,30 @@
+{
+  "profile": "capture",
+  "drive_armed": false,
+  "physical_acceptance": false,
+  "telemetry_header": [
+    "millis",
+    "tick",
+    "dt",
+    "rawA5",
+    "rawA4",
+    "rawA3",
+    "rawA2",
+    "rawA1",
+    "mask",
+    "state",
+    "reason",
+    "position",
+    "accepted_position",
+    "contrast",
+    "left_pwm",
+    "right_pwm",
+    "rejected",
+    "timing_faults"
+  ],
+  "config_sha256": "b0ef7012cbe88c345ad25f2f3a50eb609a02e30ac3e98fe78c45d46825e1996b",
+  "source_sha256": "5acd6c3d67aa78f589b37bea96e7894ab5d68c0455215b21ade774ff9fced7d0",
+  "codegen_sha256": "e37f4e2f24e811f3b5cbc4aa59773ee2fa3b1cb78f86bb4ef50929e4450bf469",
+  "xml_sha256": "0ff97c5d9d2f1abe25f2238135430186cd3e751db5f4f873450608a5e5b71274",
+  "ino_sha256": "1b9862191ac7c920218b9ded3904954eca3de249df7412fadd02a8c3f56f2c05"
+}

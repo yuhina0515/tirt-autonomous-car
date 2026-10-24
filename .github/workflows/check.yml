@@ -1,0 +1,25 @@
+name: controller-and-tools
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  regression:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-python@v7.1.0
+        with:
+          python-version: '3.12'
+      - name: Configuration, calibration, data analysis, and generated-file parity
+        run: python -m unittest discover -s tests -v
+      - name: Install native compiler with 32-bit long support
+        run: sudo apt-get update && sudo apt-get install -y g++-multilib
+      - name: Execute generated track controller with synthetic inputs
+        run: |
+          mkdir -p test-output
+          g++ -m32 -std=c++17 -I tests tests/native.cpp -o test-output/track
+          test-output/track
+      - name: Verify capture profile never commands motors
+        run: |
+          g++ -m32 -std=c++17 -I tests -DCAPTURE_TEST '-DSKETCH_FILE="../firmware/stationary_capture/stationary_capture.ino"' tests/native.cpp -o test-output/capture
+          test-output/capture

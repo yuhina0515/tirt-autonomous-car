@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+captures/
+test-output/
+build-output/
+*.exe
+*.obj
+*.elf
+*.hex
+*.bin
+.env*
+config.measured.json

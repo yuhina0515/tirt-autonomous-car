@@ -1,0 +1,42 @@
+{
+  "date": "2026-10-24",
+  "physical_acceptance": false,
+  "hardware_upload": "NOT RUN",
+  "python_tests_passed": 7,
+  "native_track": {
+    "assertions": 6143,
+    "trace": "7e3247dc",
+    "unsigned_long_bytes": 4
+  },
+  "native_capture": {
+    "assertions": 1952,
+    "trace": "17512a2b",
+    "unsigned_long_bytes": 4
+  },
+  "official_vendor_trace_parity": true,
+  "official_xml_roundtrip_local_export_byte_identical": true,
+  "avr": {
+    "fqbn": "arduino:avr:nano:cpu=atmega328old",
+    "core": "arduino:avr 1.8.8",
+    "track_flash_bytes": 12054,
+    "track_ram_bytes": 570,
+    "capture_flash_bytes": 7984,
+    "capture_ram_bytes": 438
+  },
+  "receiver": "PowerShell syntax checked; new-contract COM acquisition requires hardware acceptance",
+  "files": {
+    "build.py": "5acd6c3d67aa78f589b37bea96e7894ab5d68c0455215b21ade774ff9fced7d0",
+    "blockly_codegen.py": "e37f4e2f24e811f3b5cbc4aa59773ee2fa3b1cb78f86bb4ef50929e4450bf469",
+    "config.json": "b0ef7012cbe88c345ad25f2f3a50eb609a02e30ac3e98fe78c45d46825e1996b",
+    "tools/collect.ps1": "0e6d7074c178532cd3d03e232878ca8c2c6ad3455b3bf3abd43e70ce5cbd990c",
+    "tools/analyze.py": "acdc893d846b9723daebd35dbb2ae8fc55d47fe03d2646b1d7a5db60fe170314",
+    "tools/calibrate.py": "e5ddc1c5a8c1df0f86ab1460781a7945c6aae179821440e5219dec947bb19db6",
+    "tests/native.cpp": "db883d7a7a691ea27686da1a984f7a452a1f20bf1e623185a2b7aa83e275ba93"
+  },
+  "vendor_javascript_sha256": {
+    "arduino_compressed01.js": "c3d01b0c37d5cd9e0e72314d8fa73fd88e9e99947939458328b598ce25879c14",
+    "blockly_compressed.js": "6ef658651018a41274d71ac1b63b6b2b5b70dfe531aa15ecf45a2f8afd5abf60",
+    "blocks_compressed01.js": "9dce40e49196ad6f6b674481ccce262c8b7e77e77710199939410795d9d0e016",
+    "en.js": "1ff13a830b6ca7bc8e8c8891ce996607edac34c1d1d0732ac02a9dbc2a86afa9"
+  }
+}
