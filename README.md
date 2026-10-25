@@ -8,6 +8,10 @@
 
 ## v0.2.0-rc.1 預發行版
 
+**2026-10-25 新增 v0.3.1-rc.1 實測低速分段測試檔**：
+燒錄 `firmware/field_low_speed/field_low_speed.xml`，已校正並啟用驅動，按鈕啟動。
+從窄白線開始、PWM 上限 70、自動起終點關閉，操作見 [低速跑道測試](docs/FIELD_LOW_SPEED.zh-TW.md)。
+
 目標：從大片全白區出發，通過銳角彎與虛線，再回到全白區停止。
 新增失線前偏向記憶、內輪停止的限時尋線，以及全白起終點處理。
 下載及現場設定見 [Release 操作說明](docs/RELEASE.zh-TW.md)。

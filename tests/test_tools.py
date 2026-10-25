@@ -38,6 +38,18 @@ class Tests(unittest.TestCase):
     self.assertEqual((Path(t)/folder/(folder+'.ino')).read_bytes(),(ROOT/'firmware'/folder/(folder+'.ino')).read_bytes())
  def test_unknown_block_rejected(self):
   with self.assertRaises(ValueError):xml_to_ino('<xml xmlns="https://developers.google.com/blockly/xml"><block type="opaque_cpp"/></xml>')
+ def test_measured_field_profile_exports_and_limits(self):
+  config_path=ROOT/'configs/field_low_speed_20261025.json'
+  c=json.loads(config_path.read_text());validate(c)
+  self.assertTrue(c['calibration_measured']);self.assertTrue(c['drive_enabled'])
+  self.assertFalse(c['lap_enabled']);self.assertLessEqual(c['max_pwm'],70)
+  self.assertEqual(c['max_run_ms'],60000)
+  with tempfile.TemporaryDirectory() as t:
+   folder=Path(t)/'field_low_speed';result=build(config_path,folder,'track')
+   self.assertTrue(result['drive_armed']);self.assertFalse(result['physical_acceptance'])
+   self.assertEqual(result,json.loads((ROOT/'firmware/field_low_speed/manifest.json').read_text()))
+   for suffix in ('.xml','.ino'):
+    self.assertEqual((folder/('field_low_speed'+suffix)).read_bytes(),(ROOT/'firmware/field_low_speed'/('field_low_speed'+suffix)).read_bytes())
  def write_csv(self,path,label,adc,start=0,states=6):
   with path.open('w',newline='') as f:
    w=csv.writer(f);w.writerow(['host_ms','label']+HEADER)
