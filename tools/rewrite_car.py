@@ -58,6 +58,7 @@ def add_sharp_turns(root, main, decision):
         'TURN_MIN_MS': ('unsigned long', 30),
         'TURN_MEMORY_MS': ('unsigned long', 250),
         'TURN_CENTER_CLEAR_MS': ('unsigned long', 80),
+        'TURN_DIRECTION_CONFIRM_MS': ('unsigned long', 30),
         'TURN_CONFIRM_COUNT': ('int', 3),
         'turnDirection': ('int', 0),
         'turnActive': ('int', 0),
@@ -71,6 +72,9 @@ def add_sharp_turns(root, main, decision):
         'centerPending': ('int', 0),
         'centerAt': ('unsigned long', 0),
         'centerElapsed': ('unsigned long', 0),
+        'turnCandidate': ('int', 0),
+        'turnCandidateAt': ('unsigned long', 0),
+        'turnCandidateElapsed': ('unsigned long', 0),
         'GAP_PWM': ('int', 70),
         'GAP_TIMEOUT_MS': ('unsigned long', 250),
         'gapActive': ('int', 0),
@@ -176,16 +180,30 @@ def add_sharp_turns(root, main, decision):
                    (both(eq('lapReady', 1), both(ge('lapElapsed', 'MIN_LAP_MS'),
                                                 ge('wideElapsed', 'FINISH_CONFIRM_MS'))),
                     [setv('lapDone', 1)])])], [setv('wideActive', 0)])]
+    def candidate_direction(direction):
+        return [
+            cond(eq('turnCandidate', direction), [],
+                 [setv('turnCandidate', direction), setv('turnCandidateAt', 'turnNow')]),
+            setv('turnCandidateElapsed', sub('turnNow', 'turnCandidateAt')),
+            cond(ge('turnCandidateElapsed', 'TURN_DIRECTION_CONFIRM_MS'),
+                 [setv('turnDirection', direction), setv('turnSeenAt', 'turnNow')])]
     before = [setv('turnNow', ('millis',)),
               *lap_update,
               cond(both(eq('turnActive', 0), both(eq('gapActive', 0),
                     both(eq('turnFault', 0), eq('lapDone', 0)))), [
                   cases([(either(eq('sensorF', 8), eq('sensorF', 12)),
-                          [setv('turnDirection', -1), setv('turnSeenAt', 'turnNow')]),
+                          candidate_direction(-1)),
                          (either(eq('sensorF', 2), eq('sensorF', 6)),
-                          [setv('turnDirection', 1), setv('turnSeenAt', 'turnNow')]),
-                         (eq('sensorF', 14),
-                          [setv('turnDirection', 0)])]),
+                          candidate_direction(1)),
+                         (eq('sensorF', 0), [
+                             # A new conflicting side is not evidence for the old turn.
+                             cond(either(
+                                 both(eq('turnCandidate', -1), eq('turnDirection', 1)),
+                                 both(eq('turnCandidate', 1), eq('turnDirection', -1))),
+                                  [setv('turnDirection', 0)]),
+                             setv('turnCandidate', 0)])],
+                        [setv('turnCandidate', 0),
+                         cond(eq('sensorF', 14), [setv('turnDirection', 0)])]),
                   # A brief center observation must not erase an approaching corner.
                   # Sustained centered travel still clears stale direction for gaps.
                   cond(eq('sensorF', 4), [

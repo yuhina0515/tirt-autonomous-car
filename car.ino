@@ -4,6 +4,7 @@ unsigned long  TURN_TIMEOUT_MS;
 unsigned long  TURN_MIN_MS;
 unsigned long  TURN_MEMORY_MS;
 unsigned long  TURN_CENTER_CLEAR_MS;
+unsigned long  TURN_DIRECTION_CONFIRM_MS;
 int  TURN_CONFIRM_COUNT;
 int  turnDirection;
 int  turnActive;
@@ -17,6 +18,9 @@ unsigned long  turnAge;
 int  centerPending;
 unsigned long  centerAt;
 unsigned long  centerElapsed;
+int  turnCandidate;
+unsigned long  turnCandidateAt;
+unsigned long  turnCandidateElapsed;
 int  GAP_PWM;
 unsigned long  GAP_TIMEOUT_MS;
 int  gapActive;
@@ -182,6 +186,7 @@ void setup()
   TURN_MIN_MS = 30;
   TURN_MEMORY_MS = 250;
   TURN_CENTER_CLEAR_MS = 80;
+  TURN_DIRECTION_CONFIRM_MS = 30;
   TURN_CONFIRM_COUNT = 3;
   turnDirection = 0;
   turnActive = 0;
@@ -195,6 +200,9 @@ void setup()
   centerPending = 0;
   centerAt = 0;
   centerElapsed = 0;
+  turnCandidate = 0;
+  turnCandidateAt = 0;
+  turnCandidateElapsed = 0;
   GAP_PWM = 70;
   GAP_TIMEOUT_MS = 250;
   gapActive = 0;
@@ -344,13 +352,37 @@ void loop()
     }
     if (turnActive == 0 && gapActive == 0 && turnFault == 0 && lapDone == 0) {
       if (sensorF == 8 || sensorF == 12) {
-        turnDirection = -1;
-        turnSeenAt = turnNow;
+        if (turnCandidate == -1) {
+        } else {
+          turnCandidate = -1;
+          turnCandidateAt = turnNow;
+        }
+        turnCandidateElapsed = turnNow - turnCandidateAt;
+        if (turnCandidateElapsed >= TURN_DIRECTION_CONFIRM_MS) {
+          turnDirection = -1;
+          turnSeenAt = turnNow;
+        }
       } else if (sensorF == 2 || sensorF == 6) {
-        turnDirection = 1;
-        turnSeenAt = turnNow;
-      } else if (sensorF == 14) {
-        turnDirection = 0;
+        if (turnCandidate == 1) {
+        } else {
+          turnCandidate = 1;
+          turnCandidateAt = turnNow;
+        }
+        turnCandidateElapsed = turnNow - turnCandidateAt;
+        if (turnCandidateElapsed >= TURN_DIRECTION_CONFIRM_MS) {
+          turnDirection = 1;
+          turnSeenAt = turnNow;
+        }
+      } else if (sensorF == 0) {
+        if (turnCandidate == -1 && turnDirection == 1 || turnCandidate == 1 && turnDirection == -1) {
+          turnDirection = 0;
+        }
+        turnCandidate = 0;
+      } else {
+        turnCandidate = 0;
+        if (sensorF == 14) {
+          turnDirection = 0;
+        }
       }
       if (sensorF == 4) {
         if (centerPending == 0) {
