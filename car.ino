@@ -39,14 +39,14 @@ unsigned long  telemetryAt;
 unsigned long  telemetryElapsed;
 int  ledStatus;
 int  ledDesired;
-unsigned long  STRAIGHT_CONFIRM_MS;
-unsigned long  STRAIGHT_STEP_MS;
-int  STRAIGHT_STEP_PWM;
+unsigned long  STRAIGHT_STAGE2_MS;
+unsigned long  STRAIGHT_STAGE3_MS;
+unsigned long  STRAIGHT_STAGE4_MS;
+int  STRAIGHT_STAGE2_PWM;
+int  STRAIGHT_STAGE3_PWM;
 int  straightPending;
 unsigned long  straightAt;
 unsigned long  straightElapsed;
-unsigned long  straightStepAt;
-unsigned long  straightStepElapsed;
 int  straightPwm;
 unsigned long  MIN_LAP_MS;
 unsigned long  MAX_LAP_MS;
@@ -420,14 +420,14 @@ void setup()
   telemetryElapsed = 0;
   ledStatus = 1;
   ledDesired = 1;
-  STRAIGHT_CONFIRM_MS = 200;
-  STRAIGHT_STEP_MS = 20;
-  STRAIGHT_STEP_PWM = 5;
+  STRAIGHT_STAGE2_MS = 200;
+  STRAIGHT_STAGE3_MS = 500;
+  STRAIGHT_STAGE4_MS = 900;
+  STRAIGHT_STAGE2_PWM = 150;
+  STRAIGHT_STAGE3_PWM = 190;
   straightPending = 0;
   straightAt = 0;
   straightElapsed = 0;
-  straightStepAt = 0;
-  straightStepElapsed = 0;
   straightPwm = 100;
   MIN_LAP_MS = 15000;
   MAX_LAP_MS = 180000;
@@ -532,8 +532,8 @@ void loop()
     if (sensorA4 < LINE_THRESHOLD) {
       sensorF = sensorF + 8;
     }
-    // Position weights: A4=-1, A3=0, A2=+1. Curve base100, gain100; minimum
-    // inner8. Straight limit230 requires centered200ms and ramp5 PWM per20ms.
+    // Position weights: A4=-1, A3=0, A2=+1. Curve base100, gain100; minimum inner8.
+    // Straight stages100/150/190/230 require continuous F4 for0/200/500/900ms.
     sumW = 0;
     countOn = 0;
     if (sensorA2 < LINE_THRESHOLD) {
@@ -562,17 +562,20 @@ void loop()
       if (straightPending == 0) {
         straightPending = 1;
         straightAt = turnNow;
-        straightStepAt = turnNow;
         straightPwm = SPEED_CURVE;
       }
       straightElapsed = turnNow - straightAt;
-      straightStepElapsed = turnNow - straightStepAt;
-      if (straightElapsed >= STRAIGHT_CONFIRM_MS && straightStepElapsed >= STRAIGHT_STEP_MS) {
-        straightPwm = straightPwm + STRAIGHT_STEP_PWM;
-        if (straightPwm >= SPEED_STRAIGHT) {
-          straightPwm = SPEED_STRAIGHT;
-        }
-        straightStepAt = turnNow;
+      if (straightElapsed >= STRAIGHT_STAGE4_MS) {
+        straightPwm = SPEED_STRAIGHT;
+      } else if (straightElapsed >= STRAIGHT_STAGE3_MS) {
+        straightPwm = STRAIGHT_STAGE3_PWM;
+      } else if (straightElapsed >= STRAIGHT_STAGE2_MS) {
+        straightPwm = STRAIGHT_STAGE2_PWM;
+      } else {
+        straightPwm = SPEED_CURVE;
+      }
+      if (straightPwm >= SPEED_STRAIGHT) {
+        straightPwm = SPEED_STRAIGHT;
       }
     } else {
       straightPending = 0;
@@ -733,11 +736,11 @@ void loop()
       digitalWrite(4,HIGH);
       analogWrite(6,WIDE_PWM);
     } else {
-      // Explicit F-based following only. No strict greater-than
-      // ADC steering gap at threshold70. Only F4 requests the
-      // guarded/ramped straight PWM. Split F10 or unexpected
-      // patterns latch stop instead of preserving a prior high-speed
-      // command. F0/F14 belong to higher-priority states.
+      // Explicit F-based following only. Only stable F4 requests staged
+      // straight PWM100/150/190/230 at0/200/500/900ms. Noncentered
+      // state resets stages. Split F10 or unexpected patterns
+      // latch stop; no default-forward or strict greater-than ADC
+      // gap at threshold70. F0/F14 use higher-priority states.
       if (sensorF == 8 || sensorF == 12) {
         digitalWrite(7,LOW);
         analogWrite(5,innerSpeed);

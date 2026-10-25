@@ -2,6 +2,7 @@
 
 ## Active baseline after user-directed rollback (2026-10-25)
 
+- Latest user change uses straight stages100/150/190/230 after continuous centered F4 for0/200/500/900ms; any noncentered/other state resets them. Read docs/STRAIGHT_STAGES.zh-TW.md; it replaces the prior +5 per20ms ramp. Curve100/inner8-50 and other states remain.
 - Latest first-corner feedback on c9e7c9d led to curve base100/gain100 (inner8/50), straight start100 then centered200ms and +5 PWM per20ms up to230. Sharp search125/-95 remains; forward capture base100. Read docs/FIRST_CORNER_2026-10-25.zh-TW.md; it overrides prior curve125 and ramp80ms/+10 per10ms notes. No field acceptance.
 - After the section4 push/runaway report, docs/RUNAWAY_FIX_2026-10-25.zh-TW.md is authoritative: confirmation restored15ms; only explicit F4 ramps from125 to230 after80ms centered, steps10 per10ms. F10/unexpected normal patterns latch stop; use F-based turn conditions instead of strict >70 ADC branches. No-direction gaps are45/max120ms. These override earlier1ms/gap70 notes below; no field acceptance claim.
 - For reported detection lag, root car.xml now defaults DEBUG_SERIAL=0; optional telemetry period50ms, LEDs update only on state transitions, and turn/gap reacquisition uses continuous1ms instead of3 loops. Read docs/CONTROL_LOOP.zh-TW.md. No measured sampling-rate claim or new hardware acceptance is available.

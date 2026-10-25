@@ -93,14 +93,14 @@ def add_sharp_turns(root, main, decision):
         'telemetryElapsed': ('unsigned long', 0),
         'ledStatus': ('int', 1),
         'ledDesired': ('int', 1),
-        'STRAIGHT_CONFIRM_MS': ('unsigned long', 200),
-        'STRAIGHT_STEP_MS': ('unsigned long', 20),
-        'STRAIGHT_STEP_PWM': ('int', 5),
+        'STRAIGHT_STAGE2_MS': ('unsigned long', 200),
+        'STRAIGHT_STAGE3_MS': ('unsigned long', 500),
+        'STRAIGHT_STAGE4_MS': ('unsigned long', 900),
+        'STRAIGHT_STAGE2_PWM': ('int', 150),
+        'STRAIGHT_STAGE3_PWM': ('int', 190),
         'straightPending': ('int', 0),
         'straightAt': ('unsigned long', 0),
         'straightElapsed': ('unsigned long', 0),
-        'straightStepAt': ('unsigned long', 0),
-        'straightStepElapsed': ('unsigned long', 0),
         'straightPwm': ('int', 100),
         'MIN_LAP_MS': ('unsigned long', 15000),
         'MAX_LAP_MS': ('unsigned long', 180000),
@@ -317,15 +317,17 @@ def add_sharp_turns(root, main, decision):
              both(eq('turnActive', 0), both(eq('gapActive', 0),
                   both(eq('turnFault', 0), eq('lapDone', 0)))))), [
             cond(eq('straightPending', 0), [setv('straightPending', 1),
-                 setv('straightAt', 'turnNow'), setv('straightStepAt', 'turnNow'),
+                 setv('straightAt', 'turnNow'),
                  setv('straightPwm', 'SPEED_CURVE')]),
             setv('straightElapsed', sub('turnNow', 'straightAt')),
-            setv('straightStepElapsed', sub('turnNow', 'straightStepAt')),
-            cond(both(ge('straightElapsed', 'STRAIGHT_CONFIRM_MS'),
-                      ge('straightStepElapsed', 'STRAIGHT_STEP_MS')), [
-                setv('straightPwm', add('straightPwm', 'STRAIGHT_STEP_PWM')),
-                cond(ge('straightPwm', 'SPEED_STRAIGHT'), [setv('straightPwm', 'SPEED_STRAIGHT')]),
-                setv('straightStepAt', 'turnNow')])],
+            cases([(ge('straightElapsed', 'STRAIGHT_STAGE4_MS'),
+                    [setv('straightPwm', 'SPEED_STRAIGHT')]),
+                   (ge('straightElapsed', 'STRAIGHT_STAGE3_MS'),
+                    [setv('straightPwm', 'STRAIGHT_STAGE3_PWM')]),
+                   (ge('straightElapsed', 'STRAIGHT_STAGE2_MS'),
+                    [setv('straightPwm', 'STRAIGHT_STAGE2_PWM')])],
+                  [setv('straightPwm', 'SPEED_CURVE')]),
+            cond(ge('straightPwm', 'SPEED_STRAIGHT'), [setv('straightPwm', 'SPEED_STRAIGHT')])],
         [setv('straightPending', 0), setv('straightPwm', 'SPEED_CURVE')])]
     before = [setv('turnNow', ('millis',)),
               *straight_update,
@@ -418,7 +420,7 @@ def replace_normal_follow(main):
         (anyof('sensorF', [2, 6]), wheels('SPEED_CURVE', 'innerSpeed')),
         (eq('sensorF', 4), wheels('straightPwm', 'straightPwm'))],
         [setv('turnFault', 1), call('stop')]))
-    note(normal, 'Explicit F-based following only. No strict greater-than ADC steering gap at threshold70. Only F4 requests the guarded/ramped straight PWM. Split F10 or unexpected patterns latch stop instead of preserving a prior high-speed command. F0/F14 belong to higher-priority states.')
+    note(normal, 'Explicit F-based following only. Only stable F4 requests staged straight PWM100/150/190/230 at0/200/500/900ms. Noncentered state resets stages. Split F10 or unexpected patterns latch stop; no default-forward or strict greater-than ADC gap at threshold70. F0/F14 use higher-priority states.')
     parent.remove(decision)
     parent.append(normal)
 
@@ -584,7 +586,7 @@ def rewrite():
         ('n0232', 'Read all five ADCs; preserve original raw telemetry.'),
         ('three1', 'Exclude A1 and A5 from decisions; control uses A4/A3/A2 only.'),
         ('n7010', 'Build F = 8*A4_on + 4*A3_on + 2*A2_on.'),
-        ('sm0002', 'Position weights: A4=-1, A3=0, A2=+1. Curve base100, gain100; minimum inner8. Straight limit230 requires centered200ms and ramp5 PWM per20ms.'),
+        ('sm0002', 'Position weights: A4=-1, A3=0, A2=+1. Curve base100, gain100; minimum inner8. Straight stages100/150/190/230 require continuous F4 for0/200/500/900ms.'),
         ('n0210', 'Original 115200-baud raw ADC/F telemetry; no new capture protocol.'),
     ):
         note(main.find(".//b:block[@id='%s']" % block_id, N), text)
