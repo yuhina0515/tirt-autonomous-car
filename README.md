@@ -16,6 +16,10 @@
 
 ## 明天先做什麼
 
+需要透過筆電藍牙同步資料到 Hina Web，請使用 [藍牙即時採集與 API 說明](docs/LIVE_CAPTURE.zh-TW.md)：
+第一次執行 `Configure-Upload.cmd` 設定私人碼，再雙擊 `Start-LiveCapture.cmd`。
+離線資料留在本機，恢復連線後用 `Retry-Upload.cmd` 補傳。
+
 1. 下載本儲存庫 ZIP 並解壓縮。保持輪子架空，在 CAGEBOT 開啟
    `firmware/stationary_capture/stationary_capture.xml` 並燒錄。
    **這份採集程式不驅動馬達、不需要按啟動鈕。**

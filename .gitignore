@@ -10,3 +10,5 @@ build-output/
 *.bin
 .env*
 config.measured.json
+server/config.json
+*.upload-state.json
