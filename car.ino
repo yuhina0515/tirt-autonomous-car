@@ -115,11 +115,10 @@ void stop2() {
 }
 
 /**
- * Bounded sharp-corner pivot. After minimum30ms, F4/F6/F12
- * starts forward differential capture instead of continued
- * reverse. Three consecutive captures finish the turn
- * at curve PWM100, not straight150. Timeout latches
- * stop; no measured angle or automatic restart.
+ * Bounded sharp-corner pivot. Outer forward150, inner reverse143.
+ * After minimum30ms, F4/F6/F12 starts forward differential capture.
+ * Three consecutive captures finish at curve base150, not straight230.
+ * Timeout latches stop; no measured angle or automatic restart.
  */
 void sharp_turn() {
   turnElapsed = turnNow - turnAt;
@@ -332,9 +331,9 @@ void setup()
   pinMode(5, OUTPUT);
   pinMode(4, OUTPUT);
   pinMode(6, OUTPUT);
-    SPEED_CURVE = 100;
-  TURN_OUTER_PWM = 100;
-  TURN_INNER_PWM = 95;
+    SPEED_CURVE = 150;
+  TURN_OUTER_PWM = 150;
+  TURN_INNER_PWM = 143;
   TURN_TIMEOUT_MS = 800;
   TURN_MIN_MS = 30;
   TURN_MEMORY_MS = 250;
@@ -404,13 +403,13 @@ void setup()
   liftLineAt = 0;
   liftLineElapsed = 0;
   LINE_THRESHOLD = 70;
-  SPEED_STRAIGHT = 150;
+  SPEED_STRAIGHT = 230;
   sensorA1 = 0;
   sensorA2 = 0;
   sensorA3 = 0;
   sensorA4 = 0;
   sensorA5 = 0;
-  SPEED_TURN_INNER_MEDIUM = 5;
+  SPEED_TURN_INNER_MEDIUM = 8;
   sensorF = 0;
   WHITE_STOP_COUNT = 40;
   whiteCount = 0;
@@ -418,7 +417,7 @@ void setup()
   countOn = 0;
   absW = 0;
   innerSpeed = 0;
-  TURN_KP = 100;
+  TURN_KP = 150;
   rawA1 = 0;
   rawA2 = 0;
   rawA3 = 0;
@@ -466,7 +465,8 @@ void loop()
     if (sensorA4 < LINE_THRESHOLD) {
       sensorF = sensorF + 8;
     }
-    // Position weights: A4=-1, A3=0, A2=+1. Integer proportional inner PWM; minimum5.
+    // Position weights: A4=-1, A3=0, A2=+1. Curve base150,
+    // gain150; minimum inner8. Straight command230 is separate.
     sumW = 0;
     countOn = 0;
     if (sensorA2 < LINE_THRESHOLD) {

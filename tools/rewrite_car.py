@@ -52,9 +52,9 @@ def add_sharp_turns(root, main, decision):
     """Follow a departing edge into a bounded pivot until the center line returns."""
     exporter = Exporter()
     settings = {
-        'SPEED_CURVE': ('int', 100),
-        'TURN_OUTER_PWM': ('int', 100),
-        'TURN_INNER_PWM': ('int', 95),
+        'SPEED_CURVE': ('int', 150),
+        'TURN_OUTER_PWM': ('int', 150),
+        'TURN_INNER_PWM': ('int', 143),
         'TURN_TIMEOUT_MS': ('unsigned long', 800),
         'TURN_MIN_MS': ('unsigned long', 30),
         'TURN_MEMORY_MS': ('unsigned long', 250),
@@ -168,7 +168,7 @@ def add_sharp_turns(root, main, decision):
     exporter.field(function, 'NAME', 'sharp_turn')
     exporter.field(function, 'TYPE', 'void')
     exporter.statement(function, 'STACK', pivot)
-    note(function, 'Bounded sharp-corner pivot. After minimum30ms, F4/F6/F12 starts forward differential capture instead of continued reverse. Three consecutive captures finish the turn at curve PWM100, not straight150. Timeout latches stop; no measured angle or automatic restart.')
+    note(function, 'Bounded sharp-corner pivot. Outer forward150, inner reverse143. After minimum30ms, F4/F6/F12 starts forward differential capture. Three consecutive captures finish at curve base150, not straight230. Timeout latches stop; no measured angle or automatic restart.')
     root.append(function)
 
     # A short gap has its own fixed deadline and never inherits a pivot command.
@@ -375,9 +375,10 @@ def rewrite():
     # Straight speed is independent of the curve base and sharp-turn outputs.
     for block in main.findall(".//b:block[@type='variables_declare']", N):
         name = block.find("b:field[@name='VAR']", N).text
-        if name in ('SPEED_STRAIGHT', 'TURN_KP'):
-            block.find(".//b:field[@name='NUM']", N).text = str(
-                150 if name == 'SPEED_STRAIGHT' else 100)
+        parameters = {'SPEED_STRAIGHT': 230, 'TURN_KP': 150,
+                      'SPEED_TURN_INNER_MEDIUM': 8}
+        if name in parameters:
+            block.find(".//b:field[@name='NUM']", N).text = str(parameters[name])
     # Outer ADCs stay available as raw telemetry but never enter F or sumW.
     prune_chain(main, 'MyLoop', {'n7018', 'n7050', 'sm0016', 'sm0060'})
     calculation = main.find(".//b:block[@id='sm0082']", N)
@@ -444,7 +445,7 @@ def rewrite():
         ('n0232', 'Read all five ADCs; preserve original raw telemetry.'),
         ('three1', 'Exclude A1 and A5 from decisions; control uses A4/A3/A2 only.'),
         ('n7010', 'Build F = 8*A4_on + 4*A3_on + 2*A2_on.'),
-        ('sm0002', 'Position weights: A4=-1, A3=0, A2=+1. Integer proportional inner PWM; minimum5.'),
+        ('sm0002', 'Position weights: A4=-1, A3=0, A2=+1. Curve base150, gain150; minimum inner8. Straight command230 is separate.'),
         ('n0210', 'Original 115200-baud raw ADC/F telemetry; no new capture protocol.'),
     ):
         note(main.find(".//b:block[@id='%s']" % block_id, N), text)
