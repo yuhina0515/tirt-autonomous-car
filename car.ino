@@ -169,7 +169,8 @@ void stop2() {
  * A1=right/A5=left outer assistance. Center-only search gets
  * at most150ms to capture line or receive confirmed outer
  * support; otherwise stop. Outer evidence may correct it once
- * without resetting the800ms total deadline. Outer forward150/inner
+ * without resetting the800ms total deadline. Confirmed outer plus
+ * matching F2/F8 starts before full loss. Outer forward150/inner
  * reverse114; continuous15ms capture finishes at base120.
  */
 void sharp_turn() {
@@ -481,7 +482,7 @@ void setup()
   STRAIGHT_STAGE3_PWM = 190;
   STRAIGHT_STAGE1_PWM = 100;
   STRAIGHT_TRIM_PWM = 30;
-  STRAIGHT_TRIM_MAX_MS = 80;
+  STRAIGHT_TRIM_MAX_MS = 30;
   STRAIGHT_TRIM_CENTER_MS = 30;
   straightPending = 0;
   straightElapsed = 0;
@@ -687,7 +688,7 @@ void loop()
           if (straightTrimCenterElapsed >= STRAIGHT_TRIM_CENTER_MS) {
             straightTrimPending = 0;
             straightTrimCenterPending = 0;
-          } else if (straightTrimElapsed >= STRAIGHT_TRIM_MAX_MS) {
+          } else if (straightTrimElapsed >= STRAIGHT_TRIM_MAX_MS + STRAIGHT_TRIM_CENTER_MS) {
             straightPending = 0;
             straightElapsed = 0;
             straightPwm = STRAIGHT_STAGE1_PWM;
@@ -885,6 +886,21 @@ void loop()
         centerPending = 0;
       }
       turnAge = turnNow - turnSeenAt;
+      if (outerReady == 1 && outerDirection == 1 && sensorF == 2) {
+        turnDirection = 1;
+        turnDirectionSource = 1;
+        turnActive = 1;
+        turnAt = turnNow;
+        turnConfirm = 0;
+        outerProbeActive = 0;
+      } else if (outerReady == 1 && outerDirection == -1 && sensorF == 8) {
+        turnDirection = -1;
+        turnDirectionSource = 1;
+        turnActive = 1;
+        turnAt = turnNow;
+        turnConfirm = 0;
+        outerProbeActive = 0;
+      }
       if (sensorF == 0) {
         if (outerReady == 1) {
           turnDirection = outerDirection;
@@ -937,7 +953,7 @@ void loop()
     } else {
       // Straight stages100/150/190/230 accumulate centered time only.
       // Brief F6/F12 trim keeps the current stage, outer wheel at stage PWM and
-      // inner minus30, for a shared80ms event. Centered30ms clears that event.
+      // inner minus30, for a shared30ms event. Centered30ms clears that event.
       // Strong side/loss/outer warning resets stages. F10/unexpected patterns stop.
       if (sensorF == 8) {
         digitalWrite(7,LOW);

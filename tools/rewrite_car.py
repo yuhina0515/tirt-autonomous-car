@@ -118,7 +118,7 @@ def add_sharp_turns(root, main, decision):
         'STRAIGHT_STAGE3_PWM': ('int', 190),
         'STRAIGHT_STAGE1_PWM': ('int', 100),
         'STRAIGHT_TRIM_PWM': ('int', 30),
-        'STRAIGHT_TRIM_MAX_MS': ('unsigned long', 80),
+        'STRAIGHT_TRIM_MAX_MS': ('unsigned long', 30),
         'STRAIGHT_TRIM_CENTER_MS': ('unsigned long', 30),
         'straightPending': ('int', 0),
         'straightElapsed': ('unsigned long', 0),
@@ -227,7 +227,7 @@ def add_sharp_turns(root, main, decision):
     exporter.field(function, 'NAME', 'sharp_turn')
     exporter.field(function, 'TYPE', 'void')
     exporter.statement(function, 'STACK', pivot)
-    note(function, 'A1=right/A5=left outer assistance. Center-only search gets at most150ms to capture line or receive confirmed outer support; otherwise stop. Outer evidence may correct it once without resetting the800ms total deadline. Outer forward150/inner reverse114; continuous15ms capture finishes at base120.')
+    note(function, 'A1=right/A5=left outer assistance. Center-only search gets at most150ms to capture line or receive confirmed outer support; otherwise stop. Outer evidence may correct it once without resetting the800ms total deadline. Confirmed outer plus matching F2/F8 starts before full loss. Outer forward150/inner reverse114; continuous15ms capture finishes at base120.')
     root.append(function)
 
     # A short gap has its own fixed deadline and never inherits a pivot command.
@@ -396,7 +396,7 @@ def add_sharp_turns(root, main, decision):
             setv('straightTrimElapsed', sub('turnNow', 'straightTrimAt')),
             cases([(ge('straightTrimCenterElapsed', 'STRAIGHT_TRIM_CENTER_MS'),
                     [setv('straightTrimPending', 0), setv('straightTrimCenterPending', 0)]),
-                   (ge('straightTrimElapsed', 'STRAIGHT_TRIM_MAX_MS'), reset_straight)])],
+                   (ge('straightTrimElapsed', add('STRAIGHT_TRIM_MAX_MS', 'STRAIGHT_TRIM_CENTER_MS')), reset_straight)])],
             [setv('straightElapsed', add('straightElapsed', 'straightDelta'))] + select_stage)]
     mild = [cond(eq('straightPending', 1), [
         cond(eq('straightTrimPending', 0), [setv('straightTrimPending', 1),
@@ -445,6 +445,12 @@ def add_sharp_turns(root, main, decision):
                       cond(ge('centerElapsed', 'TURN_CENTER_CLEAR_MS'),
                            [setv('turnDirection', 0)])], [setv('centerPending', 0)]),
                   setv('turnAge', sub('turnNow', 'turnSeenAt')),
+                  # Confirmed outer and matching single center-edge start before full loss.
+                  cases([
+                      (both(eq('outerReady', 1), both(eq('outerDirection', 1), eq('sensorF', 2))),
+                       begin_turn(1, 1)),
+                      (both(eq('outerReady', 1), both(eq('outerDirection', -1), eq('sensorF', 8))),
+                       begin_turn(-1, 1))]),
                   cond(eq('sensorF', 0), [cases([
                       (eq('outerReady', 1), begin_turn('outerDirection', 1)),
                       (ne('outerCandidate', 0), [
@@ -518,7 +524,7 @@ def replace_normal_follow(main):
              wheels('straightPwm', 'straightTrimInner'), wheels('SPEED_CURVE', 'innerSpeed'))]),
         (eq('sensorF', 4), wheels('straightPwm', 'straightPwm'))],
         [setv('turnFault', 1), call('stop')]))
-    note(normal, 'Straight stages100/150/190/230 accumulate centered time only. Brief F6/F12 trim keeps the current stage, outer wheel at stage PWM and inner minus30, for a shared80ms event. Centered30ms clears that event. Strong side/loss/outer warning resets stages. F10/unexpected patterns stop.')
+    note(normal, 'Straight stages100/150/190/230 accumulate centered time only. Brief F6/F12 trim keeps the current stage, outer wheel at stage PWM and inner minus30, for a shared30ms event. Centered30ms clears that event. Strong side/loss/outer warning resets stages. F10/unexpected patterns stop.')
     parent.remove(decision)
     parent.append(normal)
 
