@@ -6,11 +6,13 @@ unsigned long  TURN_MIN_MS;
 unsigned long  TURN_MEMORY_MS;
 unsigned long  TURN_CENTER_CLEAR_MS;
 unsigned long  TURN_DIRECTION_CONFIRM_MS;
-int  TURN_CONFIRM_COUNT;
+unsigned long  TURN_REACQUIRE_MS;
 int  turnDirection;
 int  turnActive;
 int  turnFault;
 int  turnConfirm;
+unsigned long  turnCaptureAt;
+unsigned long  turnCaptureElapsed;
 unsigned long  turnNow;
 unsigned long  turnAt;
 unsigned long  turnSeenAt;
@@ -28,6 +30,15 @@ int  gapActive;
 unsigned long  gapAt;
 unsigned long  gapElapsed;
 int  gapConfirm;
+unsigned long  GAP_REACQUIRE_MS;
+unsigned long  gapCaptureAt;
+unsigned long  gapCaptureElapsed;
+int  DEBUG_SERIAL;
+unsigned long  TELEMETRY_PERIOD_MS;
+unsigned long  telemetryAt;
+unsigned long  telemetryElapsed;
+int  ledStatus;
+int  ledDesired;
 unsigned long  MIN_LAP_MS;
 unsigned long  MAX_LAP_MS;
 unsigned long  DEPART_CONFIRM_MS;
@@ -116,9 +127,9 @@ void stop2() {
 
 /**
  * Bounded sharp-corner pivot. Outer forward125, inner reverse95.
- * After minimum30ms, F4/F6/F12 starts forward differential capture.
- * Three consecutive captures finish at curve base125, not straight230.
- * Timeout latches stop; no measured angle or automatic restart.
+ * After minimum30ms, F4/F6/F12 starts forward differential
+ * capture; continuous15ms finishes at curve base125. Confirmation
+ * uses elapsed time, not loop count. Timeout latches stop.
  */
 void sharp_turn() {
   turnElapsed = turnNow - turnAt;
@@ -128,11 +139,15 @@ void sharp_turn() {
     stop2();
   } else {
     if (turnElapsed >= TURN_MIN_MS && (sensorF == 4 || sensorF == 6 || sensorF == 12)) {
-      turnConfirm = turnConfirm + 1;
+      if (turnConfirm == 0) {
+        turnConfirm = 1;
+        turnCaptureAt = turnNow;
+      }
+      turnCaptureElapsed = turnNow - turnCaptureAt;
     } else {
       turnConfirm = 0;
     }
-    if (turnConfirm >= TURN_CONFIRM_COUNT) {
+    if (turnConfirm == 1 && turnCaptureElapsed >= TURN_REACQUIRE_MS) {
       turnActive = 0;
       turnDirection = 0;
       turnConfirm = 0;
@@ -189,10 +204,10 @@ void sharp_turn() {
 }
 
 /**
- * Short gap PWM70 with fixed250ms deadline. On side-line return,
- * forward differential capture starts immediately (25/70
- * or45/70 mirrored). No reverse in gap state. Three narrow
- * samples finish; wide line returns to marker handling.
+ * Short gap PWM70 with fixed250ms deadline. Side-line return starts
+ * differential capture immediately. Continuous narrow line15ms
+ * finishes; invalid observations reset confirmation, not
+ * the event deadline. Wide line returns to marker handling.
  */
 void cross_gap() {
   gapElapsed = turnNow - gapAt;
@@ -202,11 +217,15 @@ void cross_gap() {
     stop2();
   } else {
     if (sensorF == 2 || sensorF == 4 || sensorF == 6 || sensorF == 8 || sensorF == 12) {
-      gapConfirm = gapConfirm + 1;
+      if (gapConfirm == 0) {
+        gapConfirm = 1;
+        gapCaptureAt = turnNow;
+      }
+      gapCaptureElapsed = turnNow - gapCaptureAt;
     } else {
       gapConfirm = 0;
     }
-    if (gapConfirm >= 3 || sensorF == 14) {
+    if (gapConfirm == 1 && gapCaptureElapsed >= GAP_REACQUIRE_MS || sensorF == 14) {
       gapActive = 0;
       turnDirection = 0;
       whiteCount = 0;
@@ -316,6 +335,26 @@ void lift_control() {
   }
 }
 
+/**
+ * LED updates only when desired state changes. Green=running,
+ * blue=lift wait, fault or finish. No per-loop NeoPixel show.
+ */
+void update_status_led() {
+  ledDesired = 1;
+  if (turnFault == 1 || lapDone == 1 || liftState == 1) {
+    ledDesired = 2;
+  }
+  if (ledDesired == ledStatus) {
+  } else {
+    if (ledDesired == 2) {
+      colorled13(1,"#0000ff");
+    } else {
+      colorled13(1,"#33ff33");
+    }
+    ledStatus = ledDesired;
+  }
+}
+
 void setup()
 {
   Serial.begin(115200);
@@ -339,11 +378,13 @@ void setup()
   TURN_MEMORY_MS = 250;
   TURN_CENTER_CLEAR_MS = 80;
   TURN_DIRECTION_CONFIRM_MS = 15;
-  TURN_CONFIRM_COUNT = 3;
+  TURN_REACQUIRE_MS = 15;
   turnDirection = 0;
   turnActive = 0;
   turnFault = 0;
   turnConfirm = 0;
+  turnCaptureAt = 0;
+  turnCaptureElapsed = 0;
   turnNow = 0;
   turnAt = 0;
   turnSeenAt = 0;
@@ -361,6 +402,15 @@ void setup()
   gapAt = 0;
   gapElapsed = 0;
   gapConfirm = 0;
+  GAP_REACQUIRE_MS = 15;
+  gapCaptureAt = 0;
+  gapCaptureElapsed = 0;
+  DEBUG_SERIAL = 0;
+  TELEMETRY_PERIOD_MS = 50;
+  telemetryAt = 0;
+  telemetryElapsed = 0;
+  ledStatus = 1;
+  ledDesired = 1;
   MIN_LAP_MS = 15000;
   MAX_LAP_MS = 180000;
   DEPART_CONFIRM_MS = 100;
@@ -439,7 +489,6 @@ void loop()
   // sharp corners and short gaps. After departure/minimum
   // run, sustained wide line latches finish stop. This is not
   // measured lap localization. Button waits at boot only.
-    colorled13(1,"#33ff33");
     // Read all five ADCs; preserve original raw telemetry.
     sensorA1 = analogRead(A1);
     sensorA2 = analogRead(A2);
@@ -634,7 +683,6 @@ void loop()
     }
     if (turnFault == 1 || lapDone == 1) {
       stop2();
-      colorled13(1,"#0000ff");
     } else if (LIFT_ENABLED == 1 && (liftState == 1 || liftState == 2)) {
       lift_control();
     } else if (turnActive == 1) {
@@ -667,7 +715,6 @@ void loop()
           whiteCount = whiteCount + 1;
         } else {
           stop2();
-          colorled13(1,"#0000ff");
         }
       } else {
         digitalWrite(7,LOW);
@@ -676,13 +723,20 @@ void loop()
         analogWrite(6,SPEED_STRAIGHT);
       }
     }
-    // Original 115200-baud raw ADC/F telemetry; no new capture protocol.
-    Serial.print((String("A1=") + String(rawA1)));
-    Serial.print((String("A2=") + String(rawA2)));
-    Serial.print((String("A3=") + String(rawA3)));
-    Serial.print((String("A4=") + String(rawA4)));
-    Serial.print((String("A5=") + String(rawA5)));
-    Serial.println((String("F=") + String(sensorF)));
+    update_status_led();
+    if (DEBUG_SERIAL == 1) {
+      telemetryElapsed = turnNow - telemetryAt;
+      if (telemetryElapsed >= TELEMETRY_PERIOD_MS) {
+        telemetryAt = turnNow;
+        // Original 115200-baud raw ADC/F telemetry; no new capture protocol.
+        Serial.print((String("A1=") + String(rawA1)));
+        Serial.print((String("A2=") + String(rawA2)));
+        Serial.print((String("A3=") + String(rawA3)));
+        Serial.print((String("A4=") + String(rawA4)));
+        Serial.print((String("A5=") + String(rawA5)));
+        Serial.println((String("F=") + String(sensorF)));
+      }
+    }
     if (sensorF > 0) {
       whiteCount = 0;
     }

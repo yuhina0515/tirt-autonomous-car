@@ -60,11 +60,13 @@ def add_sharp_turns(root, main, decision):
         'TURN_MEMORY_MS': ('unsigned long', 250),
         'TURN_CENTER_CLEAR_MS': ('unsigned long', 80),
         'TURN_DIRECTION_CONFIRM_MS': ('unsigned long', 15),
-        'TURN_CONFIRM_COUNT': ('int', 3),
+        'TURN_REACQUIRE_MS': ('unsigned long', 15),
         'turnDirection': ('int', 0),
         'turnActive': ('int', 0),
         'turnFault': ('int', 0),
         'turnConfirm': ('int', 0),
+        'turnCaptureAt': ('unsigned long', 0),
+        'turnCaptureElapsed': ('unsigned long', 0),
         'turnNow': ('unsigned long', 0),
         'turnAt': ('unsigned long', 0),
         'turnSeenAt': ('unsigned long', 0),
@@ -82,6 +84,15 @@ def add_sharp_turns(root, main, decision):
         'gapAt': ('unsigned long', 0),
         'gapElapsed': ('unsigned long', 0),
         'gapConfirm': ('int', 0),
+        'GAP_REACQUIRE_MS': ('unsigned long', 15),
+        'gapCaptureAt': ('unsigned long', 0),
+        'gapCaptureElapsed': ('unsigned long', 0),
+        'DEBUG_SERIAL': ('int', 0),
+        'TELEMETRY_PERIOD_MS': ('unsigned long', 50),
+        'telemetryAt': ('unsigned long', 0),
+        'telemetryElapsed': ('unsigned long', 0),
+        'ledStatus': ('int', 1),
+        'ledDesired': ('int', 1),
         'MIN_LAP_MS': ('unsigned long', 15000),
         'MAX_LAP_MS': ('unsigned long', 180000),
         'DEPART_CONFIRM_MS': ('unsigned long', 100),
@@ -157,9 +168,11 @@ def add_sharp_turns(root, main, decision):
              cond(ge('turnElapsed', 'TURN_TIMEOUT_MS'),
                   [setv('turnFault', 1), setv('turnActive', 0), call('stop')], [
                  cond(both(ge('turnElapsed', 'TURN_MIN_MS'), anyof('sensorF', [4, 6, 12])),
-                      [setv('turnConfirm', add('turnConfirm', 1))],
+                      [cond(eq('turnConfirm', 0), [
+                          setv('turnConfirm', 1), setv('turnCaptureAt', 'turnNow')]),
+                       setv('turnCaptureElapsed', sub('turnNow', 'turnCaptureAt'))],
                       [setv('turnConfirm', 0)]),
-                 cond(ge('turnConfirm', 'TURN_CONFIRM_COUNT'), done, [
+                 cond(both(eq('turnConfirm', 1), ge('turnCaptureElapsed', 'TURN_REACQUIRE_MS')), done, [
                      cond(ge('turnConfirm', 1), capture_drive,
                           [cond(eq('turnDirection', -1), left, right)])])])]
     function = exporter.block('procedures_defnoreturn')
@@ -168,7 +181,7 @@ def add_sharp_turns(root, main, decision):
     exporter.field(function, 'NAME', 'sharp_turn')
     exporter.field(function, 'TYPE', 'void')
     exporter.statement(function, 'STACK', pivot)
-    note(function, 'Bounded sharp-corner pivot. Outer forward125, inner reverse95. After minimum30ms, F4/F6/F12 starts forward differential capture. Three consecutive captures finish at curve base125, not straight230. Timeout latches stop; no measured angle or automatic restart.')
+    note(function, 'Bounded sharp-corner pivot. Outer forward125, inner reverse95. After minimum30ms, F4/F6/F12 starts forward differential capture; continuous15ms finishes at curve base125. Confirmation uses elapsed time, not loop count. Timeout latches stop.')
     root.append(function)
 
     # A short gap has its own fixed deadline and never inherits a pivot command.
@@ -186,8 +199,12 @@ def add_sharp_turns(root, main, decision):
            cond(ge('gapElapsed', 'GAP_TIMEOUT_MS'),
                 [setv('turnFault', 1), setv('gapActive', 0), call('stop')], [
                cond(anyof('sensorF', [2, 4, 6, 8, 12]),
-                    [setv('gapConfirm', add('gapConfirm', 1))], [setv('gapConfirm', 0)]),
-               cond(either(ge('gapConfirm', 3), eq('sensorF', 14)),
+                    [cond(eq('gapConfirm', 0), [
+                        setv('gapConfirm', 1), setv('gapCaptureAt', 'turnNow')]),
+                     setv('gapCaptureElapsed', sub('turnNow', 'gapCaptureAt'))],
+                    [setv('gapConfirm', 0)]),
+               cond(either(both(eq('gapConfirm', 1), ge('gapCaptureElapsed', 'GAP_REACQUIRE_MS')),
+                           eq('sensorF', 14)),
                     [setv('gapActive', 0), setv('turnDirection', 0),
                      setv('whiteCount', 0)] + gap_capture, gap_capture)])]
     function = exporter.block('procedures_defnoreturn')
@@ -196,7 +213,7 @@ def add_sharp_turns(root, main, decision):
     exporter.field(function, 'NAME', 'cross_gap')
     exporter.field(function, 'TYPE', 'void')
     exporter.statement(function, 'STACK', gap)
-    note(function, 'Short gap PWM70 with fixed250ms deadline. On side-line return, forward differential capture starts immediately (25/70 or45/70 mirrored). No reverse in gap state. Three narrow samples finish; wide line returns to marker handling.')
+    note(function, 'Short gap PWM70 with fixed250ms deadline. Side-line return starts differential capture immediately. Continuous narrow line15ms finishes; invalid observations reset confirmation, not the event deadline. Wide line returns to marker handling.')
     root.append(function)
 
     wide_drive = [('digitalwrite', '7', 0), ('pwm', '5', 'WIDE_PWM'),
@@ -361,6 +378,83 @@ def add_sharp_turns(root, main, decision):
             field.set('id', ids[field.text])
 
 
+def streamline_loop_io(root, main):
+    """Keep LED writes and optional telemetry outside the per-sample hot path."""
+    exporter = Exporter()
+    exporter.seq = 100000
+    setup = main.find("b:statement[@name='MySetup']", N)
+    loop = main.find("b:statement[@name='MyLoop']", N)
+    def led_copy(color):
+        original = next(b for b in setup.findall('.//b:block', N)
+                        if b.get('type') == 'ws2812_color'
+                        and any(f.text == color for f in b.findall(
+                            "b:value[@name='RGBLED_COLOR']//b:field", N)))
+        result = deepcopy(original)
+        nxt = result.find('b:next', N)
+        if nxt is not None:
+            result.remove(nxt)
+        for b in result.iter():
+            if b.get('id'):
+                exporter.seq += 1
+                b.set('id', 'io_' + str(exporter.seq))
+        return result
+    green, blue = led_copy('#33ff33'), led_copy('#0000ff')
+    # Preserve the boot LED, but remove all repeated runtime LED writes.
+    for parent in list(loop.iter()):
+        for child in list(parent):
+            if child.get('type') == 'ws2812_color':
+                following = child.find('b:next/b:block', N)
+                parent.remove(child)
+                if following is not None:
+                    parent.append(following)
+    body = [setv('ledDesired', 1),
+            cond(either(eq('turnFault', 1), either(eq('lapDone', 1), eq('liftState', 1))),
+                 [setv('ledDesired', 2)]),
+            cond(eq('ledDesired', 'ledStatus'), [], [
+                cond(eq('ledDesired', 2), [], []), setv('ledStatus', 'ledDesired')])]
+    function = exporter.block('procedures_defnoreturn')
+    function.set('x', '1650')
+    function.set('y', '1300')
+    exporter.field(function, 'NAME', 'update_status_led')
+    exporter.field(function, 'TYPE', 'void')
+    exporter.statement(function, 'STACK', body)
+    selector = next(b for b in function.findall('.//b:block', N)
+                    if b.get('type') == 'controls_if'
+                    and b.find("b:statement[@name='ELSE']", N) is not None
+                    and b.find("b:statement[@name='DO0']/b:block", N) is None)
+    # This is the ledDesired==ledStatus guard; its ELSE contains the color selector.
+    selector = selector.find("b:statement[@name='ELSE']/b:block", N)
+    selector.find("b:statement[@name='DO0']", N).append(blue)
+    selector.find("b:statement[@name='ELSE']", N).append(green)
+    note(function, 'LED updates only when desired state changes. Green=running, blue=lift wait, fault or finish. No per-loop NeoPixel show.')
+    root.append(function)
+
+    serial = main.find(".//b:block[@id='n0210']", N)
+    parent = next(p for p in loop.iter() if serial in list(p))
+    last = serial
+    while last.find('b:next/b:block', N) is not None:
+        following = last.find('b:next/b:block', N)
+        if following.get('type') not in ('serial_print', 'serial_printL'):
+            break
+        last = following
+    tail = last.find('b:next', N)
+    if tail is not None:
+        last.remove(tail)
+    parent.remove(serial)
+    periodic = exporter.stmt(cond(ge('telemetryElapsed', 'TELEMETRY_PERIOD_MS'),
+                                  [setv('telemetryAt', 'turnNow')]))
+    assignment = periodic.find("b:statement[@name='DO0']/b:block", N)
+    ET.SubElement(assignment, tag('next')).append(serial)
+    head = exporter.chain([call('update_status_led'), cond(eq('DEBUG_SERIAL', 1),
+                          [setv('telemetryElapsed', sub('turnNow', 'telemetryAt'))])])
+    debug = head.find('b:next/b:block', N)
+    elapsed = debug.find("b:statement[@name='DO0']/b:block", N)
+    ET.SubElement(elapsed, tag('next')).append(periodic)
+    if tail is not None:
+        debug.append(tail)
+    parent.append(head)
+
+
 def rewrite():
     root = ET.fromstring((ROOT / 'legacy/three_sensor_baseline/three_sensor_baseline.xml').read_text(encoding='utf-8'))
     main = root.find("b:block[@type='arduino_setup']", N)
@@ -450,6 +544,7 @@ def rewrite():
     ):
         note(main.find(".//b:block[@id='%s']" % block_id, N), text)
     add_sharp_turns(root, main, decision)
+    streamline_loop_io(root, main)
     ET.indent(root, space='  ')
     (ROOT / 'car.xml').write_text(ET.tostring(root, encoding='unicode') + '\n', encoding='utf-8')
     print('Rewrote car.xml from the preserved legacy XML; export Arduino next.')
