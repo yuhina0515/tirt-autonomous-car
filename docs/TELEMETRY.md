@@ -28,10 +28,10 @@ Wire columns are fixed, with no startup header dependency:
 | State | Meaning |
 |---:|---|
 | 0 | WAIT / unarmed |
-| 1 | ACQUIRE, motors off until candidate confirmed |
+| 1 | ACQUIRE, motors off except bounded straight departure on full white in lap mode |
 | 2 | TRACK, continuous PD steering |
-| 3 | UNCERTAIN, reduced speed and last accepted curvature |
-| 4 | STOP, button or run limit; requires a new press |
+| 3 | UNCERTAIN, frozen recovery budget; edge search, centered gap, wide crossing or last curvature |
+| 4 | STOP, button, run limit or finish candidate; requires a new press |
 | 5 | FAULT, timing or uncertainty/acquisition deadline; requires a new press |
 | 6 | CAPTURE, motors always off |
 
@@ -49,6 +49,11 @@ Wire columns are fixed, with no startup header dependency:
 | 9 | Initial acquisition timeout |
 | 10 | Run time limit reached |
 | 11 | Insufficient center contrast |
+| 12 | Full-white start departure |
+| 13 | Finish candidate latched; not proof of a completed lap |
+| 14 | Edge-directed search with inner wheel unpowered |
+| 15 | Centered gap, slow straight motion |
+| 16 | Wide crossing, slow straight motion |
 
 Fault/stop commands drop PWM immediately; no automatic recovery or reverse pivot.
 The next start requires a debounced release and press. A held button at boot does

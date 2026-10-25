@@ -21,7 +21,7 @@ def load(path):
             if not 0<=values['millis']<2**32 or not 0<=values['tick']<2**32:raise ValueError('Timestamp/tick out of range')
             if any(not 0<=values[k]<=1023 for k in HEADER[3:8]):raise ValueError('ADC out of range')
             if values['mask'] not in range(0,15,2) or not 0<=values['state']<=6:raise ValueError('Mask/state out of range')
-            if not 0<=values['reason']<=12 or not 0<=values['contrast']<=1000:raise ValueError('Reason/contrast out of range')
+            if not 0<=values['reason']<=16 or not 0<=values['contrast']<=1000:raise ValueError('Reason/contrast out of range')
             if any(not 0<=values[k]<=255 for k in ('left_pwm','right_pwm')):raise ValueError('PWM out of range')
             if previous is not None:
                 dt=(values['millis']-previous['millis'])&0xffffffff
