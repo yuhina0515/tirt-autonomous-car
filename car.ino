@@ -1,19 +1,14 @@
 int  LINE_THRESHOLD;
 int  SPEED_STRAIGHT;
-int  SPEED_BACKWARD;
 int  sensorA1;
 int  sensorA2;
 int  sensorA3;
 int  sensorA4;
 int  sensorA5;
-int  SPEED_TURN_INNER_FINE;
 int  SPEED_TURN_INNER_MEDIUM;
-int  SPEED_TURN_PIVOT;
 int  sensorF;
 int  WHITE_STOP_COUNT;
 int  whiteCount;
-int  CROSS_HOLD;
-int  crossCount;
 int  sumW;
 int  countOn;
 int  absW;
@@ -36,59 +31,6 @@ void colorled13(int number,String c)
       else  number--;
    strip13.setPixelColor(number,strip13.Color(r,g,b));
    strip13.show();
-}
-
-/**
- * 描述此函式...
- */
-void forward() {
-  digitalWrite(7,LOW);
-  analogWrite(5,SPEED_STRAIGHT);
-  digitalWrite(4,HIGH);
-  analogWrite(6,SPEED_STRAIGHT);
-}
-
-/**
- * 描述此函式...
- */
-void backward() {
-  digitalWrite(7,HIGH);
-  analogWrite(5,SPEED_BACKWARD);
-  digitalWrite(4,LOW);
-  analogWrite(6,SPEED_BACKWARD);
-}
-
-int  dist;
-float ultrasonic_distance_9_10() {
-  digitalWrite(9, LOW);
-  digitalWrite(10, LOW);
-  delayMicroseconds(5);
-  digitalWrite(9, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(9, LOW);
-  unsigned long sonic_duration = pulseIn(10, HIGH);
-  float distance_cm = (sonic_duration / 2.0) / 29.1;
-  return distance_cm;
-}
-
-/**
- * 描述此函式...
- */
-void ultrasonic_warn() {
-  dist = 0;
-  dist = ultrasonic_distance_9_10( );
-  if (dist < 15) {
-    colorled13(1,"#ff0000");
-    tone(8,659,3000);
-    stop2();
-  } else if (dist < 50) {
-    colorled13(1,"#ffff00");
-    for (int count = 0; count < 3; count++) {
-      tone(8,523,500);
-    }
-  } else if (dist < 100) {
-    colorled13(1,"#33ff33");
-  }
 }
 
 /**
@@ -118,20 +60,15 @@ void setup()
   pinMode(6, OUTPUT);
     LINE_THRESHOLD = 70;
   SPEED_STRAIGHT = 100;
-  SPEED_BACKWARD = 40;
   sensorA1 = 0;
   sensorA2 = 0;
   sensorA3 = 0;
   sensorA4 = 0;
   sensorA5 = 0;
-  SPEED_TURN_INNER_FINE = 12;
   SPEED_TURN_INNER_MEDIUM = 5;
-  SPEED_TURN_PIVOT = 95;
   sensorF = 0;
   WHITE_STOP_COUNT = 40;
   whiteCount = 0;
-  CROSS_HOLD = 30;
-  crossCount = 0;
   sumW = 0;
   countOn = 0;
   absW = 0;
@@ -148,15 +85,16 @@ void setup()
   }
   colorled13(1,"#33ff33");
 
-  pinMode( 9 , OUTPUT);
-  pinMode( 10 , INPUT);
-  pinMode(8, OUTPUT);
 }
 
 
 void loop()
 {
+  // Three-center-sensor baseline rewrite. A4/A3/A2 control
+  // only; A5/A1 raw telemetry. PWM100, threshold70, TURN_KP75.
+  // Button waits at boot only. LED behavior unchanged.
     colorled13(1,"#33ff33");
+    // Read all five ADCs; preserve original raw telemetry.
     sensorA1 = analogRead(A1);
     sensorA2 = analogRead(A2);
     sensorA3 = analogRead(A3);
@@ -167,12 +105,11 @@ void loop()
     rawA3 = sensorA3;
     rawA4 = sensorA4;
     rawA5 = sensorA5;
+    // Exclude A1 and A5 from decisions; control uses A4/A3/A2 only.
     sensorA1 = 1023;
     sensorA5 = 1023;
+    // Build F = 8*A4_on + 4*A3_on + 2*A2_on.
     sensorF = 0;
-    if (sensorA1 < LINE_THRESHOLD) {
-      sensorF = sensorF + 1;
-    }
     if (sensorA2 < LINE_THRESHOLD) {
       sensorF = sensorF + 2;
     }
@@ -182,15 +119,9 @@ void loop()
     if (sensorA4 < LINE_THRESHOLD) {
       sensorF = sensorF + 8;
     }
-    if (sensorA5 < LINE_THRESHOLD) {
-      sensorF = sensorF + 16;
-    }
+    // Position weights: A4=-1, A3=0, A2=+1. Integer proportional inner PWM; minimum5.
     sumW = 0;
     countOn = 0;
-    if (sensorA1 < LINE_THRESHOLD) {
-      sumW = sumW + 2;
-      countOn = countOn + 1;
-    }
     if (sensorA2 < LINE_THRESHOLD) {
       sumW = sumW + 1;
       countOn = countOn + 1;
@@ -200,10 +131,6 @@ void loop()
     }
     if (sensorA4 < LINE_THRESHOLD) {
       sumW = sumW + -1;
-      countOn = countOn + 1;
-    }
-    if (sensorA5 < LINE_THRESHOLD) {
-      sumW = sumW + -2;
       countOn = countOn + 1;
     }
     absW = sumW;
@@ -216,61 +143,19 @@ void loop()
     if (innerSpeed < SPEED_TURN_INNER_MEDIUM) {
       innerSpeed = SPEED_TURN_INNER_MEDIUM;
     }
-    if (sensorF == 31 || sensorF == 15 || sensorF == 23 || sensorF == 27 || sensorF == 29 || sensorF == 30 || crossCount > 0) {
-      if (sensorF == 31 || sensorF == 15 || sensorF == 23 || sensorF == 27 || sensorF == 29 || sensorF == 30) {
-        crossCount = CROSS_HOLD;
-      } else {
-        crossCount = crossCount - 1;
-      }
-      digitalWrite(7,LOW);
-      analogWrite(5,SPEED_STRAIGHT);
-      digitalWrite(4,HIGH);
-      analogWrite(6,SPEED_STRAIGHT);
-    } else if (sensorF == 10 || sensorF == 17 || sensorF == 27) {
-    } else if (sensorF == 16) {
-      digitalWrite(7,HIGH);
-      analogWrite(5,SPEED_TURN_PIVOT);
-      digitalWrite(4,HIGH);
-      analogWrite(6,SPEED_STRAIGHT);
-    } else if (sensorF == 1) {
-      digitalWrite(7,LOW);
-      analogWrite(5,SPEED_STRAIGHT);
-      digitalWrite(4,LOW);
-      analogWrite(6,SPEED_TURN_PIVOT);
-    } else if (sensorF > 23) {
+    // F=10: hold. Left/right: original proportional steering. F=0: hold 40 loops,
+    // then stop. Otherwise forward. No latched stop or new route strategy.
+    if (sensorF == 10) {
+    } else if (sensorA4 < LINE_THRESHOLD && sensorA2 > LINE_THRESHOLD) {
       digitalWrite(7,LOW);
       analogWrite(5,innerSpeed);
       digitalWrite(4,HIGH);
       analogWrite(6,SPEED_STRAIGHT);
-    } else if (sensorA2 < LINE_THRESHOLD && sensorA1 < LINE_THRESHOLD) {
+    } else if (sensorA2 < LINE_THRESHOLD && sensorA4 > LINE_THRESHOLD) {
       digitalWrite(7,LOW);
       analogWrite(5,SPEED_STRAIGHT);
       digitalWrite(4,HIGH);
       analogWrite(6,innerSpeed);
-    } else if (sensorA4 < LINE_THRESHOLD && sensorA2 > LINE_THRESHOLD) {
-      if (sensorA3 < LINE_THRESHOLD) {
-        digitalWrite(7,LOW);
-        analogWrite(5,innerSpeed);
-        digitalWrite(4,HIGH);
-        analogWrite(6,SPEED_STRAIGHT);
-      } else {
-        digitalWrite(7,LOW);
-        analogWrite(5,innerSpeed);
-        digitalWrite(4,HIGH);
-        analogWrite(6,SPEED_STRAIGHT);
-      }
-    } else if (sensorA2 < LINE_THRESHOLD && sensorA4 > LINE_THRESHOLD) {
-      if (sensorA3 < LINE_THRESHOLD) {
-        digitalWrite(7,LOW);
-        analogWrite(5,SPEED_STRAIGHT);
-        digitalWrite(4,HIGH);
-        analogWrite(6,innerSpeed);
-      } else {
-        digitalWrite(7,LOW);
-        analogWrite(5,SPEED_STRAIGHT);
-        digitalWrite(4,HIGH);
-        analogWrite(6,innerSpeed);
-      }
     } else if (sensorF == 0) {
       if (whiteCount < WHITE_STOP_COUNT) {
         whiteCount = whiteCount + 1;
@@ -284,6 +169,7 @@ void loop()
       digitalWrite(4,HIGH);
       analogWrite(6,SPEED_STRAIGHT);
     }
+    // Original 115200-baud raw ADC/F telemetry; no new capture protocol.
     Serial.print((String("A1=") + String(rawA1)));
     Serial.print((String("A2=") + String(rawA2)));
     Serial.print((String("A3=") + String(rawA3)));
