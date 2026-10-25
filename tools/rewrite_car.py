@@ -134,6 +134,8 @@ def add_sharp_turns(root, main, decision):
         'straightTrimCenterAt': ('unsigned long', 0),
         'straightTrimCenterElapsed': ('unsigned long', 0),
         'straightTrimAllowed': ('int', 0),
+        'straightWarning': ('int', 0),
+        'straightTrimSlow': ('int', 0),
         'straightTrimInner': ('int', 70),
         'straightPwm': ('int', 100),
         'MIN_LAP_MS': ('unsigned long', 15000),
@@ -390,7 +392,7 @@ def add_sharp_turns(root, main, decision):
     reset_straight = [setv('straightPending', 0), setv('straightElapsed', 0),
                       setv('straightPwm', 'STRAIGHT_STAGE1_PWM'),
                       setv('straightTrimPending', 0), setv('straightTrimCenterPending', 0),
-                      setv('straightTrimAllowed', 0)]
+                      setv('straightTrimAllowed', 0), setv('straightTrimSlow', 0)]
     select_stage = [cases([
         (ge('straightElapsed', 'STRAIGHT_STAGE4_MS'), [setv('straightPwm', 'SPEED_STRAIGHT')]),
         (ge('straightElapsed', 'STRAIGHT_STAGE3_MS'), [setv('straightPwm', 'STRAIGHT_STAGE3_PWM')]),
@@ -406,9 +408,9 @@ def add_sharp_turns(root, main, decision):
                  setv('straightTrimCenterAt', 'turnNow')]),
             setv('straightTrimCenterElapsed', sub('turnNow', 'straightTrimCenterAt')),
             setv('straightTrimElapsed', sub('turnNow', 'straightTrimAt')),
-            cases([(ge('straightTrimCenterElapsed', 'STRAIGHT_TRIM_CENTER_MS'),
-                    [setv('straightTrimPending', 0), setv('straightTrimCenterPending', 0)]),
-                   (ge('straightTrimElapsed', add('STRAIGHT_TRIM_MAX_MS', 'STRAIGHT_TRIM_CENTER_MS')), reset_straight)])],
+            cond(ge('straightTrimCenterElapsed', 'STRAIGHT_TRIM_CENTER_MS'),
+                 [setv('straightTrimPending', 0), setv('straightTrimCenterPending', 0),
+                  setv('straightTrimSlow', 0)])],
             [setv('straightElapsed', add('straightElapsed', 'straightDelta'))] + select_stage)]
     mild = [cond(eq('straightPending', 1), [
         cond(eq('straightTrimPending', 0), [setv('straightTrimPending', 1),
@@ -416,13 +418,17 @@ def add_sharp_turns(root, main, decision):
         setv('straightTrimCenterPending', 0),
         setv('straightTrimElapsed', sub('turnNow', 'straightTrimAt')),
         cond(lt('straightTrimElapsed', 'STRAIGHT_TRIM_MAX_MS'),
-             [setv('straightTrimAllowed', 1)], reset_straight)], reset_straight)]
+             [setv('straightTrimAllowed', 1)], [setv('straightTrimAllowed', 0), setv('straightTrimSlow', 1)])], reset_straight)]
     straight_update = [setv('straightDelta', sub('turnNow', 'straightLastAt')),
         setv('straightLastAt', 'turnNow'), setv('straightTrimAllowed', 0),
-        cond(both(both(eq('outerCandidate', 0), eq('outerReady', 0)),
+        setv('straightWarning', 0),
+        cond(both(eq('outerReady', 0),
                   both(normal_lift_state, both(eq('turnActive', 0), both(eq('gapActive', 0),
                        both(eq('turnFault', 0), eq('lapDone', 0)))))), [
-            cases([(eq('sensorF', 4), centered), (anyof('sensorF', [6, 12]), mild)], reset_straight)],
+            cond(both(ne('outerCandidate', 0), anyof('sensorF', [4, 6, 12])),
+                 [setv('straightWarning', 1), setv('straightTrimSlow', 1), setv('straightTrimPending', 1), setv('straightTrimCenterPending', 0),
+                  setv('straightTrimAt', sub('turnNow', 'STRAIGHT_TRIM_MAX_MS'))],
+                 [cases([(eq('sensorF', 4), centered), (anyof('sensorF', [6, 12]), mild)], reset_straight)])],
             reset_straight),
         setv('straightTrimInner', sub('straightPwm', 'STRAIGHT_TRIM_PWM')),
         cond(lt('straightTrimInner', 'SPEED_TURN_INNER_MEDIUM'),
@@ -463,6 +469,10 @@ def add_sharp_turns(root, main, decision):
                        begin_turn(1, 1)),
                       (both(eq('outerReady', 1), both(eq('outerDirection', -1), eq('sensorF', 8))),
                        begin_turn(-1, 1)),
+                      (both(eq('outerCandidate', 1), eq('sensorF', 2)),
+                       begin_turn(1, 0)),
+                      (both(eq('outerCandidate', -1), eq('sensorF', 8)),
+                       begin_turn(-1, 0)),
                       (both(both(eq('outerReady', 0), eq('outerCandidate', 0)),
                             both(eq('sensorF', 2), both(eq('turnCandidate', 1),
                                  ge('turnCandidateElapsed', 'TURN_DIRECTION_CONFIRM_MS')))),
@@ -542,9 +552,12 @@ def replace_normal_follow(main):
              wheels('straightTrimInner', 'straightPwm'), wheels('innerSpeed', 'SPEED_CURVE'))]),
         (eq('sensorF', 6), [cond(eq('straightTrimAllowed', 1),
              wheels('straightPwm', 'straightTrimInner'), wheels('SPEED_CURVE', 'innerSpeed'))]),
-        (eq('sensorF', 4), wheels('straightPwm', 'straightPwm'))],
+        (eq('sensorF', 4), [cond(eq('straightWarning', 1),
+             wheels('STRAIGHT_STAGE1_PWM', 'STRAIGHT_STAGE1_PWM'),
+             [cond(both(eq('straightTrimSlow', 1), ge('straightPwm', 'SPEED_CURVE')),
+                   wheels('SPEED_CURVE', 'SPEED_CURVE'), wheels('straightPwm', 'straightPwm'))])])],
         [setv('turnFault', 1), call('stop')]))
-    note(normal, 'Straight stages100/150/190/230 accumulate centered time only. Brief F6/F12 trim keeps the current stage, outer wheel at stage PWM and inner minus30, for a shared30ms event. Centered30ms clears that event. Strong side/loss/outer warning resets stages. F10/unexpected patterns stop.')
+    note(normal, 'Straight stages100/150/190/230 accumulate centered time only. Brief F6/F12 trim keeps the current stage, outer wheel at stage PWM and inner minus30, for a shared30ms event. Centered30ms clears that event. Mild correction expiry uses curve output without clearing stage; centered30ms restores retained stage. Strong side/loss/confirmed outer resets stages. F10/unexpected patterns stop.')
     parent.remove(decision)
     parent.append(normal)
 
@@ -711,7 +724,7 @@ def rewrite():
         ('n0232', 'Read all five ADCs; preserve original raw telemetry.'),
         ('three1', 'Exclude A1/A5 from center F and weighted position. Their saved raw values now feed the separately confirmed outer sharp-turn assistance.'),
         ('n7010', 'Build F = 8*A4_on + 4*A3_on + 2*A2_on.'),
-        ('sm0002', 'Curve base174/gain174/minimum15 after45 percent increase from120/120/10. Straight stages100/150/190/230 retain brief F6/F12 trim without advancing during correction. Strong side or unresolved trim resets stages.'),
+        ('sm0002', 'Curve base174/gain174/minimum15 after45 percent increase from120/120/10. Straight stages100/150/190/230 retain brief F6/F12 trim without advancing during correction. Mild trim pauses stages; stable center restores retained stage. Strong side or confirmed outer resets stages.'),
         ('n0210', 'Original 115200-baud raw ADC/F telemetry; no new capture protocol.'),
     ):
         note(main.find(".//b:block[@id='%s']" % block_id, N), text)

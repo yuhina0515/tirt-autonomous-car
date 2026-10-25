@@ -80,6 +80,8 @@ int  straightTrimCenterPending;
 unsigned long  straightTrimCenterAt;
 unsigned long  straightTrimCenterElapsed;
 int  straightTrimAllowed;
+int  straightWarning;
+int  straightTrimSlow;
 int  straightTrimInner;
 int  straightPwm;
 unsigned long  MIN_LAP_MS;
@@ -532,6 +534,8 @@ void setup()
   straightTrimCenterAt = 0;
   straightTrimCenterElapsed = 0;
   straightTrimAllowed = 0;
+  straightWarning = 0;
+  straightTrimSlow = 0;
   straightTrimInner = 70;
   straightPwm = 100;
   MIN_LAP_MS = 15000;
@@ -639,9 +643,10 @@ void loop()
       sensorF = sensorF + 8;
     }
     // Curve base174/gain174/minimum15 after45 percent increase
-    // from120/120/10. Straight stages100/150/190/230 retain
-    // brief F6/F12 trim without advancing during correction.
-    // Strong side or unresolved trim resets stages.
+    // from120/120/10. Straight stages100/150/190/230 retain brief
+    // F6/F12 trim without advancing during correction. Mild trim
+    // pauses stages; stable center restores retained stage.
+    // Strong side or confirmed outer resets stages.
     sumW = 0;
     countOn = 0;
     if (sensorA2 < LINE_THRESHOLD) {
@@ -708,64 +713,71 @@ void loop()
     straightDelta = turnNow - straightLastAt;
     straightLastAt = turnNow;
     straightTrimAllowed = 0;
-    if (outerCandidate == 0 && outerReady == 0 && (liftState == 0 || liftState == 3) && turnActive == 0 && gapActive == 0 && turnFault == 0 && lapDone == 0) {
-      if (sensorF == 4) {
-        if (straightPending == 0) {
-          straightPending = 1;
-          straightElapsed = 0;
-          straightDelta = 0;
-          straightPwm = STRAIGHT_STAGE1_PWM;
-        }
-        if (straightTrimPending == 1) {
-          if (straightTrimCenterPending == 0) {
-            straightTrimCenterPending = 1;
-            straightTrimCenterAt = turnNow;
+    straightWarning = 0;
+    if (outerReady == 0 && (liftState == 0 || liftState == 3) && turnActive == 0 && gapActive == 0 && turnFault == 0 && lapDone == 0) {
+      if (outerCandidate != 0 && (sensorF == 4 || sensorF == 6 || sensorF == 12)) {
+        straightWarning = 1;
+        straightTrimSlow = 1;
+        straightTrimPending = 1;
+        straightTrimCenterPending = 0;
+        straightTrimAt = turnNow - STRAIGHT_TRIM_MAX_MS;
+      } else {
+        if (sensorF == 4) {
+          if (straightPending == 0) {
+            straightPending = 1;
+            straightElapsed = 0;
+            straightDelta = 0;
+            straightPwm = STRAIGHT_STAGE1_PWM;
           }
-          straightTrimCenterElapsed = turnNow - straightTrimCenterAt;
-          straightTrimElapsed = turnNow - straightTrimAt;
-          if (straightTrimCenterElapsed >= STRAIGHT_TRIM_CENTER_MS) {
-            straightTrimPending = 0;
+          if (straightTrimPending == 1) {
+            if (straightTrimCenterPending == 0) {
+              straightTrimCenterPending = 1;
+              straightTrimCenterAt = turnNow;
+            }
+            straightTrimCenterElapsed = turnNow - straightTrimCenterAt;
+            straightTrimElapsed = turnNow - straightTrimAt;
+            if (straightTrimCenterElapsed >= STRAIGHT_TRIM_CENTER_MS) {
+              straightTrimPending = 0;
+              straightTrimCenterPending = 0;
+              straightTrimSlow = 0;
+            }
+          } else {
+            straightElapsed = straightElapsed + straightDelta;
+            if (straightElapsed >= STRAIGHT_STAGE4_MS) {
+              straightPwm = SPEED_STRAIGHT;
+            } else if (straightElapsed >= STRAIGHT_STAGE3_MS) {
+              straightPwm = STRAIGHT_STAGE3_PWM;
+            } else if (straightElapsed >= STRAIGHT_STAGE2_MS) {
+              straightPwm = STRAIGHT_STAGE2_PWM;
+            } else {
+              straightPwm = STRAIGHT_STAGE1_PWM;
+            }
+            if (straightPwm >= SPEED_STRAIGHT) {
+              straightPwm = SPEED_STRAIGHT;
+            }
+          }
+        } else if (sensorF == 6 || sensorF == 12) {
+          if (straightPending == 1) {
+            if (straightTrimPending == 0) {
+              straightTrimPending = 1;
+              straightTrimAt = turnNow;
+            }
             straightTrimCenterPending = 0;
-          } else if (straightTrimElapsed >= STRAIGHT_TRIM_MAX_MS + STRAIGHT_TRIM_CENTER_MS) {
+            straightTrimElapsed = turnNow - straightTrimAt;
+            if (straightTrimElapsed < STRAIGHT_TRIM_MAX_MS) {
+              straightTrimAllowed = 1;
+            } else {
+              straightTrimAllowed = 0;
+              straightTrimSlow = 1;
+            }
+          } else {
             straightPending = 0;
             straightElapsed = 0;
             straightPwm = STRAIGHT_STAGE1_PWM;
             straightTrimPending = 0;
             straightTrimCenterPending = 0;
             straightTrimAllowed = 0;
-          }
-        } else {
-          straightElapsed = straightElapsed + straightDelta;
-          if (straightElapsed >= STRAIGHT_STAGE4_MS) {
-            straightPwm = SPEED_STRAIGHT;
-          } else if (straightElapsed >= STRAIGHT_STAGE3_MS) {
-            straightPwm = STRAIGHT_STAGE3_PWM;
-          } else if (straightElapsed >= STRAIGHT_STAGE2_MS) {
-            straightPwm = STRAIGHT_STAGE2_PWM;
-          } else {
-            straightPwm = STRAIGHT_STAGE1_PWM;
-          }
-          if (straightPwm >= SPEED_STRAIGHT) {
-            straightPwm = SPEED_STRAIGHT;
-          }
-        }
-      } else if (sensorF == 6 || sensorF == 12) {
-        if (straightPending == 1) {
-          if (straightTrimPending == 0) {
-            straightTrimPending = 1;
-            straightTrimAt = turnNow;
-          }
-          straightTrimCenterPending = 0;
-          straightTrimElapsed = turnNow - straightTrimAt;
-          if (straightTrimElapsed < STRAIGHT_TRIM_MAX_MS) {
-            straightTrimAllowed = 1;
-          } else {
-            straightPending = 0;
-            straightElapsed = 0;
-            straightPwm = STRAIGHT_STAGE1_PWM;
-            straightTrimPending = 0;
-            straightTrimCenterPending = 0;
-            straightTrimAllowed = 0;
+            straightTrimSlow = 0;
           }
         } else {
           straightPending = 0;
@@ -774,14 +786,8 @@ void loop()
           straightTrimPending = 0;
           straightTrimCenterPending = 0;
           straightTrimAllowed = 0;
+          straightTrimSlow = 0;
         }
-      } else {
-        straightPending = 0;
-        straightElapsed = 0;
-        straightPwm = STRAIGHT_STAGE1_PWM;
-        straightTrimPending = 0;
-        straightTrimCenterPending = 0;
-        straightTrimAllowed = 0;
       }
     } else {
       straightPending = 0;
@@ -790,6 +796,7 @@ void loop()
       straightTrimPending = 0;
       straightTrimCenterPending = 0;
       straightTrimAllowed = 0;
+      straightTrimSlow = 0;
     }
     straightTrimInner = straightPwm - STRAIGHT_TRIM_PWM;
     if (straightTrimInner < SPEED_TURN_INNER_MEDIUM) {
@@ -942,6 +949,24 @@ void loop()
         outerProbeActive = 0;
         turnDeparted = 0;
         turnCaptureStarted = 0;
+      } else if (outerCandidate == 1 && sensorF == 2) {
+        turnDirection = 1;
+        turnDirectionSource = 0;
+        turnActive = 1;
+        turnAt = turnNow;
+        turnConfirm = 0;
+        outerProbeActive = 0;
+        turnDeparted = 0;
+        turnCaptureStarted = 0;
+      } else if (outerCandidate == -1 && sensorF == 8) {
+        turnDirection = -1;
+        turnDirectionSource = 0;
+        turnActive = 1;
+        turnAt = turnNow;
+        turnConfirm = 0;
+        outerProbeActive = 0;
+        turnDeparted = 0;
+        turnCaptureStarted = 0;
       } else if (outerReady == 0 && outerCandidate == 0 && sensorF == 2 && turnCandidate == 1 && turnCandidateElapsed >= TURN_DIRECTION_CONFIRM_MS) {
         turnDirection = 1;
         turnDirectionSource = 0;
@@ -1016,9 +1041,11 @@ void loop()
       analogWrite(6,WIDE_PWM);
     } else {
       // Straight stages100/150/190/230 accumulate centered time only.
-      // Brief F6/F12 trim keeps the current stage, outer wheel at stage PWM and
-      // inner minus30, for a shared30ms event. Centered30ms clears that event.
-      // Strong side/loss/outer warning resets stages. F10/unexpected patterns stop.
+      // Brief F6/F12 trim keeps the current stage, outer wheel at stage
+      // PWM and inner minus30, for a shared30ms event. Centered30ms clears
+      // that event. Mild correction expiry uses curve output without
+      // clearing stage; centered30ms restores retained stage. Strong
+      // side/loss/confirmed outer resets stages. F10/unexpected patterns stop.
       if (sensorF == 8) {
         digitalWrite(7,LOW);
         analogWrite(5,innerSpeed);
@@ -1054,10 +1081,24 @@ void loop()
           analogWrite(6,innerSpeed);
         }
       } else if (sensorF == 4) {
-        digitalWrite(7,LOW);
-        analogWrite(5,straightPwm);
-        digitalWrite(4,HIGH);
-        analogWrite(6,straightPwm);
+        if (straightWarning == 1) {
+          digitalWrite(7,LOW);
+          analogWrite(5,STRAIGHT_STAGE1_PWM);
+          digitalWrite(4,HIGH);
+          analogWrite(6,STRAIGHT_STAGE1_PWM);
+        } else {
+          if (straightTrimSlow == 1 && straightPwm >= SPEED_CURVE) {
+            digitalWrite(7,LOW);
+            analogWrite(5,SPEED_CURVE);
+            digitalWrite(4,HIGH);
+            analogWrite(6,SPEED_CURVE);
+          } else {
+            digitalWrite(7,LOW);
+            analogWrite(5,straightPwm);
+            digitalWrite(4,HIGH);
+            analogWrite(6,straightPwm);
+          }
+        }
       } else {
         turnFault = 1;
         stop2();

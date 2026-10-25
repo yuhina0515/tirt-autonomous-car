@@ -2,6 +2,8 @@
 
 ## Active baseline after user-directed rollback (2026-10-25)
 
+- Latest: mild trim expiry retains stage/time, uses curve output until centered30ms; brief trims retain stage throughout. Candidate-only outer warning freezes stage and limits output, confirmed outer/strong side/loss resets. Matching outer candidate plus F2/F8 may enter source0 provisional turn immediately, bounded150ms until outer confirmation. Read docs/STRAIGHT_HOLD_CORNER_ENTRY_2026-10-25.zh-TW.md. Overrides earlier reset-on-trim-expiry rules.
+
 - Latest corner fix: center candidate confirmed15ms with matching F2/F8 and no outer candidate/ready may enter early (source0,150ms bound). After actual F0, matching single edge initiates forward capture. TURN_CAPTURE_PWM100, inner20/50. Once capture starts, invalid readings stop instead of resuming reverse. Exit requires F4/6/12 plus15ms valid capture. Read docs/CORNER_CAPTURE_2026-10-25.zh-TW.md; overrides shared174 capture.
 
 - Latest user request raises ordinary low-speed curve PWM45 percent: base/gain174, inner15/87. Sharp forward capture shares base174; pivot search150/-114 and straight stages/ceiling230 remain. Read docs/CURVE_SPEED_45_2026-10-25.zh-TW.md. Earlier speed values are historical.
