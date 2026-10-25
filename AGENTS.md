@@ -2,6 +2,8 @@
 
 ## Active baseline after user-directed rollback (2026-10-25)
 
+- Latest user request raises ordinary low-speed curve PWM45 percent: base/gain174, inner15/87. Sharp forward capture shares base174; pivot search150/-114 and straight stages/ceiling230 remain. Read docs/CURVE_SPEED_45_2026-10-25.zh-TW.md. Earlier speed values are historical.
+
 - Latest section14/15 fix: confirmed outer plus matching single center edge F2(right)/F8(left) starts pivot before F0. Straight trim allowed30ms (was80); centered recovery30ms with total60ms event bound. Read docs/EARLY_CORNER_2026-10-25.zh-TW.md; overrides older trigger/trim timing. No field acceptance.
 
 - Latest override: brief F6/F12 straight trim retains the stage, outer at stage PWM and inner minus30, shared80ms event cleared by30ms centered. Freeze stage accumulation during trim/recovery. Strong side/loss/outer hints reset. Curve120/gain120/minimum10 (actual10/60), sharp150/-114. Stage1 stays100, ceiling230. Read docs/STRAIGHT_TRIM_2026-10-25.zh-TW.md; earlier speed/reset notes below are historical. No extra tests or upload.

@@ -171,7 +171,7 @@ void stop2() {
  * support; otherwise stop. Outer evidence may correct it once
  * without resetting the800ms total deadline. Confirmed outer plus
  * matching F2/F8 starts before full loss. Outer forward150/inner
- * reverse114; continuous15ms capture finishes at base120.
+ * reverse114; continuous15ms capture finishes at base174.
  */
 void sharp_turn() {
   turnElapsed = turnNow - turnAt;
@@ -416,7 +416,7 @@ void setup()
   pinMode(5, OUTPUT);
   pinMode(4, OUTPUT);
   pinMode(6, OUTPUT);
-    SPEED_CURVE = 120;
+    SPEED_CURVE = 174;
   TURN_OUTER_PWM = 150;
   TURN_INNER_PWM = 114;
   TURN_TIMEOUT_MS = 800;
@@ -545,7 +545,7 @@ void setup()
   sensorA3 = 0;
   sensorA4 = 0;
   sensorA5 = 0;
-  SPEED_TURN_INNER_MEDIUM = 10;
+  SPEED_TURN_INNER_MEDIUM = 15;
   sensorF = 0;
   WHITE_STOP_COUNT = 40;
   whiteCount = 0;
@@ -553,7 +553,7 @@ void setup()
   countOn = 0;
   absW = 0;
   innerSpeed = 0;
-  TURN_KP = 120;
+  TURN_KP = 174;
   rawA1 = 0;
   rawA2 = 0;
   rawA3 = 0;
@@ -601,9 +601,10 @@ void loop()
     if (sensorA4 < LINE_THRESHOLD) {
       sensorF = sensorF + 8;
     }
-    // Curve base120/gain120/minimum10 after20 percent increase. Straight
-    // stages100/150/190/230 retain brief F6/F12 trim without advancing
-    // during correction. Strong side or unresolved trim resets stages.
+    // Curve base174/gain174/minimum15 after45 percent increase
+    // from120/120/10. Straight stages100/150/190/230 retain
+    // brief F6/F12 trim without advancing during correction.
+    // Strong side or unresolved trim resets stages.
     sumW = 0;
     countOn = 0;
     if (sensorA2 < LINE_THRESHOLD) {

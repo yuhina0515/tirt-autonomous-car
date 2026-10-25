@@ -52,7 +52,7 @@ def add_sharp_turns(root, main, decision):
     """Follow a departing edge into a bounded pivot until the center line returns."""
     exporter = Exporter()
     settings = {
-        'SPEED_CURVE': ('int', 120),
+        'SPEED_CURVE': ('int', 174),
         'TURN_OUTER_PWM': ('int', 150),
         'TURN_INNER_PWM': ('int', 114),
         'TURN_TIMEOUT_MS': ('unsigned long', 800),
@@ -227,7 +227,7 @@ def add_sharp_turns(root, main, decision):
     exporter.field(function, 'NAME', 'sharp_turn')
     exporter.field(function, 'TYPE', 'void')
     exporter.statement(function, 'STACK', pivot)
-    note(function, 'A1=right/A5=left outer assistance. Center-only search gets at most150ms to capture line or receive confirmed outer support; otherwise stop. Outer evidence may correct it once without resetting the800ms total deadline. Confirmed outer plus matching F2/F8 starts before full loss. Outer forward150/inner reverse114; continuous15ms capture finishes at base120.')
+    note(function, 'A1=right/A5=left outer assistance. Center-only search gets at most150ms to capture line or receive confirmed outer support; otherwise stop. Outer evidence may correct it once without resetting the800ms total deadline. Confirmed outer plus matching F2/F8 starts before full loss. Outer forward150/inner reverse114; continuous15ms capture finishes at base174.')
     root.append(function)
 
     # A short gap has its own fixed deadline and never inherits a pivot command.
@@ -621,8 +621,8 @@ def rewrite():
     # Straight speed is independent of the curve base and sharp-turn outputs.
     for block in main.findall(".//b:block[@type='variables_declare']", N):
         name = block.find("b:field[@name='VAR']", N).text
-        parameters = {'SPEED_STRAIGHT': 230, 'TURN_KP': 120,
-                      'SPEED_TURN_INNER_MEDIUM': 10}
+        parameters = {'SPEED_STRAIGHT': 230, 'TURN_KP': 174,
+                      'SPEED_TURN_INNER_MEDIUM': 15}
         if name in parameters:
             block.find(".//b:field[@name='NUM']", N).text = str(parameters[name])
     # Outer ADCs stay available as raw telemetry but never enter F or sumW.
@@ -691,7 +691,7 @@ def rewrite():
         ('n0232', 'Read all five ADCs; preserve original raw telemetry.'),
         ('three1', 'Exclude A1/A5 from center F and weighted position. Their saved raw values now feed the separately confirmed outer sharp-turn assistance.'),
         ('n7010', 'Build F = 8*A4_on + 4*A3_on + 2*A2_on.'),
-        ('sm0002', 'Curve base120/gain120/minimum10 after20 percent increase. Straight stages100/150/190/230 retain brief F6/F12 trim without advancing during correction. Strong side or unresolved trim resets stages.'),
+        ('sm0002', 'Curve base174/gain174/minimum15 after45 percent increase from120/120/10. Straight stages100/150/190/230 retain brief F6/F12 trim without advancing during correction. Strong side or unresolved trim resets stages.'),
         ('n0210', 'Original 115200-baud raw ADC/F telemetry; no new capture protocol.'),
     ):
         note(main.find(".//b:block[@id='%s']" % block_id, N), text)
