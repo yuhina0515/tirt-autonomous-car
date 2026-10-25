@@ -13,6 +13,29 @@ unsigned long  turnAt;
 unsigned long  turnSeenAt;
 unsigned long  turnElapsed;
 unsigned long  turnAge;
+int  GAP_PWM;
+unsigned long  GAP_TIMEOUT_MS;
+int  gapActive;
+unsigned long  gapAt;
+unsigned long  gapElapsed;
+int  gapConfirm;
+unsigned long  MIN_LAP_MS;
+unsigned long  MAX_LAP_MS;
+unsigned long  DEPART_CONFIRM_MS;
+unsigned long  FINISH_CONFIRM_MS;
+unsigned long  WIDE_TIMEOUT_MS;
+int  WIDE_PWM;
+int  lapStarted;
+int  lapReady;
+int  lapDone;
+unsigned long  lapAt;
+unsigned long  lapElapsed;
+int  departPending;
+unsigned long  departAt;
+unsigned long  departElapsed;
+int  wideActive;
+unsigned long  wideAt;
+unsigned long  wideElapsed;
 int  LINE_THRESHOLD;
 int  SPEED_STRAIGHT;
 int  sensorA1;
@@ -100,6 +123,40 @@ void sharp_turn() {
   }
 }
 
+/**
+ * Straight short-gap crossing, PWM70, fixed 250ms total
+ * limit. No pivot during a gap. Reacquire narrow line for
+ * three samples; wide line returns to marker handling.
+ */
+void cross_gap() {
+  gapElapsed = turnNow - gapAt;
+  if (gapElapsed >= GAP_TIMEOUT_MS) {
+    turnFault = 1;
+    gapActive = 0;
+    stop2();
+  } else {
+    if (sensorF == 2 || sensorF == 4 || sensorF == 6 || sensorF == 8 || sensorF == 12) {
+      gapConfirm = gapConfirm + 1;
+    } else {
+      gapConfirm = 0;
+    }
+    if (gapConfirm >= 3 || sensorF == 14) {
+      gapActive = 0;
+      turnDirection = 0;
+      whiteCount = 0;
+      digitalWrite(7,LOW);
+      analogWrite(5,GAP_PWM);
+      digitalWrite(4,HIGH);
+      analogWrite(6,GAP_PWM);
+    } else {
+      digitalWrite(7,LOW);
+      analogWrite(5,GAP_PWM);
+      digitalWrite(4,HIGH);
+      analogWrite(6,GAP_PWM);
+    }
+  }
+}
+
 void setup()
 {
   Serial.begin(115200);
@@ -130,6 +187,29 @@ void setup()
   turnSeenAt = 0;
   turnElapsed = 0;
   turnAge = 0;
+  GAP_PWM = 70;
+  GAP_TIMEOUT_MS = 250;
+  gapActive = 0;
+  gapAt = 0;
+  gapElapsed = 0;
+  gapConfirm = 0;
+  MIN_LAP_MS = 15000;
+  MAX_LAP_MS = 180000;
+  DEPART_CONFIRM_MS = 100;
+  FINISH_CONFIRM_MS = 250;
+  WIDE_TIMEOUT_MS = 900;
+  WIDE_PWM = 45;
+  lapStarted = 0;
+  lapReady = 0;
+  lapDone = 0;
+  lapAt = 0;
+  lapElapsed = 0;
+  departPending = 0;
+  departAt = 0;
+  departElapsed = 0;
+  wideActive = 0;
+  wideAt = 0;
+  wideElapsed = 0;
   LINE_THRESHOLD = 70;
   SPEED_STRAIGHT = 100;
   sensorA1 = 0;
@@ -162,9 +242,11 @@ void setup()
 
 void loop()
 {
-  // Three-center-sensor control with sharp-corner pivot recovery.
-  // A4/A3/A2 control only; A5/A1 raw telemetry. PWM100, threshold70,
-  // TURN_KP75. Button waits at boot only. Turn timeout needs reset.
+  // Start on the narrow line LEFT of the large finish patch,
+  // facing away from finish. Three-center-sensor control,
+  // sharp corners and short gaps. After departure/minimum
+  // run, sustained wide line latches finish stop. This is not
+  // measured lap localization. Button waits at boot only.
     colorled13(1,"#33ff33");
     // Read all five ADCs; preserve original raw telemetry.
     sensorA1 = analogRead(A1);
@@ -216,29 +298,82 @@ void loop()
       innerSpeed = SPEED_TURN_INNER_MEDIUM;
     }
     turnNow = millis();
-    if (turnActive == 0 && turnFault == 0) {
-      if (sensorF == 8 || sensorF == 12) {
-        turnDirection = -1;
-        turnSeenAt = turnNow;
-      } else if (sensorF == 2 || sensorF == 6) {
-        turnDirection = 1;
-        turnSeenAt = turnNow;
-      }
-      turnAge = turnNow - turnSeenAt;
-      if (sensorF == 0 && (turnDirection == -1 || turnDirection == 1) && turnAge <= TURN_MEMORY_MS) {
-        turnActive = 1;
-        turnAt = turnNow;
-        turnConfirm = 0;
+    if (lapStarted == 0) {
+      lapStarted = 1;
+      lapAt = turnNow;
+    }
+    lapElapsed = turnNow - lapAt;
+    if (lapElapsed >= MAX_LAP_MS) {
+      turnFault = 1;
+    }
+    if (lapReady == 0) {
+      if (sensorF == 2 || sensorF == 4 || sensorF == 6 || sensorF == 8 || sensorF == 12) {
+        if (departPending == 0) {
+          departPending = 1;
+          departAt = turnNow;
+        }
+        departElapsed = turnNow - departAt;
+        if (departElapsed >= DEPART_CONFIRM_MS) {
+          lapReady = 1;
+        }
+      } else {
+        departPending = 0;
       }
     }
-    if (turnFault == 1) {
+    if (sensorF == 14 && turnActive == 0 && gapActive == 0) {
+      if (wideActive == 0) {
+        wideActive = 1;
+        wideAt = turnNow;
+      }
+      wideElapsed = turnNow - wideAt;
+      if (wideElapsed >= WIDE_TIMEOUT_MS) {
+        turnFault = 1;
+      } else if (lapReady == 1 && lapElapsed >= MIN_LAP_MS && wideElapsed >= FINISH_CONFIRM_MS) {
+        lapDone = 1;
+      }
+    } else {
+      wideActive = 0;
+    }
+    if (turnActive == 0 && gapActive == 0 && turnFault == 0 && lapDone == 0) {
+      if (sensorF == 8) {
+        turnDirection = -1;
+        turnSeenAt = turnNow;
+      } else if (sensorF == 2) {
+        turnDirection = 1;
+        turnSeenAt = turnNow;
+      } else if (sensorF == 4 || sensorF == 14) {
+        turnDirection = 0;
+      }
+      turnAge = turnNow - turnSeenAt;
+      if (sensorF == 0) {
+        if ((turnDirection == -1 || turnDirection == 1) && turnAge <= TURN_MEMORY_MS) {
+          turnActive = 1;
+          turnAt = turnNow;
+          turnConfirm = 0;
+        } else {
+          gapActive = 1;
+          gapAt = turnNow;
+          gapConfirm = 0;
+        }
+      }
+    }
+    if (turnFault == 1 || lapDone == 1) {
       stop2();
+      colorled13(1,"#0000ff");
     } else if (turnActive == 1) {
       sharp_turn();
+    } else if (gapActive == 1) {
+      cross_gap();
+    } else if (wideActive == 1) {
+      digitalWrite(7,LOW);
+      analogWrite(5,WIDE_PWM);
+      digitalWrite(4,HIGH);
+      analogWrite(6,WIDE_PWM);
     } else {
       // Normal follow fallback: F=10 holds; left/right proportional
-      // steering; F=0 without a recent turn direction holds 40 loops,
-      // then stops. Sharp-turn state and its latched timeout have priority.
+      // steering. Lap finish, wide marker, short gap and
+      // sharp-turn states have priority. The preserved legacy
+      // F=0 loop counter is bypassed by the gap/turn states.
       if (sensorF == 10) {
       } else if (sensorA4 < LINE_THRESHOLD && sensorA2 > LINE_THRESHOLD) {
         digitalWrite(7,LOW);

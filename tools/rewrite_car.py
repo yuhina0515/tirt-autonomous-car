@@ -11,7 +11,7 @@ import xml.etree.ElementTree as ET
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from blockly_codegen import (Exporter, setv, cond, cases, call, eq, ge, le,
-                             both, either, sub, add)
+                             both, either, sub, add, anyof)
 NS = 'https://developers.google.com/blockly/xml'
 N = {'b': NS}
 ET.register_namespace('', NS)
@@ -67,6 +67,29 @@ def add_sharp_turns(root, main, decision):
         'turnSeenAt': ('unsigned long', 0),
         'turnElapsed': ('unsigned long', 0),
         'turnAge': ('unsigned long', 0),
+        'GAP_PWM': ('int', 70),
+        'GAP_TIMEOUT_MS': ('unsigned long', 250),
+        'gapActive': ('int', 0),
+        'gapAt': ('unsigned long', 0),
+        'gapElapsed': ('unsigned long', 0),
+        'gapConfirm': ('int', 0),
+        'MIN_LAP_MS': ('unsigned long', 15000),
+        'MAX_LAP_MS': ('unsigned long', 180000),
+        'DEPART_CONFIRM_MS': ('unsigned long', 100),
+        'FINISH_CONFIRM_MS': ('unsigned long', 250),
+        'WIDE_TIMEOUT_MS': ('unsigned long', 900),
+        'WIDE_PWM': ('int', 45),
+        'lapStarted': ('int', 0),
+        'lapReady': ('int', 0),
+        'lapDone': ('int', 0),
+        'lapAt': ('unsigned long', 0),
+        'lapElapsed': ('unsigned long', 0),
+        'departPending': ('int', 0),
+        'departAt': ('unsigned long', 0),
+        'departElapsed': ('unsigned long', 0),
+        'wideActive': ('int', 0),
+        'wideAt': ('unsigned long', 0),
+        'wideElapsed': ('unsigned long', 0),
     }
     variables = root.find('b:variables', N)
     for name in settings:
@@ -108,25 +131,87 @@ def add_sharp_turns(root, main, decision):
     note(function, 'Bounded left/right pivot for sharp 60/90-degree corners. End on centered line, not a measured angle. Timeout latches stop until reset; no automatic restart.')
     root.append(function)
 
+    # A short gap has its own fixed deadline and never inherits a pivot command.
+    gap_drive = [('digitalwrite', '7', 0), ('pwm', '5', 'GAP_PWM'),
+                 ('digitalwrite', '4', 1), ('pwm', '6', 'GAP_PWM')]
+    gap = [setv('gapElapsed', sub('turnNow', 'gapAt')),
+           cond(ge('gapElapsed', 'GAP_TIMEOUT_MS'),
+                [setv('turnFault', 1), setv('gapActive', 0), call('stop')], [
+               cond(anyof('sensorF', [2, 4, 6, 8, 12]),
+                    [setv('gapConfirm', add('gapConfirm', 1))], [setv('gapConfirm', 0)]),
+               cond(either(ge('gapConfirm', 3), eq('sensorF', 14)),
+                    [setv('gapActive', 0), setv('turnDirection', 0),
+                     setv('whiteCount', 0)] + gap_drive, gap_drive)])]
+    function = exporter.block('procedures_defnoreturn')
+    function.set('x', '900')
+    function.set('y', '650')
+    exporter.field(function, 'NAME', 'cross_gap')
+    exporter.field(function, 'TYPE', 'void')
+    exporter.statement(function, 'STACK', gap)
+    note(function, 'Straight short-gap crossing, PWM70, fixed 250ms total limit. No pivot during a gap. Reacquire narrow line for three samples; wide line returns to marker handling.')
+    root.append(function)
+
+    wide_drive = [('digitalwrite', '7', 0), ('pwm', '5', 'WIDE_PWM'),
+                  ('digitalwrite', '4', 1), ('pwm', '6', 'WIDE_PWM')]
+    lap_update = [
+        cond(eq('lapStarted', 0), [setv('lapStarted', 1), setv('lapAt', 'turnNow')]),
+        setv('lapElapsed', sub('turnNow', 'lapAt')),
+        cond(ge('lapElapsed', 'MAX_LAP_MS'), [setv('turnFault', 1)]),
+        cond(eq('lapReady', 0), [
+            cond(anyof('sensorF', [2, 4, 6, 8, 12]), [
+                cond(eq('departPending', 0),
+                     [setv('departPending', 1), setv('departAt', 'turnNow')]),
+                setv('departElapsed', sub('turnNow', 'departAt')),
+                cond(ge('departElapsed', 'DEPART_CONFIRM_MS'), [setv('lapReady', 1)])],
+                [setv('departPending', 0)])]),
+        cond(both(eq('sensorF', 14), both(eq('turnActive', 0), eq('gapActive', 0))), [
+            cond(eq('wideActive', 0), [setv('wideActive', 1), setv('wideAt', 'turnNow')]),
+            setv('wideElapsed', sub('turnNow', 'wideAt')),
+            # The event timeout remains fixed even across the minimum-lap threshold.
+            cases([(ge('wideElapsed', 'WIDE_TIMEOUT_MS'), [setv('turnFault', 1)]),
+                   (both(eq('lapReady', 1), both(ge('lapElapsed', 'MIN_LAP_MS'),
+                                                ge('wideElapsed', 'FINISH_CONFIRM_MS'))),
+                    [setv('lapDone', 1)])])], [setv('wideActive', 0)])]
     before = [setv('turnNow', ('millis',)),
-              cond(both(eq('turnActive', 0), eq('turnFault', 0)), [
-                  cases([(either(eq('sensorF', 8), eq('sensorF', 12)),
+              *lap_update,
+              cond(both(eq('turnActive', 0), both(eq('gapActive', 0),
+                    both(eq('turnFault', 0), eq('lapDone', 0)))), [
+                  cases([(eq('sensorF', 8),
                           [setv('turnDirection', -1), setv('turnSeenAt', 'turnNow')]),
-                         (either(eq('sensorF', 2), eq('sensorF', 6)),
-                          [setv('turnDirection', 1), setv('turnSeenAt', 'turnNow')])]),
+                         (eq('sensorF', 2),
+                          [setv('turnDirection', 1), setv('turnSeenAt', 'turnNow')]),
+                         (either(eq('sensorF', 4), eq('sensorF', 14)),
+                          [setv('turnDirection', 0)])]),
                   setv('turnAge', sub('turnNow', 'turnSeenAt')),
-                  cond(both(eq('sensorF', 0),
+                  cond(eq('sensorF', 0), [cond(
                             both(either(eq('turnDirection', -1), eq('turnDirection', 1)),
-                                 le('turnAge', 'TURN_MEMORY_MS'))), [
+                                 le('turnAge', 'TURN_MEMORY_MS')), [
                       setv('turnActive', 1), setv('turnAt', 'turnNow'),
-                      setv('turnConfirm', 0)])])]
+                      setv('turnConfirm', 0)], [
+                      setv('gapActive', 1), setv('gapAt', 'turnNow'),
+                      setv('gapConfirm', 0)])])])]
     head = exporter.chain(before)
     last = head
     while last.find('b:next/b:block', N) is not None:
         last = last.find('b:next/b:block', N)
     wrapper = exporter.stmt(cases([
-        (eq('turnFault', 1), [call('stop')]),
-        (eq('turnActive', 1), [call('sharp_turn')])], []))
+        (either(eq('turnFault', 1), eq('lapDone', 1)), [call('stop')]),
+        (eq('turnActive', 1), [call('sharp_turn')]),
+        (eq('gapActive', 1), [call('cross_gap')]),
+        (eq('wideActive', 1), wide_drive)], []))
+    blue = next(b for b in main.findall('.//b:block', N)
+                if b.get('type') == 'ws2812_color'
+                and any(f.text == '#0000ff' for f in b.findall('.//b:field', N)))
+    blue = deepcopy(blue)
+    blue_next = blue.find('b:next', N)
+    if blue_next is not None:
+        blue.remove(blue_next)
+    # The cloned LED value blocks need independent workspace IDs.
+    for index, b in enumerate(blue.iter()):
+        if b.get('id'):
+            b.set('id', 'lap_stop_led_' + str(index))
+    stop_call = wrapper.find("b:statement[@name='DO0']/b:block", N)
+    ET.SubElement(stop_call, tag('next')).append(blue)
     ET.SubElement(last, tag('next')).append(wrapper)
     parent = next(p for p in main.iter() if decision in list(p))
     following = decision.find('b:next', N)
@@ -191,7 +276,7 @@ def rewrite():
     decision.append(old['ELSE'])
     if tail is not None:
         decision.append(tail)
-    note(decision, 'Normal follow fallback: F=10 holds; left/right proportional steering; F=0 without a recent turn direction holds 40 loops, then stops. Sharp-turn state and its latched timeout have priority.')
+    note(decision, 'Normal follow fallback: F=10 holds; left/right proportional steering. Lap finish, wide marker, short gap and sharp-turn states have priority. The preserved legacy F=0 loop counter is bypassed by the gap/turn states.')
     # Remove unused helpers and disabled boot tone; keep the existing stop helper.
     for block in list(root.findall('b:block', N)):
         if block.get('type') == 'procedures_defnoreturn':
@@ -207,7 +292,7 @@ def rewrite():
             variables.remove(variable)
     main.set('x', '40')
     main.set('y', '-1400')
-    note(main, 'Three-center-sensor control with sharp-corner pivot recovery. A4/A3/A2 control only; A5/A1 raw telemetry. PWM100, threshold70, TURN_KP75. Button waits at boot only. Turn timeout needs reset.')
+    note(main, 'Start on the narrow line LEFT of the large finish patch, facing away from finish. Three-center-sensor control, sharp corners and short gaps. After departure/minimum run, sustained wide line latches finish stop. This is not measured lap localization. Button waits at boot only.')
     for block_id, text in (
         ('n0232', 'Read all five ADCs; preserve original raw telemetry.'),
         ('three1', 'Exclude A1 and A5 from decisions; control uses A4/A3/A2 only.'),

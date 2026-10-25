@@ -3,6 +3,7 @@
 ## Active baseline after user-directed rollback (2026-10-25)
 
 - Root car.xml and car.ino are the active rewrite of the three-center-sensor PWM100 baseline from self-driving_car. Read README.md, car.md and docs/SENSOR_TRUTH_TABLE.zh-TW.md before strategy changes. tools/rewrite_car.py rebuilds XML from the preserved legacy source; tools/export_car.mjs exports it with local vendor generators. Legacy files remain unchanged.
+- Later user-authorized additions are documented in docs/SHARP_TURNS.zh-TW.md and docs/ONE_LAP.zh-TW.md. Start is the narrow line left of the large finish patch, not the patch itself. Minimum runtime/wide-duration finish detection is a candidate, not proof of a full lap; no new tests or upload have been performed.
 - The user requested removal of today's controller experiments and restoration of the original strategy. Preserve its behavior until a concrete strategy change is specified.
 - For this baseline edit CAGEBOT XML and export Arduino from that XML. build.py/config.json only own the retained temporal candidate under firmware/, not root car.xml.
 - The user requested no additional testing for this rollback. No tests or upload were run; do not imply new hardware acceptance.
