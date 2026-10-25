@@ -8,6 +8,10 @@
 
 ## v0.2.0-rc.1 預發行版
 
+**最新 v0.3.2-rc.1 交叉／彎道候選檔**：燒錄 `firmware/field_crossing/field_crossing.xml`。
+針對全白 350 ms 超時停車，新增 PWM 50／900 ms 全白通過與近期偏向尋線；
+仍限速 70、從窄白線啟動、自動終點關閉。操作見 [交叉與彎道測試](docs/FIELD_CROSSING.zh-TW.md)。
+
 **2026-10-25 新增 v0.3.1-rc.1 實測低速分段測試檔**：
 燒錄 `firmware/field_low_speed/field_low_speed.xml`，已校正並啟用驅動，按鈕啟動。
 從窄白線開始、PWM 上限 70、自動起終點關閉，操作見 [低速跑道測試](docs/FIELD_LOW_SPEED.zh-TW.md)。

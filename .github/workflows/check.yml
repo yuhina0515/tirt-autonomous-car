@@ -27,3 +27,7 @@ jobs:
         run: |
           g++ -m32 -std=c++17 -I tests -DFIELD_PROFILE_TEST '-DSKETCH_FILE="../firmware/field_low_speed/field_low_speed.ino"' tests/native.cpp -o test-output/field
           test-output/field
+      - name: Verify bounded crossing and wide-to-black corner recovery
+        run: |
+          g++ -m32 -std=c++17 -I tests -DFIELD_CROSSING_TEST '-DSKETCH_FILE="../firmware/field_crossing/field_crossing.ino"' tests/native.cpp -o test-output/crossing
+          test-output/crossing

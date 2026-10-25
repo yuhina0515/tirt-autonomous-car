@@ -19,7 +19,8 @@ class Tests(unittest.TestCase):
            {'on_strength':300},{'period_ms':30},{'log_period_ms':10},
            {'line_adc_A5_to_A1':[499]*5},{'drive_enabled':'true'},
            {'lap_enabled':1},{'finish_confirm_ms':400},{'min_lap_ms':180000},
-           {'search_pwm':101},{'search_timeout_ms':20},{'departure_confirm_ms':15000}]
+           {'search_pwm':101},{'search_timeout_ms':20},{'departure_confirm_ms':15000},
+           {'wide_pwm':101},{'wide_pwm':True},{'wide_hint_ms':501},{'wide_hint_ms':True}]
   for change in changes:
    c=copy.deepcopy(self.config);c.update(change)
    with self.subTest(change=change),self.assertRaises(ValueError):validate(c)
@@ -38,6 +39,15 @@ class Tests(unittest.TestCase):
     self.assertEqual((Path(t)/folder/(folder+'.ino')).read_bytes(),(ROOT/'firmware'/folder/(folder+'.ino')).read_bytes())
  def test_unknown_block_rejected(self):
   with self.assertRaises(ValueError):xml_to_ino('<xml xmlns="https://developers.google.com/blockly/xml"><block type="opaque_cpp"/></xml>')
+ def test_crossing_profile_exports(self):
+  path=ROOT/'configs/field_crossing_20261025.json';c=json.loads(path.read_text());validate(c)
+  self.assertFalse(c['lap_enabled']);self.assertTrue(c['drive_enabled']);self.assertEqual(c['wide_pwm'],50)
+  self.assertEqual(c['wide_timeout_ms'],900);self.assertEqual(c['wide_hint_ms'],250)
+  with tempfile.TemporaryDirectory() as t:
+   folder=Path(t)/'field_crossing';result=build(path,folder,'track')
+   self.assertEqual(result,json.loads((ROOT/'firmware/field_crossing/manifest.json').read_text()))
+   for suffix in ('.xml','.ino'):
+    self.assertEqual((folder/('field_crossing'+suffix)).read_bytes(),(ROOT/'firmware/field_crossing'/('field_crossing'+suffix)).read_bytes())
  def test_measured_field_profile_exports_and_limits(self):
   config_path=ROOT/'configs/field_low_speed_20261025.json'
   c=json.loads(config_path.read_text());validate(c)

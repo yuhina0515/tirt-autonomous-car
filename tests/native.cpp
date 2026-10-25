@@ -31,7 +31,7 @@ int main(){
 #ifdef CAPTURE_TEST
  reset();configReady=1;
  for(int m=0;m<32;++m){mockButton=m%2;stable(m,30);check(controlState==6&&leftPwm==0&&rightPwm==0);}
-#elif defined(FIELD_PROFILE_TEST)
+#elif defined(FIELD_PROFILE_TEST) || defined(FIELD_CROSSING_TEST)
  // Execute the measured, armed field profile, not the unarmed default profile.
  reset();check(configReady==1&&lapEnabled==0&&maxPwm==70&&basePwm==60&&maxRunMs==60000);
  stable(4,30);check(controlState==0&&leftPwm==0&&rightPwm==0); // Boot never starts motion.
@@ -48,7 +48,7 @@ int main(){
  start();stable(0,8);check(controlState==3&&reason==15&&leftPwm==rightPwm);
  stable(4,8);check(controlState==2);
  start();stable(0,35);check(controlState==5&&leftPwm==0&&rightPwm==0);
- start();stable(14,45);check(controlState==5&&reason!=13); // Lap detection stays disabled.
+ start();stable(14,(int)(wideTimeoutMs/10+10));check(controlState==5&&reason!=13); // Lap detection stays disabled.
  reset();stable(14,4);mockButton=0;stable(14,4);mockButton=1;stable(14,30);
  check(controlState==1&&leftPwm==0&&rightPwm==0); // Narrow-line start required.
  stable(14,200);check(controlState==5&&reason==9);
@@ -60,6 +60,27 @@ int main(){
   start();stable(4|((outer&1)?1:0)|((outer&2)?16:0),20);
   check(controlState==2&&lastPosition==0&&leftPwm==basePwm&&rightPwm==basePwm);
  }
+#ifdef FIELD_CROSSING_TEST
+ check(widePwm==50&&wideTimeoutMs==900&&wideHintMs==250&&searchEdge==400);
+ start();stable(14,45);check(controlState==3&&reason==16&&leftPwm==50&&rightPwm==50);
+ stable(4,8);check(controlState==2); // Crossing lasting longer than the old 350 ms deadline.
+ for(int edge:{12,6}){
+  start();stable(edge,15);stable(4,6);check(controlState==2&&lastPosition==0);
+  stable(14,8);check(controlState==3&&wideTurn==(edge==12?-1:1));
+  unsigned long entry=uncertainAtMs;
+  stable(0,8);check(controlState==3&&reason==14&&uncertainAtMs==entry);
+  if(edge==12)check(leftPwm==0&&rightPwm==searchPwm);else check(rightPwm==0&&leftPwm==searchPwm);
+  stable(edge,8);check(controlState==2);
+ }
+ start();stable(12,15);stable(4,40);stable(14,8);check(wideTurn==0);
+ stable(0,8);check(controlState==3&&reason==15&&leftPwm==rightPwm); // Expired hint cannot choose a corner.
+ start();stable(14,8);unsigned long entry=uncertainAtMs;
+ for(int i=0;i<100;++i)sample(i%2?4:14);
+ check(controlState==5&&uncertainAtMs==entry&&leftPwm==0&&rightPwm==0); // Blips cannot extend deadline.
+ start();stable(12,15);stable(14,8);stable(0,85);
+ check(controlState==5&&leftPwm==0&&rightPwm==0); // Wide-to-black cannot restart a search timer.
+ start();stable(14,8);mockButton=0;stable(14,4);check(controlState==4&&reason==7&&leftPwm==0&&rightPwm==0);
+#endif
 #else
  reset();mockButton=0;stable(4,30);check(controlState==0&&leftPwm==0&&rightPwm==0); // Unarmed cannot drive.
  reset();configReady=1;mockButton=0;stable(4,30);check(controlState==0); // Held at boot cannot start.
