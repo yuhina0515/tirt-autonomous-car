@@ -2,6 +2,7 @@
 
 ## Active baseline after user-directed rollback (2026-10-25)
 
+- User explicitly authorized A5/A1 sharp-turn assistance after repeated section14 wrong-left turns. Read docs/OUTER_TURN_ASSIST.zh-TW.md. General F/PD remains center-only, but raw outers select corner direction after20ms confirmation, inhibit straight acceleration, and may correct center-sourced search once within150ms. Center-only search without outer support stops at150ms. This overrides earlier "outer logged-only" rules for this assistance; thresholds are provisional and unmeasured.
 - Latest user change uses straight stages100/150/190/230 after continuous centered F4 for0/200/500/900ms; any noncentered/other state resets them. Read docs/STRAIGHT_STAGES.zh-TW.md; it replaces the prior +5 per20ms ramp. Curve100/inner8-50 and other states remain.
 - Latest first-corner feedback on c9e7c9d led to curve base100/gain100 (inner8/50), straight start100 then centered200ms and +5 PWM per20ms up to230. Sharp search125/-95 remains; forward capture base100. Read docs/FIRST_CORNER_2026-10-25.zh-TW.md; it overrides prior curve125 and ramp80ms/+10 per10ms notes. No field acceptance.
 - After the section4 push/runaway report, docs/RUNAWAY_FIX_2026-10-25.zh-TW.md is authoritative: confirmation restored15ms; only explicit F4 ramps from125 to230 after80ms centered, steps10 per10ms. F10/unexpected normal patterns latch stop; use F-based turn conditions instead of strict >70 ADC branches. No-direction gaps are45/max120ms. These override earlier1ms/gap70 notes below; no field acceptance claim.

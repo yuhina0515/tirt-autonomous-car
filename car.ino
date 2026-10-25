@@ -10,6 +10,24 @@ unsigned long  TURN_REACQUIRE_MS;
 int  turnDirection;
 int  turnActive;
 int  turnFault;
+int  OUTER_TURN_ASSIST;
+int  OUTER_LINE_THRESHOLD;
+int  OUTER_BACKGROUND_THRESHOLD;
+unsigned long  OUTER_CONFIRM_MS;
+unsigned long  OUTER_MEMORY_MS;
+unsigned long  OUTER_PROBE_TIMEOUT_MS;
+unsigned long  OUTER_OVERRIDE_WINDOW_MS;
+int  outerCandidate;
+unsigned long  outerCandidateAt;
+unsigned long  outerCandidateElapsed;
+int  outerDirection;
+unsigned long  outerSeenAt;
+unsigned long  outerAge;
+int  outerReady;
+int  outerProbeActive;
+unsigned long  outerProbeAt;
+unsigned long  outerProbeElapsed;
+int  turnDirectionSource;
 int  turnConfirm;
 unsigned long  turnCaptureAt;
 unsigned long  turnCaptureElapsed;
@@ -135,14 +153,19 @@ void stop2() {
 }
 
 /**
- * Bounded sharp-corner pivot. Outer forward125, inner reverse95.
- * After minimum30ms, F4/F6/F12 starts forward differential
- * capture; continuous15ms finishes at curve base100. Confirmation
- * uses elapsed time, not loop count. Timeout latches stop.
+ * A1=right/A5=left outer assistance. Center-only search gets
+ * at most150ms to capture line or receive confirmed outer
+ * support; otherwise stop. Outer evidence may correct it once
+ * without resetting the800ms total deadline. Outer forward125/inner
+ * reverse95; continuous15ms capture finishes at base100.
  */
 void sharp_turn() {
   turnElapsed = turnNow - turnAt;
-  if (turnElapsed >= TURN_TIMEOUT_MS) {
+  if (turnDirectionSource == 0 && turnElapsed <= OUTER_OVERRIDE_WINDOW_MS && outerReady == 1) {
+    turnDirection = outerDirection;
+    turnDirectionSource = 1;
+  }
+  if (turnElapsed >= TURN_TIMEOUT_MS || OUTER_TURN_ASSIST == 1 && turnDirectionSource == 0 && turnElapsed >= OUTER_OVERRIDE_WINDOW_MS) {
     turnFault = 1;
     turnActive = 0;
     stop2();
@@ -345,12 +368,12 @@ void lift_control() {
 }
 
 /**
- * LED updates only when desired state changes. Green=running,
- * blue=lift wait, fault or finish. No per-loop NeoPixel show.
+ * LED updates only on changes. Green=running; blue=outer-direction
+ * probe stop, lift wait, fault or finish. No per-loop NeoPixel show.
  */
 void update_status_led() {
   ledDesired = 1;
-  if (turnFault == 1 || lapDone == 1 || liftState == 1) {
+  if (outerProbeActive == 1 || turnFault == 1 || lapDone == 1 || liftState == 1) {
     ledDesired = 2;
   }
   if (ledDesired == ledStatus) {
@@ -391,6 +414,24 @@ void setup()
   turnDirection = 0;
   turnActive = 0;
   turnFault = 0;
+  OUTER_TURN_ASSIST = 1;
+  OUTER_LINE_THRESHOLD = 70;
+  OUTER_BACKGROUND_THRESHOLD = 120;
+  OUTER_CONFIRM_MS = 20;
+  OUTER_MEMORY_MS = 120;
+  OUTER_PROBE_TIMEOUT_MS = 80;
+  OUTER_OVERRIDE_WINDOW_MS = 150;
+  outerCandidate = 0;
+  outerCandidateAt = 0;
+  outerCandidateElapsed = 0;
+  outerDirection = 0;
+  outerSeenAt = 0;
+  outerAge = 0;
+  outerReady = 0;
+  outerProbeActive = 0;
+  outerProbeAt = 0;
+  outerProbeElapsed = 0;
+  turnDirectionSource = 0;
   turnConfirm = 0;
   turnCaptureAt = 0;
   turnCaptureElapsed = 0;
@@ -518,7 +559,8 @@ void loop()
     rawA3 = sensorA3;
     rawA4 = sensorA4;
     rawA5 = sensorA5;
-    // Exclude A1 and A5 from decisions; control uses A4/A3/A2 only.
+    // Exclude A1/A5 from center F and weighted position. Their saved raw
+    // values now feed the separately confirmed outer sharp-turn assistance.
     sensorA1 = 1023;
     sensorA5 = 1023;
     // Build F = 8*A4_on + 4*A3_on + 2*A2_on.
@@ -558,7 +600,46 @@ void loop()
       innerSpeed = SPEED_TURN_INNER_MEDIUM;
     }
     turnNow = millis();
-    if (sensorF == 4 && (liftState == 0 || liftState == 3) && turnActive == 0 && gapActive == 0 && turnFault == 0 && lapDone == 0) {
+    if (sensorF != 0) {
+      outerProbeActive = 0;
+    }
+    if (OUTER_TURN_ASSIST == 1 && (sensorF == 0 || sensorF == 2 || sensorF == 4 || sensorF == 6 || sensorF == 8 || sensorF == 12)) {
+      if (rawA1 < OUTER_LINE_THRESHOLD && rawA5 >= OUTER_BACKGROUND_THRESHOLD) {
+        if (outerCandidate != 1) {
+          outerCandidate = 1;
+          outerCandidateAt = turnNow;
+        }
+        outerCandidateElapsed = turnNow - outerCandidateAt;
+        if (outerCandidateElapsed >= OUTER_CONFIRM_MS) {
+          outerDirection = 1;
+          outerSeenAt = turnNow;
+        }
+      } else if (rawA5 < OUTER_LINE_THRESHOLD && rawA1 >= OUTER_BACKGROUND_THRESHOLD) {
+        if (outerCandidate != -1) {
+          outerCandidate = -1;
+          outerCandidateAt = turnNow;
+        }
+        outerCandidateElapsed = turnNow - outerCandidateAt;
+        if (outerCandidateElapsed >= OUTER_CONFIRM_MS) {
+          outerDirection = -1;
+          outerSeenAt = turnNow;
+        }
+      } else {
+        outerCandidate = 0;
+      }
+      if (rawA1 < OUTER_LINE_THRESHOLD && rawA5 < OUTER_LINE_THRESHOLD) {
+        outerDirection = 0;
+      }
+    } else {
+      outerCandidate = 0;
+      outerDirection = 0;
+    }
+    outerAge = turnNow - outerSeenAt;
+    outerReady = 0;
+    if (OUTER_TURN_ASSIST == 1 && outerDirection != 0 && outerAge <= OUTER_MEMORY_MS && (outerCandidate == 0 || outerCandidate == outerDirection)) {
+      outerReady = 1;
+    }
+    if (outerCandidate == 0 && outerReady == 0 && sensorF == 4 && (liftState == 0 || liftState == 3) && turnActive == 0 && gapActive == 0 && turnFault == 0 && lapDone == 0) {
       if (straightPending == 0) {
         straightPending = 1;
         straightAt = turnNow;
@@ -711,11 +792,33 @@ void loop()
       }
       turnAge = turnNow - turnSeenAt;
       if (sensorF == 0) {
-        if ((turnDirection == -1 || turnDirection == 1) && turnAge <= TURN_MEMORY_MS) {
+        if (outerReady == 1) {
+          turnDirection = outerDirection;
+          turnDirectionSource = 1;
           turnActive = 1;
           turnAt = turnNow;
           turnConfirm = 0;
+          outerProbeActive = 0;
+        } else if (outerCandidate != 0) {
+          if (outerProbeActive == 0) {
+            outerProbeActive = 1;
+            outerProbeAt = turnNow;
+          }
+          outerProbeElapsed = turnNow - outerProbeAt;
+          if (outerProbeElapsed >= OUTER_PROBE_TIMEOUT_MS) {
+            turnFault = 1;
+          }
+        } else if (outerProbeActive == 1) {
+          turnFault = 1;
+        } else if (turnDirection != 0 && turnAge <= TURN_MEMORY_MS) {
+          turnDirection = turnDirection;
+          turnDirectionSource = 0;
+          turnActive = 1;
+          turnAt = turnNow;
+          turnConfirm = 0;
+          outerProbeActive = 0;
         } else {
+          outerProbeActive = 0;
           gapActive = 1;
           gapAt = turnNow;
           gapConfirm = 0;
@@ -726,6 +829,8 @@ void loop()
       stop2();
     } else if (LIFT_ENABLED == 1 && (liftState == 1 || liftState == 2)) {
       lift_control();
+    } else if (outerProbeActive == 1) {
+      stop2();
     } else if (turnActive == 1) {
       sharp_turn();
     } else if (gapActive == 1) {

@@ -11,7 +11,7 @@ import xml.etree.ElementTree as ET
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from blockly_codegen import (Exporter, setv, cond, cases, call, eq, ge, le,
-                             both, either, sub, add, anyof)
+                             both, either, sub, add, anyof, lt, ne)
 NS = 'https://developers.google.com/blockly/xml'
 N = {'b': NS}
 ET.register_namespace('', NS)
@@ -64,6 +64,24 @@ def add_sharp_turns(root, main, decision):
         'turnDirection': ('int', 0),
         'turnActive': ('int', 0),
         'turnFault': ('int', 0),
+        'OUTER_TURN_ASSIST': ('int', 1),
+        'OUTER_LINE_THRESHOLD': ('int', 70),
+        'OUTER_BACKGROUND_THRESHOLD': ('int', 120),
+        'OUTER_CONFIRM_MS': ('unsigned long', 20),
+        'OUTER_MEMORY_MS': ('unsigned long', 120),
+        'OUTER_PROBE_TIMEOUT_MS': ('unsigned long', 80),
+        'OUTER_OVERRIDE_WINDOW_MS': ('unsigned long', 150),
+        'outerCandidate': ('int', 0),
+        'outerCandidateAt': ('unsigned long', 0),
+        'outerCandidateElapsed': ('unsigned long', 0),
+        'outerDirection': ('int', 0),
+        'outerSeenAt': ('unsigned long', 0),
+        'outerAge': ('unsigned long', 0),
+        'outerReady': ('int', 0),
+        'outerProbeActive': ('int', 0),
+        'outerProbeAt': ('unsigned long', 0),
+        'outerProbeElapsed': ('unsigned long', 0),
+        'turnDirectionSource': ('int', 0),
         'turnConfirm': ('int', 0),
         'turnCaptureAt': ('unsigned long', 0),
         'turnCaptureElapsed': ('unsigned long', 0),
@@ -174,7 +192,13 @@ def add_sharp_turns(root, main, decision):
             setv('turnConfirm', 0), setv('whiteCount', 0)] + capture_drive
     # Deadline is fixed at entry and has priority over reacquisition.
     pivot = [setv('turnElapsed', sub('turnNow', 'turnAt')),
-             cond(ge('turnElapsed', 'TURN_TIMEOUT_MS'),
+             cond(both(eq('turnDirectionSource', 0),
+                       both(le('turnElapsed', 'OUTER_OVERRIDE_WINDOW_MS'), eq('outerReady', 1))), [
+                 setv('turnDirection', 'outerDirection'), setv('turnDirectionSource', 1)]),
+             cond(either(ge('turnElapsed', 'TURN_TIMEOUT_MS'),
+                         both(eq('OUTER_TURN_ASSIST', 1),
+                              both(eq('turnDirectionSource', 0),
+                                   ge('turnElapsed', 'OUTER_OVERRIDE_WINDOW_MS')))),
                   [setv('turnFault', 1), setv('turnActive', 0), call('stop')], [
                  cond(both(ge('turnElapsed', 'TURN_MIN_MS'), anyof('sensorF', [4, 6, 12])),
                       [cond(eq('turnConfirm', 0), [
@@ -190,7 +214,7 @@ def add_sharp_turns(root, main, decision):
     exporter.field(function, 'NAME', 'sharp_turn')
     exporter.field(function, 'TYPE', 'void')
     exporter.statement(function, 'STACK', pivot)
-    note(function, 'Bounded sharp-corner pivot. Outer forward125, inner reverse95. After minimum30ms, F4/F6/F12 starts forward differential capture; continuous15ms finishes at curve base100. Confirmation uses elapsed time, not loop count. Timeout latches stop.')
+    note(function, 'A1=right/A5=left outer assistance. Center-only search gets at most150ms to capture line or receive confirmed outer support; otherwise stop. Outer evidence may correct it once without resetting the800ms total deadline. Outer forward125/inner reverse95; continuous15ms capture finishes at base100.')
     root.append(function)
 
     # A short gap has its own fixed deadline and never inherits a pivot command.
@@ -312,10 +336,37 @@ def add_sharp_turns(root, main, decision):
             setv('turnCandidateElapsed', sub('turnNow', 'turnCandidateAt')),
             cond(ge('turnCandidateElapsed', 'TURN_DIRECTION_CONFIRM_MS'),
                  [setv('turnDirection', direction), setv('turnSeenAt', 'turnNow')])]
+    def outer_candidate(direction):
+        return [cond(ne('outerCandidate', direction), [
+                    setv('outerCandidate', direction), setv('outerCandidateAt', 'turnNow')]),
+                setv('outerCandidateElapsed', sub('turnNow', 'outerCandidateAt')),
+                cond(ge('outerCandidateElapsed', 'OUTER_CONFIRM_MS'), [
+                    setv('outerDirection', direction), setv('outerSeenAt', 'turnNow')])]
+    outer_update = [
+        cond(ne('sensorF', 0), [setv('outerProbeActive', 0)]),
+        cond(both(eq('OUTER_TURN_ASSIST', 1), anyof('sensorF', [0, 2, 4, 6, 8, 12])), [
+            cases([
+                (both(lt('rawA1', 'OUTER_LINE_THRESHOLD'), ge('rawA5', 'OUTER_BACKGROUND_THRESHOLD')),
+                 outer_candidate(1)),
+                (both(lt('rawA5', 'OUTER_LINE_THRESHOLD'), ge('rawA1', 'OUTER_BACKGROUND_THRESHOLD')),
+                 outer_candidate(-1))], [setv('outerCandidate', 0)]),
+            cond(both(lt('rawA1', 'OUTER_LINE_THRESHOLD'), lt('rawA5', 'OUTER_LINE_THRESHOLD')),
+                 [setv('outerDirection', 0)])],
+             [setv('outerCandidate', 0), setv('outerDirection', 0)]),
+        setv('outerAge', sub('turnNow', 'outerSeenAt')), setv('outerReady', 0),
+        cond(both(eq('OUTER_TURN_ASSIST', 1),
+                  both(ne('outerDirection', 0), both(le('outerAge', 'OUTER_MEMORY_MS'),
+                       either(eq('outerCandidate', 0), eq('outerCandidate', 'outerDirection'))))),
+             [setv('outerReady', 1)])]
+    def begin_turn(direction, source):
+        return [setv('turnDirection', direction), setv('turnDirectionSource', source),
+                setv('turnActive', 1), setv('turnAt', 'turnNow'),
+                setv('turnConfirm', 0), setv('outerProbeActive', 0)]
     straight_update = [cond(
-        both(eq('sensorF', 4), both(normal_lift_state,
+        both(both(eq('outerCandidate', 0), eq('outerReady', 0)),
+             both(eq('sensorF', 4), both(normal_lift_state,
              both(eq('turnActive', 0), both(eq('gapActive', 0),
-                  both(eq('turnFault', 0), eq('lapDone', 0)))))), [
+                  both(eq('turnFault', 0), eq('lapDone', 0))))))), [
             cond(eq('straightPending', 0), [setv('straightPending', 1),
                  setv('straightAt', 'turnNow'),
                  setv('straightPwm', 'SPEED_CURVE')]),
@@ -330,6 +381,7 @@ def add_sharp_turns(root, main, decision):
             cond(ge('straightPwm', 'SPEED_STRAIGHT'), [setv('straightPwm', 'SPEED_STRAIGHT')])],
         [setv('straightPending', 0), setv('straightPwm', 'SPEED_CURVE')])]
     before = [setv('turnNow', ('millis',)),
+              *outer_update,
               *straight_update,
               *lift_update,
               *lap_update,
@@ -358,13 +410,19 @@ def add_sharp_turns(root, main, decision):
                       cond(ge('centerElapsed', 'TURN_CENTER_CLEAR_MS'),
                            [setv('turnDirection', 0)])], [setv('centerPending', 0)]),
                   setv('turnAge', sub('turnNow', 'turnSeenAt')),
-                  cond(eq('sensorF', 0), [cond(
-                            both(either(eq('turnDirection', -1), eq('turnDirection', 1)),
-                                 le('turnAge', 'TURN_MEMORY_MS')), [
-                      setv('turnActive', 1), setv('turnAt', 'turnNow'),
-                      setv('turnConfirm', 0)], [
-                      setv('gapActive', 1), setv('gapAt', 'turnNow'),
-                      setv('gapConfirm', 0)])])])]
+                  cond(eq('sensorF', 0), [cases([
+                      (eq('outerReady', 1), begin_turn('outerDirection', 1)),
+                      (ne('outerCandidate', 0), [
+                          cond(eq('outerProbeActive', 0), [
+                              setv('outerProbeActive', 1), setv('outerProbeAt', 'turnNow')]),
+                          setv('outerProbeElapsed', sub('turnNow', 'outerProbeAt')),
+                          cond(ge('outerProbeElapsed', 'OUTER_PROBE_TIMEOUT_MS'),
+                               [setv('turnFault', 1)])]),
+                      (eq('outerProbeActive', 1), [setv('turnFault', 1)]),
+                      (both(ne('turnDirection', 0), le('turnAge', 'TURN_MEMORY_MS')),
+                       begin_turn('turnDirection', 0))], [
+                          setv('outerProbeActive', 0), setv('gapActive', 1),
+                          setv('gapAt', 'turnNow'), setv('gapConfirm', 0)])])])]
     head = exporter.chain(before)
     last = head
     while last.find('b:next/b:block', N) is not None:
@@ -373,6 +431,7 @@ def add_sharp_turns(root, main, decision):
         (either(eq('turnFault', 1), eq('lapDone', 1)), [call('stop')]),
         (both(eq('LIFT_ENABLED', 1), either(eq('liftState', 1), eq('liftState', 2))),
          [call('lift_control')]),
+        (eq('outerProbeActive', 1), [call('stop')]),
         (eq('turnActive', 1), [call('sharp_turn')]),
         (eq('gapActive', 1), [call('cross_gap')]),
         (eq('wideActive', 1), wide_drive)], []))
@@ -455,7 +514,8 @@ def streamline_loop_io(root, main):
                 if following is not None:
                     parent.append(following)
     body = [setv('ledDesired', 1),
-            cond(either(eq('turnFault', 1), either(eq('lapDone', 1), eq('liftState', 1))),
+            cond(either(eq('outerProbeActive', 1),
+                        either(eq('turnFault', 1), either(eq('lapDone', 1), eq('liftState', 1)))),
                  [setv('ledDesired', 2)]),
             cond(eq('ledDesired', 'ledStatus'), [], [
                 cond(eq('ledDesired', 2), [], []), setv('ledStatus', 'ledDesired')])]
@@ -473,7 +533,7 @@ def streamline_loop_io(root, main):
     selector = selector.find("b:statement[@name='ELSE']/b:block", N)
     selector.find("b:statement[@name='DO0']", N).append(blue)
     selector.find("b:statement[@name='ELSE']", N).append(green)
-    note(function, 'LED updates only when desired state changes. Green=running, blue=lift wait, fault or finish. No per-loop NeoPixel show.')
+    note(function, 'LED updates only on changes. Green=running; blue=outer-direction probe stop, lift wait, fault or finish. No per-loop NeoPixel show.')
     root.append(function)
 
     serial = main.find(".//b:block[@id='n0210']", N)
@@ -584,7 +644,7 @@ def rewrite():
     note(main, 'Start on the narrow line LEFT of the large finish patch, facing away from finish. Three-center-sensor control, sharp corners and short gaps. After departure/minimum run, sustained wide line latches finish stop. This is not measured lap localization. Button waits at boot only.')
     for block_id, text in (
         ('n0232', 'Read all five ADCs; preserve original raw telemetry.'),
-        ('three1', 'Exclude A1 and A5 from decisions; control uses A4/A3/A2 only.'),
+        ('three1', 'Exclude A1/A5 from center F and weighted position. Their saved raw values now feed the separately confirmed outer sharp-turn assistance.'),
         ('n7010', 'Build F = 8*A4_on + 4*A3_on + 2*A2_on.'),
         ('sm0002', 'Position weights: A4=-1, A3=0, A2=+1. Curve base100, gain100; minimum inner8. Straight stages100/150/190/230 require continuous F4 for0/200/500/900ms.'),
         ('n0210', 'Original 115200-baud raw ADC/F telemetry; no new capture protocol.'),
