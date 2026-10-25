@@ -1,0 +1,62 @@
+{
+  "date": "2026-10-25",
+  "release": "v0.3.3-rc.1",
+  "python_tests_passed": 18,
+  "native": {
+    "motor_swap": {
+      "assertions": 4657,
+      "trace": "05d2f00d"
+    },
+    "crossing": {
+      "assertions": 3785,
+      "trace": "329d7336"
+    },
+    "low_speed": {
+      "assertions": 2304,
+      "trace": "46645c4a"
+    },
+    "default": {
+      "assertions": 9090,
+      "trace": "204e974a"
+    },
+    "capture": {
+      "assertions": 1952,
+      "trace": "17512a2b"
+    }
+  },
+  "unsigned_long_bytes": 4,
+  "vendor_trace_parity_all_profiles": true,
+  "vendor_xml_roundtrip_all_profiles": true,
+  "vendor_import_blocks": {
+    "track_profiles": 1597,
+    "capture": 1549
+  },
+  "avr": {
+    "fqbn": "arduino:avr:nano:cpu=atmega328old",
+    "motor_swap_local_and_vendor_flash": 14890,
+    "motor_swap_local_and_vendor_ram": 666,
+    "capture_local_and_vendor_flash": 8042,
+    "capture_local_and_vendor_ram": 442
+  },
+  "swap_motor_channels": true,
+  "mapping_candidate": {
+    "D5": "right_pwm",
+    "D6": "left_pwm",
+    "D7": "LOW",
+    "D4": "HIGH"
+  },
+  "max_pwm": 70,
+  "lap_enabled": false,
+  "physical_acceptance": false,
+  "hardware_upload": "NOT RUN",
+  "root_cause": "Motor channel mismatch is a hypothesis from A2 telemetry and reported opposite wheel response; physical mapping remains to be accepted.",
+  "files": {
+    "build.py": "0529bede76ed293b66a6bfba158436ed486dc0b4c577c2d1841bfeddabfaedb0",
+    "configs/field_motor_swap_20261025.json": "66fc191917c123011ff5a27b6be8b69499d66ff4b919a2e8a8a10ed999faaeac",
+    "tests/native.cpp": "5b89761ffc1d69d62eb77bae30d154ff0905cfdff62320fff841c7e08c12e829",
+    "tests/test_tools.py": "d2b1a2797fe0bf9610a80268f9dbb298f033a1e141db0b598e4cc2e9f15b25ad",
+    "firmware/field_motor_swap/field_motor_swap.xml": "82285b5c82414b10f5159ce0bfd5c2681b3909eea65bc65192c314678363a230",
+    "firmware/field_motor_swap/field_motor_swap.ino": "275227f608c61a112c0e8275ebd12267db23d3e1000dab3272e78bc06e72e44a",
+    "firmware/field_motor_swap/manifest.json": "1b119fd0a4c584afdb749f6f1e2577e6651dd649fb23dcbb7fd75cb99a2be848"
+  }
+}

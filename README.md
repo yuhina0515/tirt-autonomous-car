@@ -8,6 +8,10 @@
 
 ## v0.2.0-rc.1 預發行版
 
+**最新 v0.3.3-rc.1 左右馬達對應候選檔**：針對右線卻左轉的回報，
+`firmware/field_motor_swap/field_motor_swap.xml` 交換 D5/D6 的左右 PWM 命令。
+先按 [左右方向架空驗收](docs/FIELD_MOTOR_SWAP.zh-TW.md) 確認，再落地。
+
 **最新 v0.3.2-rc.1 交叉／彎道候選檔**：燒錄 `firmware/field_crossing/field_crossing.xml`。
 針對全白 350 ms 超時停車，新增 PWM 50／900 ms 全白通過與近期偏向尋線；
 仍限速 70、從窄白線啟動、自動終點關閉。操作見 [交叉與彎道測試](docs/FIELD_CROSSING.zh-TW.md)。

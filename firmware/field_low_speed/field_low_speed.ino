@@ -35,6 +35,7 @@ unsigned long minLapMs;
 unsigned long finishConfirmMs;
 long widePwm;
 unsigned long wideHintMs;
+long swapMotorChannels;
 unsigned long nowMs;
 unsigned long lastTickMs;
 unsigned long dtMs;
@@ -658,8 +659,14 @@ rightPwm = rightTarget;
 }
 digitalWrite(7,LOW);
 digitalWrite(4,HIGH);
+if ((swapMotorChannels == 1L)) {
+analogWrite(5,rightPwm);
+analogWrite(6,leftPwm);
+}
+else {
 analogWrite(5,leftPwm);
 analogWrite(6,rightPwm);
+}
 }
 
 void telemetry() {
@@ -750,6 +757,7 @@ minLapMs = 15000L;
 finishConfirmMs = 250L;
 widePwm = 35L;
 wideHintMs = 0L;
+swapMotorChannels = 0L;
 nowMs = 0L;
 lastTickMs = 0L;
 dtMs = 0L;

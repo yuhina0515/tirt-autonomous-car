@@ -56,6 +56,8 @@ def validate(c):
         raise ValueError('Invalid wide PWM')
     if type(c.get('wide_hint_ms',0)) is not int or not 0<=c.get('wide_hint_ms',0)<=500:
         raise ValueError('Invalid wide hint age')
+    if type(c.get('swap_motor_channels',False)) is not bool:
+        raise ValueError('swap_motor_channels must be boolean')
 
 def program(c,profile):
     validate(c);variables={};funcs={}
@@ -75,7 +77,7 @@ def program(c,profile):
         'searchEdge':c['search_edge'],'searchPwm':c['search_pwm'],'departurePwm':c['departure_pwm'],
         'departureConfirmMs':c['departure_confirm_ms'],'minLapMs':c['min_lap_ms'],
         'finishConfirmMs':c['finish_confirm_ms'],'widePwm':c.get('wide_pwm',c['uncertain_pwm']),
-        'wideHintMs':c.get('wide_hint_ms',0)}
+        'wideHintMs':c.get('wide_hint_ms',0),'swapMotorChannels':int(c.get('swap_motor_channels',False))}
     for n,v in settings.items():var(n,v,'unsigned long' if n.endswith('Ms') else 'long')
     for n in ('nowMs','lastTickMs','dtMs','logAtMs','runAtMs','buttonAtMs','candidateAtMs','uncertainAtMs','elapsedMs','tick','rejected','timingFaults',
               'recoveryBudgetMs','lineAtMs','wideAtMs','hintAtMs'):
@@ -211,7 +213,9 @@ def program(c,profile):
         motors += [cond(gt(t,'maxPwm'),[setv(t,'maxPwm')]),cond(lt(t,0),[setv(t,0)]),
             cases([(le(t,0),[setv(p,0)]),(gt(t,p),[
                 setv(p,add(p,'slewPwm')),cond(lt(p,'minPwm'),[setv(p,'minPwm')]),cond(gt(p,t),[setv(p,t)])])],[setv(p,t)])]
-    motors += [('digitalwrite','7',0),('digitalwrite','4',1),('pwm','5','leftPwm'),('pwm','6','rightPwm')]
+    motors += [('digitalwrite','7',0),('digitalwrite','4',1),
+        cond(eq('swapMotorChannels',1),[('pwm','5','rightPwm'),('pwm','6','leftPwm')],
+             [('pwm','5','leftPwm'),('pwm','6','rightPwm')])]
     funcs['write_motors']=motors
     fields=['nowMs','tick','dtMs']+[f'raw{i}' for i in range(5)]+['maskF','controlState','reason',
         'candidatePos','lastPosition','contrast','leftPwm','rightPwm','rejected','timingFaults']
