@@ -11,6 +11,8 @@
 
 [六部門失敗原因審查（2026-10-25）](docs/audits/2026-10-25-corner-failure-squad.zh-TW.md)：確認2個狀態交接實作缺陷，另列策略／感測／版本證據風險。本輪只診斷，控制程式未修改，缺陷尚未修復。
 
+[Opus5.5 medium獨立審查原文](docs/audits/2026-10-25-opus-5-5-medium.zh-TW.md)與[主審核對](docs/audits/2026-10-25-opus-5-5-medium-verification.zh-TW.md)：同意舊候選重用問題，新增收線備援使用舊入彎方向的缺陷；保留對上一輪審查優先序的不同意見。僅審查，尚未修復。
+
 ## 目前主檔
 
 [car.xml](car.xml)是CAGEBOT可編輯主程式；[car.ino](car.ino)由同XML透過本機保存的原廠產生器匯出。修改來源為tools/rewrite_car.py，不要用build.py或config.json覆寫；後兩者只屬firmware/下保留的temporal候選。
