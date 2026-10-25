@@ -31,7 +31,7 @@ int main(){
 #ifdef CAPTURE_TEST
  reset();configReady=1;
  for(int m=0;m<32;++m){mockButton=m%2;stable(m,30);check(controlState==6&&leftPwm==0&&rightPwm==0);}
-#elif defined(FIELD_PROFILE_TEST) || defined(FIELD_CROSSING_TEST)
+#elif defined(FIELD_PROFILE_TEST) || defined(FIELD_CROSSING_TEST) || defined(FIELD_MOTOR_SWAP_TEST)
  // Execute the measured, armed field profile, not the unarmed default profile.
  reset();check(configReady==1&&lapEnabled==0&&maxPwm==70&&basePwm==60&&maxRunMs==60000);
  stable(4,30);check(controlState==0&&leftPwm==0&&rightPwm==0); // Boot never starts motion.
@@ -60,7 +60,7 @@ int main(){
   start();stable(4|((outer&1)?1:0)|((outer&2)?16:0),20);
   check(controlState==2&&lastPosition==0&&leftPwm==basePwm&&rightPwm==basePwm);
  }
-#ifdef FIELD_CROSSING_TEST
+#if defined(FIELD_CROSSING_TEST) || defined(FIELD_MOTOR_SWAP_TEST)
  check(widePwm==50&&wideTimeoutMs==900&&wideHintMs==250&&searchEdge==400);
  start();stable(14,45);check(controlState==3&&reason==16&&leftPwm==50&&rightPwm==50);
  stable(4,8);check(controlState==2); // Crossing lasting longer than the old 350 ms deadline.
@@ -80,6 +80,22 @@ int main(){
  start();stable(12,15);stable(14,8);stable(0,85);
  check(controlState==5&&leftPwm==0&&rightPwm==0); // Wide-to-black cannot restart a search timer.
  start();stable(14,8);mockButton=0;stable(14,4);check(controlState==4&&reason==7&&leftPwm==0&&rightPwm==0);
+#endif
+#ifdef FIELD_MOTOR_SWAP_TEST
+ check(swapMotorChannels==1);
+ reset();stable(4,30);check(mockPwm[5]==0&&mockPwm[6]==0);
+ reset();mockButton=0;stable(4,30);check(mockPwm[5]==0&&mockPwm[6]==0);
+ for(int edge:{2,8}){
+  start();stable(edge,15);
+  check(mockPwm[5]==rightPwm&&mockPwm[6]==leftPwm);
+  if(edge==2)check(mockPwm[6]>mockPwm[5]);else check(mockPwm[5]>mockPwm[6]);
+  stable(0,8);check(reason==14&&controlState==3);
+  if(edge==2)check(mockPwm[6]==searchPwm&&mockPwm[5]==0);else check(mockPwm[5]==searchPwm&&mockPwm[6]==0);
+  stable(0,80);check(controlState==5&&mockPwm[5]==0&&mockPwm[6]==0);
+ }
+ start();stable(14,8);check(mockPwm[5]==50&&mockPwm[6]==50);
+ mockButton=0;stable(14,4);check(controlState==4&&mockPwm[5]==0&&mockPwm[6]==0);
+ start();stable(2,15);sample(2,51);check(controlState==5&&mockPwm[5]==0&&mockPwm[6]==0);
 #endif
 #else
  reset();mockButton=0;stable(4,30);check(controlState==0&&leftPwm==0&&rightPwm==0); // Unarmed cannot drive.

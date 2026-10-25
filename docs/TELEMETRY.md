@@ -18,6 +18,9 @@ Wire columns are fixed, with no startup header dependency:
   `accepted_position` is the last trusted value, not a pose or steering angle.
 - `contrast` is max-minus-min filtered strength across the center three, 0..1000.
 - PWM is commanded duty, not measured wheel speed. Commands are forward-only.
+  Hardware output mapping is profile-dependent: default D5=left/D6=right;
+  `swap_motor_channels=true` writes D6=left/D5=right without reversing the
+  direction pins. Physical left/right still needs raised-wheel acceptance.
 - `rejected` counts unaccepted control ticks in acquisition/uncertainty, not text characters.
 - Capture uses 20 ms scheduling/logging; track targets 10 ms control with 50 ms
   log snapshots by default. UART blocking and hardware execution may cause gaps;

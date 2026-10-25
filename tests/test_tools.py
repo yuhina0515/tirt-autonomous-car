@@ -20,7 +20,8 @@ class Tests(unittest.TestCase):
            {'line_adc_A5_to_A1':[499]*5},{'drive_enabled':'true'},
            {'lap_enabled':1},{'finish_confirm_ms':400},{'min_lap_ms':180000},
            {'search_pwm':101},{'search_timeout_ms':20},{'departure_confirm_ms':15000},
-           {'wide_pwm':101},{'wide_pwm':True},{'wide_hint_ms':501},{'wide_hint_ms':True}]
+           {'wide_pwm':101},{'wide_pwm':True},{'wide_hint_ms':501},{'wide_hint_ms':True},
+           {'swap_motor_channels':1},{'swap_motor_channels':'true'}]
   for change in changes:
    c=copy.deepcopy(self.config);c.update(change)
    with self.subTest(change=change),self.assertRaises(ValueError):validate(c)
@@ -48,6 +49,18 @@ class Tests(unittest.TestCase):
    self.assertEqual(result,json.loads((ROOT/'firmware/field_crossing/manifest.json').read_text()))
    for suffix in ('.xml','.ino'):
     self.assertEqual((folder/('field_crossing'+suffix)).read_bytes(),(ROOT/'firmware/field_crossing'/('field_crossing'+suffix)).read_bytes())
+ def test_motor_swap_profile_exports(self):
+  path=ROOT/'configs/field_motor_swap_20261025.json';c=json.loads(path.read_text());validate(c)
+  self.assertTrue(c['swap_motor_channels']);self.assertFalse(c['lap_enabled'])
+  self.assertEqual(c['max_pwm'],70)
+  baseline=json.loads((ROOT/'configs/field_crossing_20261025.json').read_text())
+  self.assertEqual(c['line_adc_A5_to_A1'],baseline['line_adc_A5_to_A1'])
+  self.assertEqual(c['background_adc_A5_to_A1'],baseline['background_adc_A5_to_A1'])
+  with tempfile.TemporaryDirectory() as t:
+   folder=Path(t)/'field_motor_swap';result=build(path,folder,'track')
+   self.assertEqual(result,json.loads((ROOT/'firmware/field_motor_swap/manifest.json').read_text()))
+   for suffix in ('.xml','.ino'):
+    self.assertEqual((folder/('field_motor_swap'+suffix)).read_bytes(),(ROOT/'firmware/field_motor_swap'/('field_motor_swap'+suffix)).read_bytes())
  def test_measured_field_profile_exports_and_limits(self):
   config_path=ROOT/'configs/field_low_speed_20261025.json'
   c=json.loads(config_path.read_text());validate(c)

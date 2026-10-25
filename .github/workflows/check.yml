@@ -31,3 +31,7 @@ jobs:
         run: |
           g++ -m32 -std=c++17 -I tests -DFIELD_CROSSING_TEST '-DSKETCH_FILE="../firmware/field_crossing/field_crossing.ino"' tests/native.cpp -o test-output/crossing
           test-output/crossing
+      - name: Verify swapped motor pin outputs and stop behavior
+        run: |
+          g++ -m32 -std=c++17 -I tests -DFIELD_MOTOR_SWAP_TEST '-DSKETCH_FILE="../firmware/field_motor_swap/field_motor_swap.ino"' tests/native.cpp -o test-output/motor-swap
+          test-output/motor-swap
