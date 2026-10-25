@@ -73,6 +73,7 @@ def add_sharp_turns(root, main, decision):
         'turnDirection': ('int', 0),
         'turnActive': ('int', 0),
         'turnFault': ('int', 0),
+        'LOSS_STOP_ENABLED': ('int', 0),
         'SPLIT_CONFIRM_MS': ('unsigned long', 20),
         'SPLIT_CLEAR_MS': ('unsigned long', 15),
         'splitPending': ('int', 0),
@@ -230,13 +231,21 @@ def add_sharp_turns(root, main, decision):
             both(either(eq('turnCaptureStarted', 1), eq('turnDirection', -1)), eq('sensorF', 8)))))
     done = [setv('turnActive', 0), setv('turnDirection', 0),
             setv('turnConfirm', 0), setv('whiteCount', 0)] + capture_drive
+    # Temporary user override: unresolved F0 falls back to PWM45, not latched stop.
+    loss_fallback = [setv('turnActive', 0), setv('turnDirection', 0),
+                     setv('outerProbeActive', 0), setv('gapActive', 1),
+                     setv('gapAt', 'turnNow'), setv('gapConfirm', 0),
+                     setv('whiteCount', 0)] + capture_wheels(45, 45)
+    def loss_failure(normal):
+        return [cond(both(eq('LOSS_STOP_ENABLED', 0), eq('sensorF', 0)),
+                     loss_fallback, normal)]
     # A fixed dropout event permits bounded forward-only correction after capture.
     capture_dropout = [
         cond(eq('turnCaptureGapPending', 0), [
             setv('turnCaptureGapPending', 1), setv('turnCaptureGapAt', 'turnNow')]),
         setv('turnCaptureGapElapsed', sub('turnNow', 'turnCaptureGapAt')),
         cond(ge('turnCaptureGapElapsed', 'TURN_CAPTURE_GAP_MS'),
-             [setv('turnFault', 1), setv('turnActive', 0), call('stop')],
+             loss_failure([setv('turnFault', 1), setv('turnActive', 0), call('stop')]),
              [cases([(eq('turnCaptureSide', -1), capture_wheels(30, 60)),
                      (eq('turnCaptureSide', 1), capture_wheels(60, 30))],
                     capture_wheels(45, 45))])]
@@ -252,7 +261,7 @@ def add_sharp_turns(root, main, decision):
                               both(eq('turnDirectionSource', 0),
                                    both(eq('turnCaptureStarted', 0),
                                         both(eq('turnCaptureVisible', 0), ge('turnElapsed', 'OUTER_OVERRIDE_WINDOW_MS')))))),
-                  [setv('turnFault', 1), setv('turnActive', 0), call('stop')], [
+                  loss_failure([setv('turnFault', 1), setv('turnActive', 0), call('stop')]), [
                  cond(both(ge('turnElapsed', 'TURN_MIN_MS'), eq('turnCaptureVisible', 1)),
                       [setv('turnCaptureStarted', 1),
                        cases([(anyof('sensorF', [8, 12]), [setv('turnCaptureSide', -1)]),
@@ -291,7 +300,7 @@ def add_sharp_turns(root, main, decision):
         (eq('sensorF', 6), gap_wheels('GAP_PWM', 30))], gap_drive)]
     gap = [setv('gapElapsed', sub('turnNow', 'gapAt')),
            cond(ge('gapElapsed', 'GAP_TIMEOUT_MS'),
-                [setv('turnFault', 1), setv('gapActive', 0), call('stop')], [
+                loss_failure([setv('turnFault', 1), setv('gapActive', 0), call('stop')]), [
                cond(anyof('sensorF', [2, 4, 6, 8, 12]),
                     [cond(eq('gapConfirm', 0), [
                         setv('gapConfirm', 1), setv('gapCaptureAt', 'turnNow')]),
@@ -547,8 +556,8 @@ def add_sharp_turns(root, main, decision):
                               setv('outerProbeActive', 1), setv('outerProbeAt', 'turnNow')]),
                           setv('outerProbeElapsed', sub('turnNow', 'outerProbeAt')),
                           cond(ge('outerProbeElapsed', 'OUTER_PROBE_TIMEOUT_MS'),
-                               [setv('turnFault', 1)])]),
-                      (eq('outerProbeActive', 1), [setv('turnFault', 1)]),
+                               loss_failure([setv('turnFault', 1)]))]),
+                      (eq('outerProbeActive', 1), loss_failure([setv('turnFault', 1)])),
                       (both(ne('turnDirection', 0), le('turnAge', 'TURN_MEMORY_MS')),
                        begin_turn('turnDirection', 0))], [
                           setv('outerProbeActive', 0), setv('gapActive', 1),
