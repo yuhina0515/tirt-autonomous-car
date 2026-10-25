@@ -74,6 +74,11 @@ def add_sharp_turns(root, main, decision):
         'turnActive': ('int', 0),
         'turnFault': ('int', 0),
         'LOSS_STOP_ENABLED': ('int', 0),
+        'CORNER_WIDE_STOP_ENABLED': ('int', 0),
+        'cornerWideRecovery': ('int', 0),
+        'cornerWideClearPending': ('int', 0),
+        'cornerWideClearAt': ('unsigned long', 0),
+        'cornerWideClearElapsed': ('unsigned long', 0),
         'SPLIT_CONFIRM_MS': ('unsigned long', 20),
         'SPLIT_CLEAR_MS': ('unsigned long', 15),
         'splitPending': ('int', 0),
@@ -242,6 +247,7 @@ def add_sharp_turns(root, main, decision):
         (both(eq('gapDirection', 1), le('gapDirectionAge', 'GAP_DIRECTION_MS')),
          capture_wheels('GAP_PWM', 15))], capture_wheels('GAP_PWM', 'GAP_PWM'))]
     loss_fallback = [
+        cond(eq('sensorF', 14), [setv('cornerWideRecovery', 1), setv('cornerWideClearPending', 0)]),
         cases([(eq('outerReady', 1), [setv('gapDirection', 'outerDirection'),
                                     setv('gapDirectionAt', 'outerSeenAt')]),
                (both(eq('gapActive', 0), both(eq('turnActive', 1), ne('turnDirection', 0))),
@@ -255,7 +261,8 @@ def add_sharp_turns(root, main, decision):
         setv('gapAt', 'turnNow'), setv('gapConfirm', 0),
         setv('whiteCount', 0)] + directional_gap_drive
     def loss_failure(normal):
-        return [cond(both(eq('LOSS_STOP_ENABLED', 0), eq('sensorF', 0)),
+        return [cond(either(both(eq('LOSS_STOP_ENABLED', 0), eq('sensorF', 0)),
+                            both(eq('CORNER_WIDE_STOP_ENABLED', 0), eq('sensorF', 14))),
                      loss_fallback, normal)]
     # A fixed dropout event permits bounded forward-only correction after capture.
     capture_dropout = [
@@ -350,7 +357,7 @@ def add_sharp_turns(root, main, decision):
         cond(le('LIFT_CROSSING_INDEX', 0), [setv('turnFault', 1)]),
         cond(both(eq('lapReady', 1), both(eq('liftState', 0),
                   both(eq('turnActive', 0), both(eq('gapActive', 0),
-                       both(eq('turnFault', 0), eq('lapDone', 0)))))), [
+                       both(eq('cornerWideRecovery', 0), both(eq('turnFault', 0), eq('lapDone', 0))))))), [
             cond(eq('sensorF', 14), [
                 setv('liftClearPending', 0),
                 cond(eq('liftMarkerLatched', 0), [
@@ -423,8 +430,8 @@ def add_sharp_turns(root, main, decision):
             cond(eq('wideActive', 0), [setv('wideActive', 1), setv('wideAt', 'turnNow')]),
             setv('wideElapsed', sub('turnNow', 'wideAt')),
             # The event timeout remains fixed even across the minimum-lap threshold.
-            cases([(ge('wideElapsed', 'WIDE_TIMEOUT_MS'), [setv('turnFault', 1)]),
-                   (both(either(eq('LIFT_ENABLED', 0), eq('liftState', 3)),
+            cases([(both(eq('cornerWideRecovery', 0), ge('wideElapsed', 'WIDE_TIMEOUT_MS')), [setv('turnFault', 1)]),
+                   (both(both(eq('cornerWideRecovery', 0), either(eq('LIFT_ENABLED', 0), eq('liftState', 3))),
                          both(eq('lapReady', 1), both(ge('lapElapsed', 'MIN_LAP_MS'),
                                                 ge('wideElapsed', 'FINISH_CONFIRM_MS')))),
                     [setv('lapDone', 1)])])], [setv('wideActive', 0)])]
@@ -523,7 +530,16 @@ def add_sharp_turns(root, main, decision):
                          [setv('splitPending', 0), setv('splitClearPending', 0)])],
                      [setv('splitClearPending', 0)])])],
              [setv('splitPending', 0), setv('splitClearPending', 0)])]
+    corner_wide_update = [cond(eq('cornerWideRecovery', 1), [
+        cond(both(eq('sensorF', 4), both(eq('turnActive', 0), eq('gapActive', 0))), [
+            cond(eq('cornerWideClearPending', 0), [setv('cornerWideClearPending', 1),
+                 setv('cornerWideClearAt', 'turnNow')]),
+            setv('cornerWideClearElapsed', sub('turnNow', 'cornerWideClearAt')),
+            cond(ge('cornerWideClearElapsed', 'TURN_CENTER_CLEAR_MS'),
+                 [setv('cornerWideRecovery', 0), setv('cornerWideClearPending', 0)])],
+             [setv('cornerWideClearPending', 0)])])]
     before = [setv('turnNow', ('millis',)),
+              *corner_wide_update,
               *split_update,
               *outer_update,
               *straight_update,

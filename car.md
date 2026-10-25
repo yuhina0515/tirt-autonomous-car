@@ -1,5 +1,7 @@
 # car.xml 程式說明
 
+**彎道寬白備援**：CORNER_WIDE_STOP_ENABLED=0，轉彎／收線／缺口的F14逾時改低速補線。該次恢復暫不辨識升降／終點或寬白逾時，中央線穩定80 ms才解除。[現行說明](docs/CORNER_WIDE_FALLBACK_2026-10-25.zh-TW.md)。
+
 **右60度彎補線修正**：失線備援保留合格方向，右45／15、左15／45；方向120 ms後過期，補線重入不刷新。無方向才45／45，失線鎖停仍暫停。[現行補線規則](docs/DIRECTIONAL_LOSS_RECOVERY_2026-10-25.zh-TW.md)。
 
 **暫停失線鎖停**：LOSS_STOP_ENABLED=0；F0持續到原失線期限時改為PWM45／45前進，不再因此鎖定停車。其他升降、終點與故障條件保留；改回1恢復。[設定說明](docs/LOSS_STOP_DISABLED_2026-10-25.zh-TW.md)。

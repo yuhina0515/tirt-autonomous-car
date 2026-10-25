@@ -20,6 +20,11 @@ int  turnDirection;
 int  turnActive;
 int  turnFault;
 int  LOSS_STOP_ENABLED;
+int  CORNER_WIDE_STOP_ENABLED;
+int  cornerWideRecovery;
+int  cornerWideClearPending;
+unsigned long  cornerWideClearAt;
+unsigned long  cornerWideClearElapsed;
 unsigned long  SPLIT_CONFIRM_MS;
 unsigned long  SPLIT_CLEAR_MS;
 int  splitPending;
@@ -221,7 +226,11 @@ void sharp_turn() {
     turnDirectionSource = 1;
   }
   if (turnElapsed >= TURN_TIMEOUT_MS || OUTER_TURN_ASSIST == 1 && turnDirectionSource == 0 && turnCaptureStarted == 0 && turnCaptureVisible == 0 && turnElapsed >= OUTER_OVERRIDE_WINDOW_MS) {
-    if (LOSS_STOP_ENABLED == 0 && sensorF == 0) {
+    if (LOSS_STOP_ENABLED == 0 && sensorF == 0 || CORNER_WIDE_STOP_ENABLED == 0 && sensorF == 14) {
+      if (sensorF == 14) {
+        cornerWideRecovery = 1;
+        cornerWideClearPending = 0;
+      }
       if (outerReady == 1) {
         gapDirection = outerDirection;
         gapDirectionAt = outerSeenAt;
@@ -351,7 +360,11 @@ void sharp_turn() {
             }
             turnCaptureGapElapsed = turnNow - turnCaptureGapAt;
             if (turnCaptureGapElapsed >= TURN_CAPTURE_GAP_MS) {
-              if (LOSS_STOP_ENABLED == 0 && sensorF == 0) {
+              if (LOSS_STOP_ENABLED == 0 && sensorF == 0 || CORNER_WIDE_STOP_ENABLED == 0 && sensorF == 14) {
+                if (sensorF == 14) {
+                  cornerWideRecovery = 1;
+                  cornerWideClearPending = 0;
+                }
                 if (outerReady == 1) {
                   gapDirection = outerDirection;
                   gapDirectionAt = outerSeenAt;
@@ -426,7 +439,11 @@ void sharp_turn() {
             }
             turnCaptureGapElapsed = turnNow - turnCaptureGapAt;
             if (turnCaptureGapElapsed >= TURN_CAPTURE_GAP_MS) {
-              if (LOSS_STOP_ENABLED == 0 && sensorF == 0) {
+              if (LOSS_STOP_ENABLED == 0 && sensorF == 0 || CORNER_WIDE_STOP_ENABLED == 0 && sensorF == 14) {
+                if (sensorF == 14) {
+                  cornerWideRecovery = 1;
+                  cornerWideClearPending = 0;
+                }
                 if (outerReady == 1) {
                   gapDirection = outerDirection;
                   gapDirectionAt = outerSeenAt;
@@ -531,7 +548,11 @@ void cross_gap() {
   }
   gapDirectionAge = turnNow - gapDirectionAt;
   if (gapElapsed >= GAP_TIMEOUT_MS) {
-    if (LOSS_STOP_ENABLED == 0 && sensorF == 0) {
+    if (LOSS_STOP_ENABLED == 0 && sensorF == 0 || CORNER_WIDE_STOP_ENABLED == 0 && sensorF == 14) {
+      if (sensorF == 14) {
+        cornerWideRecovery = 1;
+        cornerWideClearPending = 0;
+      }
       if (outerReady == 1) {
         gapDirection = outerDirection;
         gapDirectionAt = outerSeenAt;
@@ -791,6 +812,11 @@ void setup()
   turnActive = 0;
   turnFault = 0;
   LOSS_STOP_ENABLED = 0;
+  CORNER_WIDE_STOP_ENABLED = 0;
+  cornerWideRecovery = 0;
+  cornerWideClearPending = 0;
+  cornerWideClearAt = 0;
+  cornerWideClearElapsed = 0;
   SPLIT_CONFIRM_MS = 20;
   SPLIT_CLEAR_MS = 15;
   splitPending = 0;
@@ -1009,6 +1035,21 @@ void loop()
       innerSpeed = SPEED_TURN_INNER_MEDIUM;
     }
     turnNow = millis();
+    if (cornerWideRecovery == 1) {
+      if (sensorF == 4 && turnActive == 0 && gapActive == 0) {
+        if (cornerWideClearPending == 0) {
+          cornerWideClearPending = 1;
+          cornerWideClearAt = turnNow;
+        }
+        cornerWideClearElapsed = turnNow - cornerWideClearAt;
+        if (cornerWideClearElapsed >= TURN_CENTER_CLEAR_MS) {
+          cornerWideRecovery = 0;
+          cornerWideClearPending = 0;
+        }
+      } else {
+        cornerWideClearPending = 0;
+      }
+    }
     splitActive = 0;
     if ((liftState == 0 || liftState == 3) && gapActive == 0 && turnFault == 0 && lapDone == 0) {
       if (sensorF == 10) {
@@ -1176,7 +1217,7 @@ void loop()
       if (LIFT_CROSSING_INDEX <= 0) {
         turnFault = 1;
       }
-      if (lapReady == 1 && liftState == 0 && turnActive == 0 && gapActive == 0 && turnFault == 0 && lapDone == 0) {
+      if (lapReady == 1 && liftState == 0 && turnActive == 0 && gapActive == 0 && cornerWideRecovery == 0 && turnFault == 0 && lapDone == 0) {
         if (sensorF == 14) {
           liftClearPending = 0;
           if (liftMarkerLatched == 0) {
@@ -1251,9 +1292,9 @@ void loop()
         wideAt = turnNow;
       }
       wideElapsed = turnNow - wideAt;
-      if (wideElapsed >= WIDE_TIMEOUT_MS) {
+      if (cornerWideRecovery == 0 && wideElapsed >= WIDE_TIMEOUT_MS) {
         turnFault = 1;
-      } else if ((LIFT_ENABLED == 0 || liftState == 3) && lapReady == 1 && lapElapsed >= MIN_LAP_MS && wideElapsed >= FINISH_CONFIRM_MS) {
+      } else if (cornerWideRecovery == 0 && (LIFT_ENABLED == 0 || liftState == 3) && lapReady == 1 && lapElapsed >= MIN_LAP_MS && wideElapsed >= FINISH_CONFIRM_MS) {
         lapDone = 1;
       }
     } else {
@@ -1392,7 +1433,11 @@ void loop()
           }
           outerProbeElapsed = turnNow - outerProbeAt;
           if (outerProbeElapsed >= OUTER_PROBE_TIMEOUT_MS) {
-            if (LOSS_STOP_ENABLED == 0 && sensorF == 0) {
+            if (LOSS_STOP_ENABLED == 0 && sensorF == 0 || CORNER_WIDE_STOP_ENABLED == 0 && sensorF == 14) {
+              if (sensorF == 14) {
+                cornerWideRecovery = 1;
+                cornerWideClearPending = 0;
+              }
               if (outerReady == 1) {
                 gapDirection = outerDirection;
                 gapDirectionAt = outerSeenAt;
@@ -1436,7 +1481,11 @@ void loop()
             }
           }
         } else if (outerProbeActive == 1) {
-          if (LOSS_STOP_ENABLED == 0 && sensorF == 0) {
+          if (LOSS_STOP_ENABLED == 0 && sensorF == 0 || CORNER_WIDE_STOP_ENABLED == 0 && sensorF == 14) {
+            if (sensorF == 14) {
+              cornerWideRecovery = 1;
+              cornerWideClearPending = 0;
+            }
             if (outerReady == 1) {
               gapDirection = outerDirection;
               gapDirectionAt = outerSeenAt;

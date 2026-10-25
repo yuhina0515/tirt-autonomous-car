@@ -2,6 +2,8 @@
 
 ## Active baseline after user-directed rollback (2026-10-25)
 
+- Latest: CORNER_WIDE_STOP_ENABLED0 lets turn/capture/gap F14 failures use low-speed fallback. That sets cornerWideRecovery, suppressing lift candidate, finish and normal wide timeout for the same recovery event until centered F4 stable80ms outside turn/gap. Normal marker logic outside recovery and180s overall stop remain. Read docs/CORNER_WIDE_FALLBACK_2026-10-25.zh-TW.md; no field acceptance.
+
 - Latest loss fallback retains qualified gapDirection: right45/15, left15/45, unknown/expired45/45. GAP_DIRECTION_MS120; repeated gap renewal never refreshes direction time. Fresh outer evidence uses outerSeenAt, actual side returns update direction. LOSS_STOP_ENABLED0 retained. Read docs/DIRECTIONAL_LOSS_RECOVERY_2026-10-25.zh-TW.md; overrides unconditional45/45 fallback. No hardware acceptance.
 
 - User temporarily disables F0 loss-triggered fault latching: LOSS_STOP_ENABLED=0. Turn/capture/gap/probe failure while F0 falls back to forward45/45 gap mode, clears reverse/old direction; persistent F0 renews gap. Restore1 for prior behavior. Other faults/lift/finish/180s limit remain; initial probe zero-output wait remains. Read docs/LOSS_STOP_DISABLED_2026-10-25.zh-TW.md.
