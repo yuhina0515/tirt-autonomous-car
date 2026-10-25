@@ -2,7 +2,7 @@
 
 ## Active baseline after user-directed rollback (2026-10-25)
 
-- For reported detection lag, root car.xml now defaults DEBUG_SERIAL=0; optional telemetry period50ms, LEDs update only on state transitions, and turn/gap reacquisition uses continuous15ms instead of3 loops. Read docs/CONTROL_LOOP.zh-TW.md. No measured sampling-rate claim or new hardware acceptance is available.
+- For reported detection lag, root car.xml now defaults DEBUG_SERIAL=0; optional telemetry period50ms, LEDs update only on state transitions, and turn/gap reacquisition uses continuous1ms instead of3 loops. Read docs/CONTROL_LOOP.zh-TW.md. No measured sampling-rate claim or new hardware acceptance is available.
 - Straight PWM230 remains user-authorized. After the user reported excessive turning, active root car.xml reduces curve base to125, TURN_KP100, minimum inner8 (actual25/75), sharp outer125/reverse inner95; see docs/SPEED_SETTINGS.zh-TW.md. This overrides the default100 cap for these commands. Gap70 and wide/lift-exit45 remain. Preserve published v0.4.0 assets/tag; do not claim new field acceptance.
 - The appended lift candidate is documented in docs/LIFT.zh-TW.md. User tentatively reports no prior crossings: LIFT_ENABLED=1, crossing index1. The user requested reducing the wait from28350ms to23350ms for v0.4.0; it is below the published27s +/-5% timing. These are assumptions, not measured descent completion; do not claim compliance or unique recognition. Disable lift for the prior practice mat without it.
 - Before competition-strategy changes, read docs/TIRT_RULES_2026.zh-TW.md and distinguish official requirements from practice-mat assumptions and local controller parameters. The documented rules do not imply that the current firmware completes the official course.

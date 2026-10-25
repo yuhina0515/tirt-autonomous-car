@@ -174,7 +174,7 @@
                                     <field name="TYPE">unsigned long</field>
                                     <value name="VALUE">
                                       <block type="math_number" id="v5_00016">
-                                        <field name="NUM">15</field>
+                                        <field name="NUM">1</field>
                                       </block>
                                     </value>
                                     <next>
@@ -183,7 +183,7 @@
                                         <field name="TYPE">unsigned long</field>
                                         <value name="VALUE">
                                           <block type="math_number" id="v5_00018">
-                                            <field name="NUM">15</field>
+                                            <field name="NUM">1</field>
                                           </block>
                                         </value>
                                         <next>
@@ -399,7 +399,7 @@
                                                                                                                                         <field name="TYPE">unsigned long</field>
                                                                                                                                         <value name="VALUE">
                                                                                                                                           <block type="math_number" id="v5_00066">
-                                                                                                                                            <field name="NUM">15</field>
+                                                                                                                                            <field name="NUM">1</field>
                                                                                                                                           </block>
                                                                                                                                         </value>
                                                                                                                                         <next>
@@ -5335,7 +5335,7 @@
         </next>
       </block>
     </statement>
-    <comment pinned="false" h="100" w="380">Bounded sharp-corner pivot. Outer forward125, inner reverse95. After minimum30ms, F4/F6/F12 starts forward differential capture; continuous15ms finishes at curve base125. Confirmation uses elapsed time, not loop count. Timeout latches stop.</comment>
+    <comment pinned="false" h="100" w="380">Bounded sharp-corner pivot. Outer forward125, inner reverse95. After minimum30ms, F4/F6/F12 starts forward differential capture; continuous1ms finishes at curve base125. Confirmation uses elapsed time, not loop count. Timeout latches stop.</comment>
   </block>
   <block type="procedures_defnoreturn" id="v5_00295" x="900" y="650">
     <field name="NAME">cross_gap</field>
@@ -6115,7 +6115,7 @@
         </next>
       </block>
     </statement>
-    <comment pinned="false" h="100" w="380">Short gap PWM70 with fixed250ms deadline. Side-line return starts differential capture immediately. Continuous narrow line15ms finishes; invalid observations reset confirmation, not the event deadline. Wide line returns to marker handling.</comment>
+    <comment pinned="false" h="100" w="380">Short gap PWM70 with fixed250ms deadline. Side-line return starts differential capture immediately. Continuous narrow line1ms finishes; invalid observations reset confirmation, not the event deadline. Wide line returns to marker handling.</comment>
   </block>
   <block type="procedures_defnoreturn" id="v5_00447" x="1650" y="650">
     <field name="NAME">lift_control</field>

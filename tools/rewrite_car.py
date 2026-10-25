@@ -59,8 +59,8 @@ def add_sharp_turns(root, main, decision):
         'TURN_MIN_MS': ('unsigned long', 30),
         'TURN_MEMORY_MS': ('unsigned long', 250),
         'TURN_CENTER_CLEAR_MS': ('unsigned long', 80),
-        'TURN_DIRECTION_CONFIRM_MS': ('unsigned long', 15),
-        'TURN_REACQUIRE_MS': ('unsigned long', 15),
+        'TURN_DIRECTION_CONFIRM_MS': ('unsigned long', 1),
+        'TURN_REACQUIRE_MS': ('unsigned long', 1),
         'turnDirection': ('int', 0),
         'turnActive': ('int', 0),
         'turnFault': ('int', 0),
@@ -84,7 +84,7 @@ def add_sharp_turns(root, main, decision):
         'gapAt': ('unsigned long', 0),
         'gapElapsed': ('unsigned long', 0),
         'gapConfirm': ('int', 0),
-        'GAP_REACQUIRE_MS': ('unsigned long', 15),
+        'GAP_REACQUIRE_MS': ('unsigned long', 1),
         'gapCaptureAt': ('unsigned long', 0),
         'gapCaptureElapsed': ('unsigned long', 0),
         'DEBUG_SERIAL': ('int', 0),
@@ -181,7 +181,7 @@ def add_sharp_turns(root, main, decision):
     exporter.field(function, 'NAME', 'sharp_turn')
     exporter.field(function, 'TYPE', 'void')
     exporter.statement(function, 'STACK', pivot)
-    note(function, 'Bounded sharp-corner pivot. Outer forward125, inner reverse95. After minimum30ms, F4/F6/F12 starts forward differential capture; continuous15ms finishes at curve base125. Confirmation uses elapsed time, not loop count. Timeout latches stop.')
+    note(function, 'Bounded sharp-corner pivot. Outer forward125, inner reverse95. After minimum30ms, F4/F6/F12 starts forward differential capture; continuous1ms finishes at curve base125. Confirmation uses elapsed time, not loop count. Timeout latches stop.')
     root.append(function)
 
     # A short gap has its own fixed deadline and never inherits a pivot command.
@@ -213,7 +213,7 @@ def add_sharp_turns(root, main, decision):
     exporter.field(function, 'NAME', 'cross_gap')
     exporter.field(function, 'TYPE', 'void')
     exporter.statement(function, 'STACK', gap)
-    note(function, 'Short gap PWM70 with fixed250ms deadline. Side-line return starts differential capture immediately. Continuous narrow line15ms finishes; invalid observations reset confirmation, not the event deadline. Wide line returns to marker handling.')
+    note(function, 'Short gap PWM70 with fixed250ms deadline. Side-line return starts differential capture immediately. Continuous narrow line1ms finishes; invalid observations reset confirmation, not the event deadline. Wide line returns to marker handling.')
     root.append(function)
 
     wide_drive = [('digitalwrite', '7', 0), ('pwm', '5', 'WIDE_PWM'),

@@ -128,7 +128,7 @@ void stop2() {
 /**
  * Bounded sharp-corner pivot. Outer forward125, inner reverse95.
  * After minimum30ms, F4/F6/F12 starts forward differential
- * capture; continuous15ms finishes at curve base125. Confirmation
+ * capture; continuous1ms finishes at curve base125. Confirmation
  * uses elapsed time, not loop count. Timeout latches stop.
  */
 void sharp_turn() {
@@ -205,7 +205,7 @@ void sharp_turn() {
 
 /**
  * Short gap PWM70 with fixed250ms deadline. Side-line return starts
- * differential capture immediately. Continuous narrow line15ms
+ * differential capture immediately. Continuous narrow line1ms
  * finishes; invalid observations reset confirmation, not
  * the event deadline. Wide line returns to marker handling.
  */
@@ -377,8 +377,8 @@ void setup()
   TURN_MIN_MS = 30;
   TURN_MEMORY_MS = 250;
   TURN_CENTER_CLEAR_MS = 80;
-  TURN_DIRECTION_CONFIRM_MS = 15;
-  TURN_REACQUIRE_MS = 15;
+  TURN_DIRECTION_CONFIRM_MS = 1;
+  TURN_REACQUIRE_MS = 1;
   turnDirection = 0;
   turnActive = 0;
   turnFault = 0;
@@ -402,7 +402,7 @@ void setup()
   gapAt = 0;
   gapElapsed = 0;
   gapConfirm = 0;
-  GAP_REACQUIRE_MS = 15;
+  GAP_REACQUIRE_MS = 1;
   gapCaptureAt = 0;
   gapCaptureElapsed = 0;
   DEBUG_SERIAL = 0;
