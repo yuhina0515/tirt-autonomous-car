@@ -100,7 +100,7 @@
         <field name="TYPE">int</field>
         <value name="VALUE">
           <block type="math_number" id="v5_00002">
-            <field name="NUM">150</field>
+            <field name="NUM">125</field>
           </block>
         </value>
         <next>
@@ -109,7 +109,7 @@
             <field name="TYPE">int</field>
             <value name="VALUE">
               <block type="math_number" id="v5_00004">
-                <field name="NUM">150</field>
+                <field name="NUM">125</field>
               </block>
             </value>
             <next>
@@ -118,7 +118,7 @@
                 <field name="TYPE">int</field>
                 <value name="VALUE">
                   <block type="math_number" id="v5_00006">
-                    <field name="NUM">143</field>
+                    <field name="NUM">95</field>
                   </block>
                 </value>
                 <next>
@@ -878,7 +878,7 @@
                                                                                                                                                                                                                                                                                                                                                                     <field name="TYPE">int</field>
                                                                                                                                                                                                                                                                                                                                                                     <value name="VALUE">
                                                                                                                                                                                                                                                                                                                                                                       <shadow type="math_number" id="sm0098">
-                                                                                                                                                                                                                                                                                                                                                                        <field name="NUM">150</field>
+                                                                                                                                                                                                                                                                                                                                                                        <field name="NUM">100</field>
                                                                                                                                                                                                                                                                                                                                                                       </shadow>
                                                                                                                                                                                                                                                                                                                                                                     </value>
                                                                                                                                                                                                                                                                                                                                                                     <next>
@@ -4444,7 +4444,7 @@
                                                                                 </next>
                                                                               </block>
                                                                             </next>
-                                                                            <comment pinned="false" h="100" w="380">Position weights: A4=-1, A3=0, A2=+1. Curve base150, gain150; minimum inner8. Straight command230 is separate.</comment>
+                                                                            <comment pinned="false" h="100" w="380">Position weights: A4=-1, A3=0, A2=+1. Curve base125, gain100; minimum inner8. Straight command230 is separate.</comment>
                                                                           </block>
                                                                         </next>
                                                                       </block>
@@ -5126,7 +5126,7 @@
         </next>
       </block>
     </statement>
-    <comment pinned="false" h="100" w="380">Bounded sharp-corner pivot. Outer forward150, inner reverse143. After minimum30ms, F4/F6/F12 starts forward differential capture. Three consecutive captures finish at curve base150, not straight230. Timeout latches stop; no measured angle or automatic restart.</comment>
+    <comment pinned="false" h="100" w="380">Bounded sharp-corner pivot. Outer forward125, inner reverse95. After minimum30ms, F4/F6/F12 starts forward differential capture. Three consecutive captures finish at curve base125, not straight230. Timeout latches stop; no measured angle or automatic restart.</comment>
   </block>
   <block type="procedures_defnoreturn" id="v5_00261" x="900" y="650">
     <field name="NAME">cross_gap</field>
