@@ -57,6 +57,9 @@ def add_sharp_turns(root, main, decision):
         'TURN_INNER_PWM': ('int', 114),
         'TURN_TIMEOUT_MS': ('unsigned long', 800),
         'TURN_MIN_MS': ('unsigned long', 30),
+        'TURN_CAPTURE_PWM': ('int', 100),
+        'turnDeparted': ('int', 0),
+        'turnCaptureStarted': ('int', 0),
         'TURN_MEMORY_MS': ('unsigned long', 250),
         'TURN_CENTER_CLEAR_MS': ('unsigned long', 80),
         'TURN_DIRECTION_CONFIRM_MS': ('unsigned long', 15),
@@ -194,17 +197,24 @@ def add_sharp_turns(root, main, decision):
             ('digitalwrite', '4', 1), ('pwm', '6', 'TURN_OUTER_PWM')]
     right = [('digitalwrite', '7', 0), ('pwm', '5', 'TURN_OUTER_PWM'),
              ('digitalwrite', '4', 0), ('pwm', '6', 'TURN_INNER_PWM')]
-    forward = [('digitalwrite', '7', 0), ('pwm', '5', 'SPEED_CURVE'),
-               ('digitalwrite', '4', 1), ('pwm', '6', 'SPEED_CURVE')]
+    def capture_wheels(left_pwm, right_pwm):
+        return [('digitalwrite', '7', 0), ('pwm', '5', left_pwm),
+                ('digitalwrite', '4', 1), ('pwm', '6', right_pwm)]
+    forward = capture_wheels('TURN_CAPTURE_PWM', 'TURN_CAPTURE_PWM')
     capture_drive = [cases([
-        (eq('sensorF', 12), [('digitalwrite', '7', 0), ('pwm', '5', 'innerSpeed'),
-                            ('digitalwrite', '4', 1), ('pwm', '6', 'SPEED_CURVE')]),
-        (eq('sensorF', 6), [('digitalwrite', '7', 0), ('pwm', '5', 'SPEED_CURVE'),
-                           ('digitalwrite', '4', 1), ('pwm', '6', 'innerSpeed')])], forward)]
+        (eq('sensorF', 8), capture_wheels(20, 'TURN_CAPTURE_PWM')),
+        (eq('sensorF', 12), capture_wheels(50, 'TURN_CAPTURE_PWM')),
+        (eq('sensorF', 2), capture_wheels('TURN_CAPTURE_PWM', 20)),
+        (eq('sensorF', 6), capture_wheels('TURN_CAPTURE_PWM', 50))], forward)]
+    capture_line = either(anyof('sensorF', [4, 6, 12]),
+        both(eq('turnDeparted', 1), either(
+            both(eq('turnDirection', 1), eq('sensorF', 2)),
+            both(eq('turnDirection', -1), eq('sensorF', 8)))))
     done = [setv('turnActive', 0), setv('turnDirection', 0),
             setv('turnConfirm', 0), setv('whiteCount', 0)] + capture_drive
     # Deadline is fixed at entry and has priority over reacquisition.
     pivot = [setv('turnElapsed', sub('turnNow', 'turnAt')),
+             cond(eq('sensorF', 0), [setv('turnDeparted', 1)]),
              cond(both(eq('turnDirectionSource', 0),
                        both(le('turnElapsed', 'OUTER_OVERRIDE_WINDOW_MS'), eq('outerReady', 1))), [
                  setv('turnDirection', 'outerDirection'), setv('turnDirectionSource', 1)]),
@@ -213,21 +223,22 @@ def add_sharp_turns(root, main, decision):
                               both(eq('turnDirectionSource', 0),
                                    ge('turnElapsed', 'OUTER_OVERRIDE_WINDOW_MS')))),
                   [setv('turnFault', 1), setv('turnActive', 0), call('stop')], [
-                 cond(both(ge('turnElapsed', 'TURN_MIN_MS'), anyof('sensorF', [4, 6, 12])),
-                      [cond(eq('turnConfirm', 0), [
+                 cond(both(ge('turnElapsed', 'TURN_MIN_MS'), capture_line),
+                      [setv('turnCaptureStarted', 1), cond(eq('turnConfirm', 0), [
                           setv('turnConfirm', 1), setv('turnCaptureAt', 'turnNow')]),
                        setv('turnCaptureElapsed', sub('turnNow', 'turnCaptureAt'))],
                       [setv('turnConfirm', 0)]),
-                 cond(both(eq('turnConfirm', 1), ge('turnCaptureElapsed', 'TURN_REACQUIRE_MS')), done, [
+                 cond(both(anyof('sensorF', [4, 6, 12]), both(eq('turnConfirm', 1), ge('turnCaptureElapsed', 'TURN_REACQUIRE_MS'))), done, [
                      cond(ge('turnConfirm', 1), capture_drive,
-                          [cond(eq('turnDirection', -1), left, right)])])])]
+                          [cond(eq('turnCaptureStarted', 1), [call('stop')],
+                                [cond(eq('turnDirection', -1), left, right)])])])])]
     function = exporter.block('procedures_defnoreturn')
     function.set('x', '900')
     function.set('y', '0')
     exporter.field(function, 'NAME', 'sharp_turn')
     exporter.field(function, 'TYPE', 'void')
     exporter.statement(function, 'STACK', pivot)
-    note(function, 'A1=right/A5=left outer assistance. Center-only search gets at most150ms to capture line or receive confirmed outer support; otherwise stop. Outer evidence may correct it once without resetting the800ms total deadline. Confirmed outer plus matching F2/F8 starts before full loss. Outer forward150/inner reverse114; continuous15ms capture finishes at base174.')
+    note(function, 'A1=right/A5=left outer assistance. Center-only search gets at most150ms to capture line or receive confirmed outer support; otherwise stop. Outer evidence may correct it once without resetting the800ms total deadline. Confirmed outer plus matching F2/F8 starts before full loss. Outer forward150/inner reverse114; After actual loss, matching single edge also starts capture at100/20 or100/50. Once capture starts, invalid readings stop instead of resuming reverse. Continuous15ms capture completes turn.')
     root.append(function)
 
     # A short gap has its own fixed deadline and never inherits a pivot command.
@@ -374,7 +385,8 @@ def add_sharp_turns(root, main, decision):
     def begin_turn(direction, source):
         return [setv('turnDirection', direction), setv('turnDirectionSource', source),
                 setv('turnActive', 1), setv('turnAt', 'turnNow'),
-                setv('turnConfirm', 0), setv('outerProbeActive', 0)]
+                setv('turnConfirm', 0), setv('outerProbeActive', 0),
+                setv('turnDeparted', 0), setv('turnCaptureStarted', 0)]
     reset_straight = [setv('straightPending', 0), setv('straightElapsed', 0),
                       setv('straightPwm', 'STRAIGHT_STAGE1_PWM'),
                       setv('straightTrimPending', 0), setv('straightTrimCenterPending', 0),
@@ -450,7 +462,15 @@ def add_sharp_turns(root, main, decision):
                       (both(eq('outerReady', 1), both(eq('outerDirection', 1), eq('sensorF', 2))),
                        begin_turn(1, 1)),
                       (both(eq('outerReady', 1), both(eq('outerDirection', -1), eq('sensorF', 8))),
-                       begin_turn(-1, 1))]),
+                       begin_turn(-1, 1)),
+                      (both(both(eq('outerReady', 0), eq('outerCandidate', 0)),
+                            both(eq('sensorF', 2), both(eq('turnCandidate', 1),
+                                 ge('turnCandidateElapsed', 'TURN_DIRECTION_CONFIRM_MS')))),
+                       begin_turn(1, 0)),
+                      (both(both(eq('outerReady', 0), eq('outerCandidate', 0)),
+                            both(eq('sensorF', 8), both(eq('turnCandidate', -1),
+                                 ge('turnCandidateElapsed', 'TURN_DIRECTION_CONFIRM_MS')))),
+                       begin_turn(-1, 0))]),
                   cond(eq('sensorF', 0), [cases([
                       (eq('outerReady', 1), begin_turn('outerDirection', 1)),
                       (ne('outerCandidate', 0), [

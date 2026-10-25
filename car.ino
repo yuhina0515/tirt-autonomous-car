@@ -3,6 +3,9 @@ int  TURN_OUTER_PWM;
 int  TURN_INNER_PWM;
 unsigned long  TURN_TIMEOUT_MS;
 unsigned long  TURN_MIN_MS;
+int  TURN_CAPTURE_PWM;
+int  turnDeparted;
+int  turnCaptureStarted;
 unsigned long  TURN_MEMORY_MS;
 unsigned long  TURN_CENTER_CLEAR_MS;
 unsigned long  TURN_DIRECTION_CONFIRM_MS;
@@ -168,13 +171,19 @@ void stop2() {
 /**
  * A1=right/A5=left outer assistance. Center-only search gets
  * at most150ms to capture line or receive confirmed outer
- * support; otherwise stop. Outer evidence may correct it once
- * without resetting the800ms total deadline. Confirmed outer plus
- * matching F2/F8 starts before full loss. Outer forward150/inner
- * reverse114; continuous15ms capture finishes at base174.
+ * support; otherwise stop. Outer evidence may correct
+ * it once without resetting the800ms total deadline.
+ * Confirmed outer plus matching F2/F8 starts before full
+ * loss. Outer forward150/inner reverse114; After actual loss,
+ * matching single edge also starts capture at100/20 or100/50.
+ * Once capture starts, invalid readings stop instead of
+ * resuming reverse. Continuous15ms capture completes turn.
  */
 void sharp_turn() {
   turnElapsed = turnNow - turnAt;
+  if (sensorF == 0) {
+    turnDeparted = 1;
+  }
   if (turnDirectionSource == 0 && turnElapsed <= OUTER_OVERRIDE_WINDOW_MS && outerReady == 1) {
     turnDirection = outerDirection;
     turnDirectionSource = 1;
@@ -184,7 +193,8 @@ void sharp_turn() {
     turnActive = 0;
     stop2();
   } else {
-    if (turnElapsed >= TURN_MIN_MS && (sensorF == 4 || sensorF == 6 || sensorF == 12)) {
+    if (turnElapsed >= TURN_MIN_MS && (sensorF == 4 || sensorF == 6 || sensorF == 12 || turnDeparted == 1 && (turnDirection == 1 && sensorF == 2 || turnDirection == -1 && sensorF == 8))) {
+      turnCaptureStarted = 1;
       if (turnConfirm == 0) {
         turnConfirm = 1;
         turnCaptureAt = turnNow;
@@ -193,56 +203,80 @@ void sharp_turn() {
     } else {
       turnConfirm = 0;
     }
-    if (turnConfirm == 1 && turnCaptureElapsed >= TURN_REACQUIRE_MS) {
+    if ((sensorF == 4 || sensorF == 6 || sensorF == 12) && turnConfirm == 1 && turnCaptureElapsed >= TURN_REACQUIRE_MS) {
       turnActive = 0;
       turnDirection = 0;
       turnConfirm = 0;
       whiteCount = 0;
-      if (sensorF == 12) {
+      if (sensorF == 8) {
         digitalWrite(7,LOW);
-        analogWrite(5,innerSpeed);
+        analogWrite(5,20);
         digitalWrite(4,HIGH);
-        analogWrite(6,SPEED_CURVE);
+        analogWrite(6,TURN_CAPTURE_PWM);
+      } else if (sensorF == 12) {
+        digitalWrite(7,LOW);
+        analogWrite(5,50);
+        digitalWrite(4,HIGH);
+        analogWrite(6,TURN_CAPTURE_PWM);
+      } else if (sensorF == 2) {
+        digitalWrite(7,LOW);
+        analogWrite(5,TURN_CAPTURE_PWM);
+        digitalWrite(4,HIGH);
+        analogWrite(6,20);
       } else if (sensorF == 6) {
         digitalWrite(7,LOW);
-        analogWrite(5,SPEED_CURVE);
+        analogWrite(5,TURN_CAPTURE_PWM);
         digitalWrite(4,HIGH);
-        analogWrite(6,innerSpeed);
+        analogWrite(6,50);
       } else {
         digitalWrite(7,LOW);
-        analogWrite(5,SPEED_CURVE);
+        analogWrite(5,TURN_CAPTURE_PWM);
         digitalWrite(4,HIGH);
-        analogWrite(6,SPEED_CURVE);
+        analogWrite(6,TURN_CAPTURE_PWM);
       }
     } else {
       if (turnConfirm >= 1) {
-        if (sensorF == 12) {
+        if (sensorF == 8) {
           digitalWrite(7,LOW);
-          analogWrite(5,innerSpeed);
+          analogWrite(5,20);
           digitalWrite(4,HIGH);
-          analogWrite(6,SPEED_CURVE);
+          analogWrite(6,TURN_CAPTURE_PWM);
+        } else if (sensorF == 12) {
+          digitalWrite(7,LOW);
+          analogWrite(5,50);
+          digitalWrite(4,HIGH);
+          analogWrite(6,TURN_CAPTURE_PWM);
+        } else if (sensorF == 2) {
+          digitalWrite(7,LOW);
+          analogWrite(5,TURN_CAPTURE_PWM);
+          digitalWrite(4,HIGH);
+          analogWrite(6,20);
         } else if (sensorF == 6) {
           digitalWrite(7,LOW);
-          analogWrite(5,SPEED_CURVE);
+          analogWrite(5,TURN_CAPTURE_PWM);
           digitalWrite(4,HIGH);
-          analogWrite(6,innerSpeed);
+          analogWrite(6,50);
         } else {
           digitalWrite(7,LOW);
-          analogWrite(5,SPEED_CURVE);
+          analogWrite(5,TURN_CAPTURE_PWM);
           digitalWrite(4,HIGH);
-          analogWrite(6,SPEED_CURVE);
+          analogWrite(6,TURN_CAPTURE_PWM);
         }
       } else {
-        if (turnDirection == -1) {
-          digitalWrite(7,HIGH);
-          analogWrite(5,TURN_INNER_PWM);
-          digitalWrite(4,HIGH);
-          analogWrite(6,TURN_OUTER_PWM);
+        if (turnCaptureStarted == 1) {
+          stop2();
         } else {
-          digitalWrite(7,LOW);
-          analogWrite(5,TURN_OUTER_PWM);
-          digitalWrite(4,LOW);
-          analogWrite(6,TURN_INNER_PWM);
+          if (turnDirection == -1) {
+            digitalWrite(7,HIGH);
+            analogWrite(5,TURN_INNER_PWM);
+            digitalWrite(4,HIGH);
+            analogWrite(6,TURN_OUTER_PWM);
+          } else {
+            digitalWrite(7,LOW);
+            analogWrite(5,TURN_OUTER_PWM);
+            digitalWrite(4,LOW);
+            analogWrite(6,TURN_INNER_PWM);
+          }
         }
       }
     }
@@ -421,6 +455,9 @@ void setup()
   TURN_INNER_PWM = 114;
   TURN_TIMEOUT_MS = 800;
   TURN_MIN_MS = 30;
+  TURN_CAPTURE_PWM = 100;
+  turnDeparted = 0;
+  turnCaptureStarted = 0;
   TURN_MEMORY_MS = 250;
   TURN_CENTER_CLEAR_MS = 80;
   TURN_DIRECTION_CONFIRM_MS = 15;
@@ -894,6 +931,8 @@ void loop()
         turnAt = turnNow;
         turnConfirm = 0;
         outerProbeActive = 0;
+        turnDeparted = 0;
+        turnCaptureStarted = 0;
       } else if (outerReady == 1 && outerDirection == -1 && sensorF == 8) {
         turnDirection = -1;
         turnDirectionSource = 1;
@@ -901,6 +940,26 @@ void loop()
         turnAt = turnNow;
         turnConfirm = 0;
         outerProbeActive = 0;
+        turnDeparted = 0;
+        turnCaptureStarted = 0;
+      } else if (outerReady == 0 && outerCandidate == 0 && sensorF == 2 && turnCandidate == 1 && turnCandidateElapsed >= TURN_DIRECTION_CONFIRM_MS) {
+        turnDirection = 1;
+        turnDirectionSource = 0;
+        turnActive = 1;
+        turnAt = turnNow;
+        turnConfirm = 0;
+        outerProbeActive = 0;
+        turnDeparted = 0;
+        turnCaptureStarted = 0;
+      } else if (outerReady == 0 && outerCandidate == 0 && sensorF == 8 && turnCandidate == -1 && turnCandidateElapsed >= TURN_DIRECTION_CONFIRM_MS) {
+        turnDirection = -1;
+        turnDirectionSource = 0;
+        turnActive = 1;
+        turnAt = turnNow;
+        turnConfirm = 0;
+        outerProbeActive = 0;
+        turnDeparted = 0;
+        turnCaptureStarted = 0;
       }
       if (sensorF == 0) {
         if (outerReady == 1) {
@@ -910,6 +969,8 @@ void loop()
           turnAt = turnNow;
           turnConfirm = 0;
           outerProbeActive = 0;
+          turnDeparted = 0;
+          turnCaptureStarted = 0;
         } else if (outerCandidate != 0) {
           if (outerProbeActive == 0) {
             outerProbeActive = 1;
@@ -928,6 +989,8 @@ void loop()
           turnAt = turnNow;
           turnConfirm = 0;
           outerProbeActive = 0;
+          turnDeparted = 0;
+          turnCaptureStarted = 0;
         } else {
           outerProbeActive = 0;
           gapActive = 1;

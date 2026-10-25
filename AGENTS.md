@@ -2,6 +2,8 @@
 
 ## Active baseline after user-directed rollback (2026-10-25)
 
+- Latest corner fix: center candidate confirmed15ms with matching F2/F8 and no outer candidate/ready may enter early (source0,150ms bound). After actual F0, matching single edge initiates forward capture. TURN_CAPTURE_PWM100, inner20/50. Once capture starts, invalid readings stop instead of resuming reverse. Exit requires F4/6/12 plus15ms valid capture. Read docs/CORNER_CAPTURE_2026-10-25.zh-TW.md; overrides shared174 capture.
+
 - Latest user request raises ordinary low-speed curve PWM45 percent: base/gain174, inner15/87. Sharp forward capture shares base174; pivot search150/-114 and straight stages/ceiling230 remain. Read docs/CURVE_SPEED_45_2026-10-25.zh-TW.md. Earlier speed values are historical.
 
 - Latest section14/15 fix: confirmed outer plus matching single center edge F2(right)/F8(left) starts pivot before F0. Straight trim allowed30ms (was80); centered recovery30ms with total60ms event bound. Read docs/EARLY_CORNER_2026-10-25.zh-TW.md; overrides older trigger/trim timing. No field acceptance.
