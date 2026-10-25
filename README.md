@@ -4,6 +4,7 @@
 
 ## 使用檔案
 
+- [60°／90° 尖角轉彎策略](docs/SHARP_TURNS.zh-TW.md)：最近偏側後失線時樞紐轉向，重新抓回中央線後結束；800 ms 逾時鎖定停車。
 - [00000～11111 完整對照表](docs/SENSOR_TRUTH_TABLE.zh-TW.md)：原五感測器設計與目前三感測器版的對應行為。
 - **[car.xml](car.xml)**：以 10/24 三感測器策略重寫的主檔，移除不可到達分支與未用功能，加入區段註解；既有參數及控制規則保留。
 - [car.ino](car.ino)：由這份 XML 使用本機保存的原廠 CAGEBOT 產生器同步匯出。
@@ -23,4 +24,4 @@
 ## 後續修改
 
 以 car.xml 原策略為基礎，針對明確的路段行為修改。修改積木後，從 CAGEBOT 同步匯出 Arduino；不要只改 Arduino，也不要使用另一套候選產生器重建本版。
-本次沒有另行指定策略參數，因此保留原有控制規則。重寫工具為 `tools/rewrite_car.py`，它只讀取保留的舊 XML 產生新版 XML；Arduino 請由 CAGEBOT 匯出，或使用 `tools/export_car.mjs` 搭配本機原廠產生器。原廠檔案不隨本庫散布。
+一般循跡保留原規則；依後續要求加入尖角樞紐轉向及轉向逾時鎖定。重寫工具為 `tools/rewrite_car.py`，它讀取保留的舊 XML 並加入上述策略產生新版 XML；Arduino 請由 CAGEBOT 匯出，或使用 `tools/export_car.mjs` 搭配本機原廠產生器。原廠檔案不隨本庫散布。

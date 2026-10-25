@@ -1,3 +1,18 @@
+int  TURN_OUTER_PWM;
+int  TURN_INNER_PWM;
+unsigned long  TURN_TIMEOUT_MS;
+unsigned long  TURN_MIN_MS;
+unsigned long  TURN_MEMORY_MS;
+int  TURN_CONFIRM_COUNT;
+int  turnDirection;
+int  turnActive;
+int  turnFault;
+int  turnConfirm;
+unsigned long  turnNow;
+unsigned long  turnAt;
+unsigned long  turnSeenAt;
+unsigned long  turnElapsed;
+unsigned long  turnAge;
 int  LINE_THRESHOLD;
 int  SPEED_STRAIGHT;
 int  sensorA1;
@@ -43,6 +58,48 @@ void stop2() {
   analogWrite(6,0);
 }
 
+/**
+ * Bounded left/right pivot for sharp 60/90-degree
+ * corners. End on centered line, not a measured angle.
+ * Timeout latches stop until reset; no automatic restart.
+ */
+void sharp_turn() {
+  turnElapsed = turnNow - turnAt;
+  if (turnElapsed >= TURN_TIMEOUT_MS) {
+    turnFault = 1;
+    turnActive = 0;
+    stop2();
+  } else {
+    if (turnElapsed >= TURN_MIN_MS && sensorF == 4) {
+      turnConfirm = turnConfirm + 1;
+    } else {
+      turnConfirm = 0;
+    }
+    if (turnConfirm >= TURN_CONFIRM_COUNT) {
+      turnActive = 0;
+      turnDirection = 0;
+      turnConfirm = 0;
+      whiteCount = 0;
+      digitalWrite(7,LOW);
+      analogWrite(5,SPEED_STRAIGHT);
+      digitalWrite(4,HIGH);
+      analogWrite(6,SPEED_STRAIGHT);
+    } else {
+      if (turnDirection == -1) {
+        digitalWrite(7,HIGH);
+        analogWrite(5,TURN_INNER_PWM);
+        digitalWrite(4,HIGH);
+        analogWrite(6,TURN_OUTER_PWM);
+      } else {
+        digitalWrite(7,LOW);
+        analogWrite(5,TURN_OUTER_PWM);
+        digitalWrite(4,LOW);
+        analogWrite(6,TURN_INNER_PWM);
+      }
+    }
+  }
+}
+
 void setup()
 {
   Serial.begin(115200);
@@ -58,7 +115,22 @@ void setup()
   pinMode(5, OUTPUT);
   pinMode(4, OUTPUT);
   pinMode(6, OUTPUT);
-    LINE_THRESHOLD = 70;
+    TURN_OUTER_PWM = 100;
+  TURN_INNER_PWM = 95;
+  TURN_TIMEOUT_MS = 800;
+  TURN_MIN_MS = 30;
+  TURN_MEMORY_MS = 250;
+  TURN_CONFIRM_COUNT = 3;
+  turnDirection = 0;
+  turnActive = 0;
+  turnFault = 0;
+  turnConfirm = 0;
+  turnNow = 0;
+  turnAt = 0;
+  turnSeenAt = 0;
+  turnElapsed = 0;
+  turnAge = 0;
+  LINE_THRESHOLD = 70;
   SPEED_STRAIGHT = 100;
   sensorA1 = 0;
   sensorA2 = 0;
@@ -90,9 +162,9 @@ void setup()
 
 void loop()
 {
-  // Three-center-sensor baseline rewrite. A4/A3/A2 control
-  // only; A5/A1 raw telemetry. PWM100, threshold70, TURN_KP75.
-  // Button waits at boot only. LED behavior unchanged.
+  // Three-center-sensor control with sharp-corner pivot recovery.
+  // A4/A3/A2 control only; A5/A1 raw telemetry. PWM100, threshold70,
+  // TURN_KP75. Button waits at boot only. Turn timeout needs reset.
     colorled13(1,"#33ff33");
     // Read all five ADCs; preserve original raw telemetry.
     sensorA1 = analogRead(A1);
@@ -143,31 +215,54 @@ void loop()
     if (innerSpeed < SPEED_TURN_INNER_MEDIUM) {
       innerSpeed = SPEED_TURN_INNER_MEDIUM;
     }
-    // F=10: hold. Left/right: original proportional steering. F=0: hold 40 loops,
-    // then stop. Otherwise forward. No latched stop or new route strategy.
-    if (sensorF == 10) {
-    } else if (sensorA4 < LINE_THRESHOLD && sensorA2 > LINE_THRESHOLD) {
-      digitalWrite(7,LOW);
-      analogWrite(5,innerSpeed);
-      digitalWrite(4,HIGH);
-      analogWrite(6,SPEED_STRAIGHT);
-    } else if (sensorA2 < LINE_THRESHOLD && sensorA4 > LINE_THRESHOLD) {
-      digitalWrite(7,LOW);
-      analogWrite(5,SPEED_STRAIGHT);
-      digitalWrite(4,HIGH);
-      analogWrite(6,innerSpeed);
-    } else if (sensorF == 0) {
-      if (whiteCount < WHITE_STOP_COUNT) {
-        whiteCount = whiteCount + 1;
-      } else {
-        stop2();
-        colorled13(1,"#0000ff");
+    turnNow = millis();
+    if (turnActive == 0 && turnFault == 0) {
+      if (sensorF == 8 || sensorF == 12) {
+        turnDirection = -1;
+        turnSeenAt = turnNow;
+      } else if (sensorF == 2 || sensorF == 6) {
+        turnDirection = 1;
+        turnSeenAt = turnNow;
       }
+      turnAge = turnNow - turnSeenAt;
+      if (sensorF == 0 && (turnDirection == -1 || turnDirection == 1) && turnAge <= TURN_MEMORY_MS) {
+        turnActive = 1;
+        turnAt = turnNow;
+        turnConfirm = 0;
+      }
+    }
+    if (turnFault == 1) {
+      stop2();
+    } else if (turnActive == 1) {
+      sharp_turn();
     } else {
-      digitalWrite(7,LOW);
-      analogWrite(5,SPEED_STRAIGHT);
-      digitalWrite(4,HIGH);
-      analogWrite(6,SPEED_STRAIGHT);
+      // Normal follow fallback: F=10 holds; left/right proportional
+      // steering; F=0 without a recent turn direction holds 40 loops,
+      // then stops. Sharp-turn state and its latched timeout have priority.
+      if (sensorF == 10) {
+      } else if (sensorA4 < LINE_THRESHOLD && sensorA2 > LINE_THRESHOLD) {
+        digitalWrite(7,LOW);
+        analogWrite(5,innerSpeed);
+        digitalWrite(4,HIGH);
+        analogWrite(6,SPEED_STRAIGHT);
+      } else if (sensorA2 < LINE_THRESHOLD && sensorA4 > LINE_THRESHOLD) {
+        digitalWrite(7,LOW);
+        analogWrite(5,SPEED_STRAIGHT);
+        digitalWrite(4,HIGH);
+        analogWrite(6,innerSpeed);
+      } else if (sensorF == 0) {
+        if (whiteCount < WHITE_STOP_COUNT) {
+          whiteCount = whiteCount + 1;
+        } else {
+          stop2();
+          colorled13(1,"#0000ff");
+        }
+      } else {
+        digitalWrite(7,LOW);
+        analogWrite(5,SPEED_STRAIGHT);
+        digitalWrite(4,HIGH);
+        analogWrite(6,SPEED_STRAIGHT);
+      }
     }
     // Original 115200-baud raw ADC/F telemetry; no new capture protocol.
     Serial.print((String("A1=") + String(rawA1)));

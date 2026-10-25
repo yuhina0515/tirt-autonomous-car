@@ -1,5 +1,7 @@
 # 00000～11111 感測器與動作對照表
 
+> **後續尖角策略更新**：現行 `car.xml` 新增 [60°／90° 樞紐轉向](SHARP_TURNS.zh-TW.md)。一般循跡仍使用下表；有最近偏側方向的 F=0 優先進入轉向。轉向中沿用已選方向，中央線連續確認後退出，800 ms 逾時鎖定停止。下表原 F=0「維持後停車」只適用於未進入尖角轉向的情況。
+
 依 `E:\Projects\XiangyiRobotDreamFactory\self-driving_car\examples\docs_before_temporal_20261024` 的 `README.md`、`car.md` 第 6、7 節重新整理，並參照目前恢復的 `car.ino` 確認整數運算與三感測器差異。本文件只整理既有策略，沒有修改韌體或執行測試。
 
 ## 位元定義
