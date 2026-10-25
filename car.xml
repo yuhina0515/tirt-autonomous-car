@@ -549,7 +549,7 @@
                                                                                                                                                                                                                 <field name="TYPE">unsigned long</field>
                                                                                                                                                                                                                 <value name="VALUE">
                                                                                                                                                                                                                   <block type="math_number" id="v5_00102">
-                                                                                                                                                                                                                    <field name="NUM">28350</field>
+                                                                                                                                                                                                                    <field name="NUM">23350</field>
                                                                                                                                                                                                                   </block>
                                                                                                                                                                                                                 </value>
                                                                                                                                                                                                                 <next>
@@ -5630,6 +5630,6 @@
         </statement>
       </block>
     </statement>
-    <comment pinned="false" h="100" w="380">Lift: first confirmed wide marker after narrow-line departure, based on user route assumption. Stop without alignment drive; provisional wait28350ms from stop command, not measured settled feedback. Auto exit PWM45 with 1500ms limit. Consume marker once. PWM zero is not active braking. Disable LIFT_ENABLED for the earlier practice mat without a lift.</comment>
+    <comment pinned="false" h="100" w="380">Lift: first confirmed wide marker after narrow-line departure, based on user route assumption. Stop without alignment drive; user-requested wait23350ms from stop command, not measured settled feedback. This is below the published27s +/-5% timing. Auto exit PWM45 with1500ms limit. Consume marker once. PWM zero is not active braking. Disable LIFT_ENABLED for the earlier practice mat without a lift.</comment>
   </block>
 </xml>

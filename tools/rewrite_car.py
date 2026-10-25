@@ -103,7 +103,7 @@ def add_sharp_turns(root, main, decision):
         'LIFT_CROSSING_INDEX': ('int', 1),
         'LIFT_MARKER_CONFIRM_MS': ('unsigned long', 30),
         'LIFT_CLEAR_CONFIRM_MS': ('unsigned long', 100),
-        'LIFT_WAIT_MS': ('unsigned long', 28350),
+        'LIFT_WAIT_MS': ('unsigned long', 23350),
         'LIFT_AUTO_EXIT': ('int', 1),
         'LIFT_EXIT_PWM': ('int', 45),
         'LIFT_EXIT_TIMEOUT_MS': ('unsigned long', 1500),
@@ -241,7 +241,7 @@ def add_sharp_turns(root, main, decision):
     exporter.field(function, 'NAME', 'lift_control')
     exporter.field(function, 'TYPE', 'void')
     exporter.statement(function, 'STACK', lift_control)
-    note(function, 'Lift: first confirmed wide marker after narrow-line departure, based on user route assumption. Stop without alignment drive; provisional wait28350ms from stop command, not measured settled feedback. Auto exit PWM45 with 1500ms limit. Consume marker once. PWM zero is not active braking. Disable LIFT_ENABLED for the earlier practice mat without a lift.')
+    note(function, 'Lift: first confirmed wide marker after narrow-line departure, based on user route assumption. Stop without alignment drive; user-requested wait23350ms from stop command, not measured settled feedback. This is below the published27s +/-5% timing. Auto exit PWM45 with1500ms limit. Consume marker once. PWM zero is not active braking. Disable LIFT_ENABLED for the earlier practice mat without a lift.')
     root.append(function)
     lap_update = [
         cond(eq('lapStarted', 0), [setv('lapStarted', 1), setv('lapAt', 'turnNow')]),

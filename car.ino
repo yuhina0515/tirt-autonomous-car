@@ -192,10 +192,11 @@ void cross_gap() {
 /**
  * Lift: first confirmed wide marker after narrow-line departure,
  * based on user route assumption. Stop without alignment drive;
- * provisional wait28350ms from stop command, not measured
- * settled feedback. Auto exit PWM45 with 1500ms limit.
- * Consume marker once. PWM zero is not active braking. Disable
- * LIFT_ENABLED for the earlier practice mat without a lift.
+ * user-requested wait23350ms from stop command, not measured
+ * settled feedback. This is below the published27s +/-5% timing.
+ * Auto exit PWM45 with1500ms limit. Consume marker once.
+ * PWM zero is not active braking. Disable LIFT_ENABLED
+ * for the earlier practice mat without a lift.
  */
 void lift_control() {
   if (liftState == 1) {
@@ -302,7 +303,7 @@ void setup()
   LIFT_CROSSING_INDEX = 1;
   LIFT_MARKER_CONFIRM_MS = 30;
   LIFT_CLEAR_CONFIRM_MS = 100;
-  LIFT_WAIT_MS = 28350;
+  LIFT_WAIT_MS = 23350;
   LIFT_AUTO_EXIT = 1;
   LIFT_EXIT_PWM = 45;
   LIFT_EXIT_TIMEOUT_MS = 1500;
