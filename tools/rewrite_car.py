@@ -57,6 +57,7 @@ def add_sharp_turns(root, main, decision):
         'TURN_TIMEOUT_MS': ('unsigned long', 800),
         'TURN_MIN_MS': ('unsigned long', 30),
         'TURN_MEMORY_MS': ('unsigned long', 250),
+        'TURN_CENTER_CLEAR_MS': ('unsigned long', 80),
         'TURN_CONFIRM_COUNT': ('int', 3),
         'turnDirection': ('int', 0),
         'turnActive': ('int', 0),
@@ -67,6 +68,9 @@ def add_sharp_turns(root, main, decision):
         'turnSeenAt': ('unsigned long', 0),
         'turnElapsed': ('unsigned long', 0),
         'turnAge': ('unsigned long', 0),
+        'centerPending': ('int', 0),
+        'centerAt': ('unsigned long', 0),
+        'centerElapsed': ('unsigned long', 0),
         'GAP_PWM': ('int', 70),
         'GAP_TIMEOUT_MS': ('unsigned long', 250),
         'gapActive': ('int', 0),
@@ -176,12 +180,20 @@ def add_sharp_turns(root, main, decision):
               *lap_update,
               cond(both(eq('turnActive', 0), both(eq('gapActive', 0),
                     both(eq('turnFault', 0), eq('lapDone', 0)))), [
-                  cases([(eq('sensorF', 8),
+                  cases([(either(eq('sensorF', 8), eq('sensorF', 12)),
                           [setv('turnDirection', -1), setv('turnSeenAt', 'turnNow')]),
-                         (eq('sensorF', 2),
+                         (either(eq('sensorF', 2), eq('sensorF', 6)),
                           [setv('turnDirection', 1), setv('turnSeenAt', 'turnNow')]),
-                         (either(eq('sensorF', 4), eq('sensorF', 14)),
+                         (eq('sensorF', 14),
                           [setv('turnDirection', 0)])]),
+                  # A brief center observation must not erase an approaching corner.
+                  # Sustained centered travel still clears stale direction for gaps.
+                  cond(eq('sensorF', 4), [
+                      cond(eq('centerPending', 0),
+                           [setv('centerPending', 1), setv('centerAt', 'turnNow')]),
+                      setv('centerElapsed', sub('turnNow', 'centerAt')),
+                      cond(ge('centerElapsed', 'TURN_CENTER_CLEAR_MS'),
+                           [setv('turnDirection', 0)])], [setv('centerPending', 0)]),
                   setv('turnAge', sub('turnNow', 'turnSeenAt')),
                   cond(eq('sensorF', 0), [cond(
                             both(either(eq('turnDirection', -1), eq('turnDirection', 1)),

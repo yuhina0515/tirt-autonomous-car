@@ -3,6 +3,7 @@ int  TURN_INNER_PWM;
 unsigned long  TURN_TIMEOUT_MS;
 unsigned long  TURN_MIN_MS;
 unsigned long  TURN_MEMORY_MS;
+unsigned long  TURN_CENTER_CLEAR_MS;
 int  TURN_CONFIRM_COUNT;
 int  turnDirection;
 int  turnActive;
@@ -13,6 +14,9 @@ unsigned long  turnAt;
 unsigned long  turnSeenAt;
 unsigned long  turnElapsed;
 unsigned long  turnAge;
+int  centerPending;
+unsigned long  centerAt;
+unsigned long  centerElapsed;
 int  GAP_PWM;
 unsigned long  GAP_TIMEOUT_MS;
 int  gapActive;
@@ -177,6 +181,7 @@ void setup()
   TURN_TIMEOUT_MS = 800;
   TURN_MIN_MS = 30;
   TURN_MEMORY_MS = 250;
+  TURN_CENTER_CLEAR_MS = 80;
   TURN_CONFIRM_COUNT = 3;
   turnDirection = 0;
   turnActive = 0;
@@ -187,6 +192,9 @@ void setup()
   turnSeenAt = 0;
   turnElapsed = 0;
   turnAge = 0;
+  centerPending = 0;
+  centerAt = 0;
+  centerElapsed = 0;
   GAP_PWM = 70;
   GAP_TIMEOUT_MS = 250;
   gapActive = 0;
@@ -335,14 +343,26 @@ void loop()
       wideActive = 0;
     }
     if (turnActive == 0 && gapActive == 0 && turnFault == 0 && lapDone == 0) {
-      if (sensorF == 8) {
+      if (sensorF == 8 || sensorF == 12) {
         turnDirection = -1;
         turnSeenAt = turnNow;
-      } else if (sensorF == 2) {
+      } else if (sensorF == 2 || sensorF == 6) {
         turnDirection = 1;
         turnSeenAt = turnNow;
-      } else if (sensorF == 4 || sensorF == 14) {
+      } else if (sensorF == 14) {
         turnDirection = 0;
+      }
+      if (sensorF == 4) {
+        if (centerPending == 0) {
+          centerPending = 1;
+          centerAt = turnNow;
+        }
+        centerElapsed = turnNow - centerAt;
+        if (centerElapsed >= TURN_CENTER_CLEAR_MS) {
+          turnDirection = 0;
+        }
+      } else {
+        centerPending = 0;
       }
       turnAge = turnNow - turnSeenAt;
       if (sensorF == 0) {
