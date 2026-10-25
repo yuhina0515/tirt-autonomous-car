@@ -44,6 +44,30 @@ unsigned long  departElapsed;
 int  wideActive;
 unsigned long  wideAt;
 unsigned long  wideElapsed;
+int  LIFT_ENABLED;
+int  LIFT_CROSSING_INDEX;
+unsigned long  LIFT_MARKER_CONFIRM_MS;
+unsigned long  LIFT_CLEAR_CONFIRM_MS;
+unsigned long  LIFT_WAIT_MS;
+int  LIFT_AUTO_EXIT;
+int  LIFT_EXIT_PWM;
+unsigned long  LIFT_EXIT_TIMEOUT_MS;
+int  liftState;
+int  liftCrossings;
+int  liftMarkerLatched;
+int  liftMarkerPending;
+unsigned long  liftMarkerAt;
+unsigned long  liftMarkerElapsed;
+int  liftClearPending;
+unsigned long  liftClearAt;
+unsigned long  liftClearElapsed;
+unsigned long  liftWaitAt;
+unsigned long  liftWaitElapsed;
+unsigned long  liftExitAt;
+unsigned long  liftExitElapsed;
+int  liftExitPending;
+unsigned long  liftLineAt;
+unsigned long  liftLineElapsed;
 int  LINE_THRESHOLD;
 int  SPEED_STRAIGHT;
 int  sensorA1;
@@ -165,6 +189,54 @@ void cross_gap() {
   }
 }
 
+/**
+ * Lift: first confirmed wide marker after narrow-line departure,
+ * based on user route assumption. Stop without alignment drive;
+ * provisional wait28350ms from stop command, not measured
+ * settled feedback. Auto exit PWM45 with 1500ms limit.
+ * Consume marker once. PWM zero is not active braking. Disable
+ * LIFT_ENABLED for the earlier practice mat without a lift.
+ */
+void lift_control() {
+  if (liftState == 1) {
+    stop2();
+    liftWaitElapsed = turnNow - liftWaitAt;
+    if (LIFT_AUTO_EXIT == 1 && liftWaitElapsed >= LIFT_WAIT_MS) {
+      liftState = 2;
+      liftExitAt = turnNow;
+      liftExitPending = 0;
+    }
+  } else if (liftState == 2) {
+    liftExitElapsed = turnNow - liftExitAt;
+    if (liftExitElapsed >= LIFT_EXIT_TIMEOUT_MS) {
+      turnFault = 1;
+      stop2();
+    } else {
+      if (sensorF == 2 || sensorF == 4 || sensorF == 6 || sensorF == 8 || sensorF == 12) {
+        if (liftExitPending == 0) {
+          liftExitPending = 1;
+          liftLineAt = turnNow;
+        }
+        liftLineElapsed = turnNow - liftLineAt;
+        if (liftLineElapsed >= LIFT_CLEAR_CONFIRM_MS) {
+          liftState = 3;
+          turnDirection = 0;
+          turnCandidate = 0;
+          centerPending = 0;
+          wideActive = 0;
+          whiteCount = 0;
+        }
+      } else {
+        liftExitPending = 0;
+      }
+      digitalWrite(7,LOW);
+      analogWrite(5,LIFT_EXIT_PWM);
+      digitalWrite(4,HIGH);
+      analogWrite(6,LIFT_EXIT_PWM);
+    }
+  }
+}
+
 void setup()
 {
   Serial.begin(115200);
@@ -226,6 +298,30 @@ void setup()
   wideActive = 0;
   wideAt = 0;
   wideElapsed = 0;
+  LIFT_ENABLED = 1;
+  LIFT_CROSSING_INDEX = 1;
+  LIFT_MARKER_CONFIRM_MS = 30;
+  LIFT_CLEAR_CONFIRM_MS = 100;
+  LIFT_WAIT_MS = 28350;
+  LIFT_AUTO_EXIT = 1;
+  LIFT_EXIT_PWM = 45;
+  LIFT_EXIT_TIMEOUT_MS = 1500;
+  liftState = 0;
+  liftCrossings = 0;
+  liftMarkerLatched = 0;
+  liftMarkerPending = 0;
+  liftMarkerAt = 0;
+  liftMarkerElapsed = 0;
+  liftClearPending = 0;
+  liftClearAt = 0;
+  liftClearElapsed = 0;
+  liftWaitAt = 0;
+  liftWaitElapsed = 0;
+  liftExitAt = 0;
+  liftExitElapsed = 0;
+  liftExitPending = 0;
+  liftLineAt = 0;
+  liftLineElapsed = 0;
   LINE_THRESHOLD = 70;
   SPEED_STRAIGHT = 100;
   sensorA1 = 0;
@@ -314,6 +410,52 @@ void loop()
       innerSpeed = SPEED_TURN_INNER_MEDIUM;
     }
     turnNow = millis();
+    if (LIFT_ENABLED == 1) {
+      if (LIFT_CROSSING_INDEX <= 0) {
+        turnFault = 1;
+      }
+      if (lapReady == 1 && (liftState == 0 || liftState == 3) && turnActive == 0 && gapActive == 0) {
+        if (sensorF == 14) {
+          liftClearPending = 0;
+          if (liftMarkerLatched == 0) {
+            if (liftMarkerPending == 0) {
+              liftMarkerPending = 1;
+              liftMarkerAt = turnNow;
+            }
+            liftMarkerElapsed = turnNow - liftMarkerAt;
+            if (liftMarkerElapsed >= LIFT_MARKER_CONFIRM_MS) {
+              liftMarkerLatched = 1;
+              liftMarkerPending = 0;
+              liftCrossings = liftCrossings + 1;
+              if (liftState == 0 && liftCrossings == LIFT_CROSSING_INDEX) {
+                liftState = 1;
+                liftWaitAt = turnNow;
+                liftExitPending = 0;
+                turnDirection = 0;
+                turnCandidate = 0;
+                wideActive = 0;
+              }
+            }
+          }
+        } else {
+          liftMarkerPending = 0;
+        }
+      } else {
+        liftMarkerPending = 0;
+      }
+      if (sensorF == 2 || sensorF == 4 || sensorF == 6 || sensorF == 8 || sensorF == 12) {
+        if (liftClearPending == 0) {
+          liftClearPending = 1;
+          liftClearAt = turnNow;
+        }
+        liftClearElapsed = turnNow - liftClearAt;
+        if (liftClearElapsed >= LIFT_CLEAR_CONFIRM_MS) {
+          liftMarkerLatched = 0;
+        }
+      } else {
+        liftClearPending = 0;
+      }
+    }
     if (lapStarted == 0) {
       lapStarted = 1;
       lapAt = turnNow;
@@ -336,7 +478,7 @@ void loop()
         departPending = 0;
       }
     }
-    if (sensorF == 14 && turnActive == 0 && gapActive == 0) {
+    if ((liftState == 0 || liftState == 3) && sensorF == 14 && turnActive == 0 && gapActive == 0) {
       if (wideActive == 0) {
         wideActive = 1;
         wideAt = turnNow;
@@ -344,13 +486,13 @@ void loop()
       wideElapsed = turnNow - wideAt;
       if (wideElapsed >= WIDE_TIMEOUT_MS) {
         turnFault = 1;
-      } else if (lapReady == 1 && lapElapsed >= MIN_LAP_MS && wideElapsed >= FINISH_CONFIRM_MS) {
+      } else if ((LIFT_ENABLED == 0 || liftState == 3) && lapReady == 1 && lapElapsed >= MIN_LAP_MS && wideElapsed >= FINISH_CONFIRM_MS) {
         lapDone = 1;
       }
     } else {
       wideActive = 0;
     }
-    if (turnActive == 0 && gapActive == 0 && turnFault == 0 && lapDone == 0) {
+    if ((liftState == 0 || liftState == 3) && turnActive == 0 && gapActive == 0 && turnFault == 0 && lapDone == 0) {
       if (sensorF == 8 || sensorF == 12) {
         if (turnCandidate == -1) {
         } else {
@@ -412,6 +554,8 @@ void loop()
     if (turnFault == 1 || lapDone == 1) {
       stop2();
       colorled13(1,"#0000ff");
+    } else if (LIFT_ENABLED == 1 && (liftState == 1 || liftState == 2)) {
+      lift_control();
     } else if (turnActive == 1) {
       sharp_turn();
     } else if (gapActive == 1) {

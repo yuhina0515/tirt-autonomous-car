@@ -98,6 +98,31 @@ def add_sharp_turns(root, main, decision):
         'wideActive': ('int', 0),
         'wideAt': ('unsigned long', 0),
         'wideElapsed': ('unsigned long', 0),
+        # User reports no earlier crossings; first confirmed wide marker is assumed.
+        'LIFT_ENABLED': ('int', 1),
+        'LIFT_CROSSING_INDEX': ('int', 1),
+        'LIFT_MARKER_CONFIRM_MS': ('unsigned long', 30),
+        'LIFT_CLEAR_CONFIRM_MS': ('unsigned long', 100),
+        'LIFT_WAIT_MS': ('unsigned long', 28350),
+        'LIFT_AUTO_EXIT': ('int', 1),
+        'LIFT_EXIT_PWM': ('int', 45),
+        'LIFT_EXIT_TIMEOUT_MS': ('unsigned long', 1500),
+        'liftState': ('int', 0),
+        'liftCrossings': ('int', 0),
+        'liftMarkerLatched': ('int', 0),
+        'liftMarkerPending': ('int', 0),
+        'liftMarkerAt': ('unsigned long', 0),
+        'liftMarkerElapsed': ('unsigned long', 0),
+        'liftClearPending': ('int', 0),
+        'liftClearAt': ('unsigned long', 0),
+        'liftClearElapsed': ('unsigned long', 0),
+        'liftWaitAt': ('unsigned long', 0),
+        'liftWaitElapsed': ('unsigned long', 0),
+        'liftExitAt': ('unsigned long', 0),
+        'liftExitElapsed': ('unsigned long', 0),
+        'liftExitPending': ('int', 0),
+        'liftLineAt': ('unsigned long', 0),
+        'liftLineElapsed': ('unsigned long', 0),
     }
     variables = root.find('b:variables', N)
     for name in settings:
@@ -161,6 +186,63 @@ def add_sharp_turns(root, main, decision):
 
     wide_drive = [('digitalwrite', '7', 0), ('pwm', '5', 'WIDE_PWM'),
                   ('digitalwrite', '4', 1), ('pwm', '6', 'WIDE_PWM')]
+    narrow = anyof('sensorF', [2, 4, 6, 8, 12])
+    normal_lift_state = either(eq('liftState', 0), eq('liftState', 3))
+    lift_update = [cond(eq('LIFT_ENABLED', 1), [
+        cond(le('LIFT_CROSSING_INDEX', 0), [setv('turnFault', 1)]),
+        cond(both(eq('lapReady', 1),
+                  both(normal_lift_state, both(eq('turnActive', 0), eq('gapActive', 0)))), [
+            cond(eq('sensorF', 14), [
+                setv('liftClearPending', 0),
+                cond(eq('liftMarkerLatched', 0), [
+                    cond(eq('liftMarkerPending', 0), [
+                        setv('liftMarkerPending', 1), setv('liftMarkerAt', 'turnNow')]),
+                    setv('liftMarkerElapsed', sub('turnNow', 'liftMarkerAt')),
+                    cond(ge('liftMarkerElapsed', 'LIFT_MARKER_CONFIRM_MS'), [
+                        setv('liftMarkerLatched', 1), setv('liftMarkerPending', 0),
+                        setv('liftCrossings', add('liftCrossings', 1)),
+                        cond(both(eq('liftState', 0), eq('liftCrossings', 'LIFT_CROSSING_INDEX')), [
+                            setv('liftState', 1), setv('liftWaitAt', 'turnNow'),
+                            setv('liftExitPending', 0), setv('turnDirection', 0),
+                            setv('turnCandidate', 0), setv('wideActive', 0)])])])], [
+                setv('liftMarkerPending', 0)])], [setv('liftMarkerPending', 0)]),
+        # A marker is consumed until stable narrow line, including during exit.
+        cond(narrow, [
+            cond(eq('liftClearPending', 0), [
+                setv('liftClearPending', 1), setv('liftClearAt', 'turnNow')]),
+            setv('liftClearElapsed', sub('turnNow', 'liftClearAt')),
+            cond(ge('liftClearElapsed', 'LIFT_CLEAR_CONFIRM_MS'),
+                 [setv('liftMarkerLatched', 0)])], [setv('liftClearPending', 0)])])]
+    exit_drive = [('digitalwrite', '7', 0), ('pwm', '5', 'LIFT_EXIT_PWM'),
+                  ('digitalwrite', '4', 1), ('pwm', '6', 'LIFT_EXIT_PWM')]
+    lift_control = [cases([
+        (eq('liftState', 1), [
+            call('stop'), setv('liftWaitElapsed', sub('turnNow', 'liftWaitAt')),
+            cond(both(eq('LIFT_AUTO_EXIT', 1), ge('liftWaitElapsed', 'LIFT_WAIT_MS')), [
+                setv('liftState', 2), setv('liftExitAt', 'turnNow'),
+                setv('liftExitPending', 0)])]),
+        (eq('liftState', 2), [
+            setv('liftExitElapsed', sub('turnNow', 'liftExitAt')),
+            cond(ge('liftExitElapsed', 'LIFT_EXIT_TIMEOUT_MS'),
+                 [setv('turnFault', 1), call('stop')], [
+                cond(narrow, [
+                    cond(eq('liftExitPending', 0), [
+                        setv('liftExitPending', 1), setv('liftLineAt', 'turnNow')]),
+                    setv('liftLineElapsed', sub('turnNow', 'liftLineAt')),
+                    cond(ge('liftLineElapsed', 'LIFT_CLEAR_CONFIRM_MS'), [
+                        setv('liftState', 3), setv('turnDirection', 0),
+                        setv('turnCandidate', 0), setv('centerPending', 0),
+                        setv('wideActive', 0), setv('whiteCount', 0)])],
+                    [setv('liftExitPending', 0)]),
+                *exit_drive])])])]
+    function = exporter.block('procedures_defnoreturn')
+    function.set('x', '1650')
+    function.set('y', '650')
+    exporter.field(function, 'NAME', 'lift_control')
+    exporter.field(function, 'TYPE', 'void')
+    exporter.statement(function, 'STACK', lift_control)
+    note(function, 'Lift: first confirmed wide marker after narrow-line departure, based on user route assumption. Stop without alignment drive; provisional wait28350ms from stop command, not measured settled feedback. Auto exit PWM45 with 1500ms limit. Consume marker once. PWM zero is not active braking. Disable LIFT_ENABLED for the earlier practice mat without a lift.')
+    root.append(function)
     lap_update = [
         cond(eq('lapStarted', 0), [setv('lapStarted', 1), setv('lapAt', 'turnNow')]),
         setv('lapElapsed', sub('turnNow', 'lapAt')),
@@ -172,13 +254,15 @@ def add_sharp_turns(root, main, decision):
                 setv('departElapsed', sub('turnNow', 'departAt')),
                 cond(ge('departElapsed', 'DEPART_CONFIRM_MS'), [setv('lapReady', 1)])],
                 [setv('departPending', 0)])]),
-        cond(both(eq('sensorF', 14), both(eq('turnActive', 0), eq('gapActive', 0))), [
+        cond(both(normal_lift_state,
+                  both(eq('sensorF', 14), both(eq('turnActive', 0), eq('gapActive', 0)))), [
             cond(eq('wideActive', 0), [setv('wideActive', 1), setv('wideAt', 'turnNow')]),
             setv('wideElapsed', sub('turnNow', 'wideAt')),
             # The event timeout remains fixed even across the minimum-lap threshold.
             cases([(ge('wideElapsed', 'WIDE_TIMEOUT_MS'), [setv('turnFault', 1)]),
-                   (both(eq('lapReady', 1), both(ge('lapElapsed', 'MIN_LAP_MS'),
-                                                ge('wideElapsed', 'FINISH_CONFIRM_MS'))),
+                   (both(either(eq('LIFT_ENABLED', 0), eq('liftState', 3)),
+                         both(eq('lapReady', 1), both(ge('lapElapsed', 'MIN_LAP_MS'),
+                                                ge('wideElapsed', 'FINISH_CONFIRM_MS')))),
                     [setv('lapDone', 1)])])], [setv('wideActive', 0)])]
     def candidate_direction(direction):
         return [
@@ -188,9 +272,11 @@ def add_sharp_turns(root, main, decision):
             cond(ge('turnCandidateElapsed', 'TURN_DIRECTION_CONFIRM_MS'),
                  [setv('turnDirection', direction), setv('turnSeenAt', 'turnNow')])]
     before = [setv('turnNow', ('millis',)),
+              *lift_update,
               *lap_update,
-              cond(both(eq('turnActive', 0), both(eq('gapActive', 0),
-                    both(eq('turnFault', 0), eq('lapDone', 0)))), [
+              cond(both(normal_lift_state,
+                    both(eq('turnActive', 0), both(eq('gapActive', 0),
+                    both(eq('turnFault', 0), eq('lapDone', 0))))), [
                   cases([(either(eq('sensorF', 8), eq('sensorF', 12)),
                           candidate_direction(-1)),
                          (either(eq('sensorF', 2), eq('sensorF', 6)),
@@ -226,6 +312,8 @@ def add_sharp_turns(root, main, decision):
         last = last.find('b:next/b:block', N)
     wrapper = exporter.stmt(cases([
         (either(eq('turnFault', 1), eq('lapDone', 1)), [call('stop')]),
+        (both(eq('LIFT_ENABLED', 1), either(eq('liftState', 1), eq('liftState', 2))),
+         [call('lift_control')]),
         (eq('turnActive', 1), [call('sharp_turn')]),
         (eq('gapActive', 1), [call('cross_gap')]),
         (eq('wideActive', 1), wide_drive)], []))
