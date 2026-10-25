@@ -62,6 +62,10 @@ int  turnCandidate;
 unsigned long  turnCandidateAt;
 unsigned long  turnCandidateElapsed;
 int  GAP_PWM;
+unsigned long  GAP_DIRECTION_MS;
+int  gapDirection;
+unsigned long  gapDirectionAt;
+unsigned long  gapDirectionAge;
 unsigned long  GAP_TIMEOUT_MS;
 int  gapActive;
 unsigned long  gapAt;
@@ -218,6 +222,21 @@ void sharp_turn() {
   }
   if (turnElapsed >= TURN_TIMEOUT_MS || OUTER_TURN_ASSIST == 1 && turnDirectionSource == 0 && turnCaptureStarted == 0 && turnCaptureVisible == 0 && turnElapsed >= OUTER_OVERRIDE_WINDOW_MS) {
     if (LOSS_STOP_ENABLED == 0 && sensorF == 0) {
+      if (outerReady == 1) {
+        gapDirection = outerDirection;
+        gapDirectionAt = outerSeenAt;
+      } else if (gapActive == 0 && turnActive == 1 && turnDirection != 0) {
+        gapDirection = turnDirection;
+        gapDirectionAt = turnNow;
+      } else if (gapActive == 0 && turnDirection != 0 && turnAge <= TURN_MEMORY_MS) {
+        gapDirection = turnDirection;
+        gapDirectionAt = turnSeenAt;
+      } else {
+        if (gapActive == 0) {
+          gapDirection = 0;
+        }
+      }
+      gapDirectionAge = turnNow - gapDirectionAt;
       turnActive = 0;
       turnDirection = 0;
       outerProbeActive = 0;
@@ -225,10 +244,22 @@ void sharp_turn() {
       gapAt = turnNow;
       gapConfirm = 0;
       whiteCount = 0;
-      digitalWrite(7,LOW);
-      analogWrite(5,45);
-      digitalWrite(4,HIGH);
-      analogWrite(6,45);
+      if (gapDirection == -1 && gapDirectionAge <= GAP_DIRECTION_MS) {
+        digitalWrite(7,LOW);
+        analogWrite(5,15);
+        digitalWrite(4,HIGH);
+        analogWrite(6,GAP_PWM);
+      } else if (gapDirection == 1 && gapDirectionAge <= GAP_DIRECTION_MS) {
+        digitalWrite(7,LOW);
+        analogWrite(5,GAP_PWM);
+        digitalWrite(4,HIGH);
+        analogWrite(6,15);
+      } else {
+        digitalWrite(7,LOW);
+        analogWrite(5,GAP_PWM);
+        digitalWrite(4,HIGH);
+        analogWrite(6,GAP_PWM);
+      }
     } else {
       turnFault = 1;
       turnActive = 0;
@@ -321,6 +352,21 @@ void sharp_turn() {
             turnCaptureGapElapsed = turnNow - turnCaptureGapAt;
             if (turnCaptureGapElapsed >= TURN_CAPTURE_GAP_MS) {
               if (LOSS_STOP_ENABLED == 0 && sensorF == 0) {
+                if (outerReady == 1) {
+                  gapDirection = outerDirection;
+                  gapDirectionAt = outerSeenAt;
+                } else if (gapActive == 0 && turnActive == 1 && turnDirection != 0) {
+                  gapDirection = turnDirection;
+                  gapDirectionAt = turnNow;
+                } else if (gapActive == 0 && turnDirection != 0 && turnAge <= TURN_MEMORY_MS) {
+                  gapDirection = turnDirection;
+                  gapDirectionAt = turnSeenAt;
+                } else {
+                  if (gapActive == 0) {
+                    gapDirection = 0;
+                  }
+                }
+                gapDirectionAge = turnNow - gapDirectionAt;
                 turnActive = 0;
                 turnDirection = 0;
                 outerProbeActive = 0;
@@ -328,10 +374,22 @@ void sharp_turn() {
                 gapAt = turnNow;
                 gapConfirm = 0;
                 whiteCount = 0;
-                digitalWrite(7,LOW);
-                analogWrite(5,45);
-                digitalWrite(4,HIGH);
-                analogWrite(6,45);
+                if (gapDirection == -1 && gapDirectionAge <= GAP_DIRECTION_MS) {
+                  digitalWrite(7,LOW);
+                  analogWrite(5,15);
+                  digitalWrite(4,HIGH);
+                  analogWrite(6,GAP_PWM);
+                } else if (gapDirection == 1 && gapDirectionAge <= GAP_DIRECTION_MS) {
+                  digitalWrite(7,LOW);
+                  analogWrite(5,GAP_PWM);
+                  digitalWrite(4,HIGH);
+                  analogWrite(6,15);
+                } else {
+                  digitalWrite(7,LOW);
+                  analogWrite(5,GAP_PWM);
+                  digitalWrite(4,HIGH);
+                  analogWrite(6,GAP_PWM);
+                }
               } else {
                 turnFault = 1;
                 turnActive = 0;
@@ -369,6 +427,21 @@ void sharp_turn() {
             turnCaptureGapElapsed = turnNow - turnCaptureGapAt;
             if (turnCaptureGapElapsed >= TURN_CAPTURE_GAP_MS) {
               if (LOSS_STOP_ENABLED == 0 && sensorF == 0) {
+                if (outerReady == 1) {
+                  gapDirection = outerDirection;
+                  gapDirectionAt = outerSeenAt;
+                } else if (gapActive == 0 && turnActive == 1 && turnDirection != 0) {
+                  gapDirection = turnDirection;
+                  gapDirectionAt = turnNow;
+                } else if (gapActive == 0 && turnDirection != 0 && turnAge <= TURN_MEMORY_MS) {
+                  gapDirection = turnDirection;
+                  gapDirectionAt = turnSeenAt;
+                } else {
+                  if (gapActive == 0) {
+                    gapDirection = 0;
+                  }
+                }
+                gapDirectionAge = turnNow - gapDirectionAt;
                 turnActive = 0;
                 turnDirection = 0;
                 outerProbeActive = 0;
@@ -376,10 +449,22 @@ void sharp_turn() {
                 gapAt = turnNow;
                 gapConfirm = 0;
                 whiteCount = 0;
-                digitalWrite(7,LOW);
-                analogWrite(5,45);
-                digitalWrite(4,HIGH);
-                analogWrite(6,45);
+                if (gapDirection == -1 && gapDirectionAge <= GAP_DIRECTION_MS) {
+                  digitalWrite(7,LOW);
+                  analogWrite(5,15);
+                  digitalWrite(4,HIGH);
+                  analogWrite(6,GAP_PWM);
+                } else if (gapDirection == 1 && gapDirectionAge <= GAP_DIRECTION_MS) {
+                  digitalWrite(7,LOW);
+                  analogWrite(5,GAP_PWM);
+                  digitalWrite(4,HIGH);
+                  analogWrite(6,15);
+                } else {
+                  digitalWrite(7,LOW);
+                  analogWrite(5,GAP_PWM);
+                  digitalWrite(4,HIGH);
+                  analogWrite(6,GAP_PWM);
+                }
               } else {
                 turnFault = 1;
                 turnActive = 0;
@@ -423,15 +508,45 @@ void sharp_turn() {
 }
 
 /**
- * Short gap PWM45 with fixed120ms deadline. Side-line return starts
- * differential capture20/45 or30/45 immediately. Continuous narrow
- * line15ms finishes; invalid observations reset confirmation,
- * not the event deadline. Wide line returns to marker handling.
+ * Gap base45. Qualified retained right direction uses45/15,
+ * left15/45, for at most120ms without fresh evidence; renewal does
+ * not refresh direction age. Unknown/expired direction uses45/45.
+ * Normal120ms deadline remains; LOSS_STOP_ENABLED0 uses forward
+ * fallback instead of F0 fault. Side-line return starts differential
+ * capture20/45 or30/45 immediately. Continuous narrow line15ms
+ * finishes; invalid observations reset confirmation, not
+ * the event deadline. Wide line returns to marker handling.
  */
 void cross_gap() {
   gapElapsed = turnNow - gapAt;
+  if (outerReady == 1) {
+    gapDirection = outerDirection;
+    gapDirectionAt = outerSeenAt;
+  } else if (sensorF == 2 || sensorF == 6) {
+    gapDirection = 1;
+    gapDirectionAt = turnNow;
+  } else if (sensorF == 8 || sensorF == 12) {
+    gapDirection = -1;
+    gapDirectionAt = turnNow;
+  }
+  gapDirectionAge = turnNow - gapDirectionAt;
   if (gapElapsed >= GAP_TIMEOUT_MS) {
     if (LOSS_STOP_ENABLED == 0 && sensorF == 0) {
+      if (outerReady == 1) {
+        gapDirection = outerDirection;
+        gapDirectionAt = outerSeenAt;
+      } else if (gapActive == 0 && turnActive == 1 && turnDirection != 0) {
+        gapDirection = turnDirection;
+        gapDirectionAt = turnNow;
+      } else if (gapActive == 0 && turnDirection != 0 && turnAge <= TURN_MEMORY_MS) {
+        gapDirection = turnDirection;
+        gapDirectionAt = turnSeenAt;
+      } else {
+        if (gapActive == 0) {
+          gapDirection = 0;
+        }
+      }
+      gapDirectionAge = turnNow - gapDirectionAt;
       turnActive = 0;
       turnDirection = 0;
       outerProbeActive = 0;
@@ -439,10 +554,22 @@ void cross_gap() {
       gapAt = turnNow;
       gapConfirm = 0;
       whiteCount = 0;
-      digitalWrite(7,LOW);
-      analogWrite(5,45);
-      digitalWrite(4,HIGH);
-      analogWrite(6,45);
+      if (gapDirection == -1 && gapDirectionAge <= GAP_DIRECTION_MS) {
+        digitalWrite(7,LOW);
+        analogWrite(5,15);
+        digitalWrite(4,HIGH);
+        analogWrite(6,GAP_PWM);
+      } else if (gapDirection == 1 && gapDirectionAge <= GAP_DIRECTION_MS) {
+        digitalWrite(7,LOW);
+        analogWrite(5,GAP_PWM);
+        digitalWrite(4,HIGH);
+        analogWrite(6,15);
+      } else {
+        digitalWrite(7,LOW);
+        analogWrite(5,GAP_PWM);
+        digitalWrite(4,HIGH);
+        analogWrite(6,GAP_PWM);
+      }
     } else {
       turnFault = 1;
       gapActive = 0;
@@ -483,10 +610,29 @@ void cross_gap() {
         digitalWrite(4,HIGH);
         analogWrite(6,30);
       } else {
-        digitalWrite(7,LOW);
-        analogWrite(5,GAP_PWM);
-        digitalWrite(4,HIGH);
-        analogWrite(6,GAP_PWM);
+        if (sensorF == 0) {
+          if (gapDirection == -1 && gapDirectionAge <= GAP_DIRECTION_MS) {
+            digitalWrite(7,LOW);
+            analogWrite(5,15);
+            digitalWrite(4,HIGH);
+            analogWrite(6,GAP_PWM);
+          } else if (gapDirection == 1 && gapDirectionAge <= GAP_DIRECTION_MS) {
+            digitalWrite(7,LOW);
+            analogWrite(5,GAP_PWM);
+            digitalWrite(4,HIGH);
+            analogWrite(6,15);
+          } else {
+            digitalWrite(7,LOW);
+            analogWrite(5,GAP_PWM);
+            digitalWrite(4,HIGH);
+            analogWrite(6,GAP_PWM);
+          }
+        } else {
+          digitalWrite(7,LOW);
+          analogWrite(5,GAP_PWM);
+          digitalWrite(4,HIGH);
+          analogWrite(6,GAP_PWM);
+        }
       }
     } else {
       if (sensorF == 8) {
@@ -510,10 +656,29 @@ void cross_gap() {
         digitalWrite(4,HIGH);
         analogWrite(6,30);
       } else {
-        digitalWrite(7,LOW);
-        analogWrite(5,GAP_PWM);
-        digitalWrite(4,HIGH);
-        analogWrite(6,GAP_PWM);
+        if (sensorF == 0) {
+          if (gapDirection == -1 && gapDirectionAge <= GAP_DIRECTION_MS) {
+            digitalWrite(7,LOW);
+            analogWrite(5,15);
+            digitalWrite(4,HIGH);
+            analogWrite(6,GAP_PWM);
+          } else if (gapDirection == 1 && gapDirectionAge <= GAP_DIRECTION_MS) {
+            digitalWrite(7,LOW);
+            analogWrite(5,GAP_PWM);
+            digitalWrite(4,HIGH);
+            analogWrite(6,15);
+          } else {
+            digitalWrite(7,LOW);
+            analogWrite(5,GAP_PWM);
+            digitalWrite(4,HIGH);
+            analogWrite(6,GAP_PWM);
+          }
+        } else {
+          digitalWrite(7,LOW);
+          analogWrite(5,GAP_PWM);
+          digitalWrite(4,HIGH);
+          analogWrite(6,GAP_PWM);
+        }
       }
     }
   }
@@ -668,6 +833,10 @@ void setup()
   turnCandidateAt = 0;
   turnCandidateElapsed = 0;
   GAP_PWM = 45;
+  GAP_DIRECTION_MS = 120;
+  gapDirection = 0;
+  gapDirectionAt = 0;
+  gapDirectionAge = 0;
   GAP_TIMEOUT_MS = 120;
   gapActive = 0;
   gapAt = 0;
@@ -1224,6 +1393,21 @@ void loop()
           outerProbeElapsed = turnNow - outerProbeAt;
           if (outerProbeElapsed >= OUTER_PROBE_TIMEOUT_MS) {
             if (LOSS_STOP_ENABLED == 0 && sensorF == 0) {
+              if (outerReady == 1) {
+                gapDirection = outerDirection;
+                gapDirectionAt = outerSeenAt;
+              } else if (gapActive == 0 && turnActive == 1 && turnDirection != 0) {
+                gapDirection = turnDirection;
+                gapDirectionAt = turnNow;
+              } else if (gapActive == 0 && turnDirection != 0 && turnAge <= TURN_MEMORY_MS) {
+                gapDirection = turnDirection;
+                gapDirectionAt = turnSeenAt;
+              } else {
+                if (gapActive == 0) {
+                  gapDirection = 0;
+                }
+              }
+              gapDirectionAge = turnNow - gapDirectionAt;
               turnActive = 0;
               turnDirection = 0;
               outerProbeActive = 0;
@@ -1231,16 +1415,43 @@ void loop()
               gapAt = turnNow;
               gapConfirm = 0;
               whiteCount = 0;
-              digitalWrite(7,LOW);
-              analogWrite(5,45);
-              digitalWrite(4,HIGH);
-              analogWrite(6,45);
+              if (gapDirection == -1 && gapDirectionAge <= GAP_DIRECTION_MS) {
+                digitalWrite(7,LOW);
+                analogWrite(5,15);
+                digitalWrite(4,HIGH);
+                analogWrite(6,GAP_PWM);
+              } else if (gapDirection == 1 && gapDirectionAge <= GAP_DIRECTION_MS) {
+                digitalWrite(7,LOW);
+                analogWrite(5,GAP_PWM);
+                digitalWrite(4,HIGH);
+                analogWrite(6,15);
+              } else {
+                digitalWrite(7,LOW);
+                analogWrite(5,GAP_PWM);
+                digitalWrite(4,HIGH);
+                analogWrite(6,GAP_PWM);
+              }
             } else {
               turnFault = 1;
             }
           }
         } else if (outerProbeActive == 1) {
           if (LOSS_STOP_ENABLED == 0 && sensorF == 0) {
+            if (outerReady == 1) {
+              gapDirection = outerDirection;
+              gapDirectionAt = outerSeenAt;
+            } else if (gapActive == 0 && turnActive == 1 && turnDirection != 0) {
+              gapDirection = turnDirection;
+              gapDirectionAt = turnNow;
+            } else if (gapActive == 0 && turnDirection != 0 && turnAge <= TURN_MEMORY_MS) {
+              gapDirection = turnDirection;
+              gapDirectionAt = turnSeenAt;
+            } else {
+              if (gapActive == 0) {
+                gapDirection = 0;
+              }
+            }
+            gapDirectionAge = turnNow - gapDirectionAt;
             turnActive = 0;
             turnDirection = 0;
             outerProbeActive = 0;
@@ -1248,10 +1459,22 @@ void loop()
             gapAt = turnNow;
             gapConfirm = 0;
             whiteCount = 0;
-            digitalWrite(7,LOW);
-            analogWrite(5,45);
-            digitalWrite(4,HIGH);
-            analogWrite(6,45);
+            if (gapDirection == -1 && gapDirectionAge <= GAP_DIRECTION_MS) {
+              digitalWrite(7,LOW);
+              analogWrite(5,15);
+              digitalWrite(4,HIGH);
+              analogWrite(6,GAP_PWM);
+            } else if (gapDirection == 1 && gapDirectionAge <= GAP_DIRECTION_MS) {
+              digitalWrite(7,LOW);
+              analogWrite(5,GAP_PWM);
+              digitalWrite(4,HIGH);
+              analogWrite(6,15);
+            } else {
+              digitalWrite(7,LOW);
+              analogWrite(5,GAP_PWM);
+              digitalWrite(4,HIGH);
+              analogWrite(6,GAP_PWM);
+            }
           } else {
             turnFault = 1;
           }
@@ -1269,6 +1492,8 @@ void loop()
         } else {
           outerProbeActive = 0;
           gapActive = 1;
+          gapDirection = 0;
+          gapDirectionAt = turnNow;
           gapAt = turnNow;
           gapConfirm = 0;
         }

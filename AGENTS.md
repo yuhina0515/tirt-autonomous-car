@@ -2,6 +2,8 @@
 
 ## Active baseline after user-directed rollback (2026-10-25)
 
+- Latest loss fallback retains qualified gapDirection: right45/15, left15/45, unknown/expired45/45. GAP_DIRECTION_MS120; repeated gap renewal never refreshes direction time. Fresh outer evidence uses outerSeenAt, actual side returns update direction. LOSS_STOP_ENABLED0 retained. Read docs/DIRECTIONAL_LOSS_RECOVERY_2026-10-25.zh-TW.md; overrides unconditional45/45 fallback. No hardware acceptance.
+
 - User temporarily disables F0 loss-triggered fault latching: LOSS_STOP_ENABLED=0. Turn/capture/gap/probe failure while F0 falls back to forward45/45 gap mode, clears reverse/old direction; persistent F0 renews gap. Restore1 for prior behavior. Other faults/lift/finish/180s limit remain; initial probe zero-output wait remains. Read docs/LOSS_STOP_DISABLED_2026-10-25.zh-TW.md.
 
 - Latest lift sequence: F14 continuous30ms only arms marker. First non-F14 must be F4 with no outer candidate/ready to count crossing and stop immediately that loop. Side/loss/split or active turn/gap cancels candidate; later F4 cannot consume it. Stable narrow100ms re-arms marker latch. Wait23350ms/exit45 unchanged. Read docs/LIFT_CROSS_EXIT_2026-10-25.zh-TW.md; overrides stop-on-F14 rules. No geometry/unique-marker/hardware acceptance claim.

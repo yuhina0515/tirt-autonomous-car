@@ -116,6 +116,10 @@ def add_sharp_turns(root, main, decision):
         'turnCandidateAt': ('unsigned long', 0),
         'turnCandidateElapsed': ('unsigned long', 0),
         'GAP_PWM': ('int', 45),
+        'GAP_DIRECTION_MS': ('unsigned long', 120),
+        'gapDirection': ('int', 0),
+        'gapDirectionAt': ('unsigned long', 0),
+        'gapDirectionAge': ('unsigned long', 0),
         'GAP_TIMEOUT_MS': ('unsigned long', 120),
         'gapActive': ('int', 0),
         'gapAt': ('unsigned long', 0),
@@ -231,11 +235,25 @@ def add_sharp_turns(root, main, decision):
             both(either(eq('turnCaptureStarted', 1), eq('turnDirection', -1)), eq('sensorF', 8)))))
     done = [setv('turnActive', 0), setv('turnDirection', 0),
             setv('turnConfirm', 0), setv('whiteCount', 0)] + capture_drive
-    # Temporary user override: unresolved F0 falls back to PWM45, not latched stop.
-    loss_fallback = [setv('turnActive', 0), setv('turnDirection', 0),
-                     setv('outerProbeActive', 0), setv('gapActive', 1),
-                     setv('gapAt', 'turnNow'), setv('gapConfirm', 0),
-                     setv('whiteCount', 0)] + capture_wheels(45, 45)
+    # Preserve a qualified turn when falling back; never restart reverse indefinitely.
+    directional_gap_drive = [cases([
+        (both(eq('gapDirection', -1), le('gapDirectionAge', 'GAP_DIRECTION_MS')),
+         capture_wheels(15, 'GAP_PWM')),
+        (both(eq('gapDirection', 1), le('gapDirectionAge', 'GAP_DIRECTION_MS')),
+         capture_wheels('GAP_PWM', 15))], capture_wheels('GAP_PWM', 'GAP_PWM'))]
+    loss_fallback = [
+        cases([(eq('outerReady', 1), [setv('gapDirection', 'outerDirection'),
+                                    setv('gapDirectionAt', 'outerSeenAt')]),
+               (both(eq('gapActive', 0), both(eq('turnActive', 1), ne('turnDirection', 0))),
+                [setv('gapDirection', 'turnDirection'), setv('gapDirectionAt', 'turnNow')]),
+               (both(eq('gapActive', 0), both(ne('turnDirection', 0), le('turnAge', 'TURN_MEMORY_MS'))),
+                [setv('gapDirection', 'turnDirection'), setv('gapDirectionAt', 'turnSeenAt')])],
+              [cond(eq('gapActive', 0), [setv('gapDirection', 0)])]),
+        setv('gapDirectionAge', sub('turnNow', 'gapDirectionAt')),
+        setv('turnActive', 0), setv('turnDirection', 0),
+        setv('outerProbeActive', 0), setv('gapActive', 1),
+        setv('gapAt', 'turnNow'), setv('gapConfirm', 0),
+        setv('whiteCount', 0)] + directional_gap_drive
     def loss_failure(normal):
         return [cond(both(eq('LOSS_STOP_ENABLED', 0), eq('sensorF', 0)),
                      loss_fallback, normal)]
@@ -288,8 +306,8 @@ def add_sharp_turns(root, main, decision):
     root.append(function)
 
     # A short gap has its own fixed deadline and never inherits a pivot command.
-    gap_drive = [('digitalwrite', '7', 0), ('pwm', '5', 'GAP_PWM'),
-                 ('digitalwrite', '4', 1), ('pwm', '6', 'GAP_PWM')]
+    gap_drive = [cond(eq('sensorF', 0), directional_gap_drive,
+                      capture_wheels('GAP_PWM', 'GAP_PWM'))]
     def gap_wheels(left_pwm, right_pwm):
         return [('digitalwrite', '7', 0), ('pwm', '5', left_pwm),
                 ('digitalwrite', '4', 1), ('pwm', '6', right_pwm)]
@@ -299,6 +317,11 @@ def add_sharp_turns(root, main, decision):
         (eq('sensorF', 2), gap_wheels('GAP_PWM', 20)),
         (eq('sensorF', 6), gap_wheels('GAP_PWM', 30))], gap_drive)]
     gap = [setv('gapElapsed', sub('turnNow', 'gapAt')),
+           cases([(eq('outerReady', 1), [setv('gapDirection', 'outerDirection'),
+                                       setv('gapDirectionAt', 'outerSeenAt')]),
+                  (anyof('sensorF', [2, 6]), [setv('gapDirection', 1), setv('gapDirectionAt', 'turnNow')]),
+                  (anyof('sensorF', [8, 12]), [setv('gapDirection', -1), setv('gapDirectionAt', 'turnNow')])]),
+           setv('gapDirectionAge', sub('turnNow', 'gapDirectionAt')),
            cond(ge('gapElapsed', 'GAP_TIMEOUT_MS'),
                 loss_failure([setv('turnFault', 1), setv('gapActive', 0), call('stop')]), [
                cond(anyof('sensorF', [2, 4, 6, 8, 12]),
@@ -316,7 +339,7 @@ def add_sharp_turns(root, main, decision):
     exporter.field(function, 'NAME', 'cross_gap')
     exporter.field(function, 'TYPE', 'void')
     exporter.statement(function, 'STACK', gap)
-    note(function, 'Short gap PWM45 with fixed120ms deadline. Side-line return starts differential capture20/45 or30/45 immediately. Continuous narrow line15ms finishes; invalid observations reset confirmation, not the event deadline. Wide line returns to marker handling.')
+    note(function, 'Gap base45. Qualified retained right direction uses45/15, left15/45, for at most120ms without fresh evidence; renewal does not refresh direction age. Unknown/expired direction uses45/45. Normal120ms deadline remains; LOSS_STOP_ENABLED0 uses forward fallback instead of F0 fault. Side-line return starts differential capture20/45 or30/45 immediately. Continuous narrow line15ms finishes; invalid observations reset confirmation, not the event deadline. Wide line returns to marker handling.')
     root.append(function)
 
     wide_drive = [('digitalwrite', '7', 0), ('pwm', '5', 'WIDE_PWM'),
@@ -561,6 +584,7 @@ def add_sharp_turns(root, main, decision):
                       (both(ne('turnDirection', 0), le('turnAge', 'TURN_MEMORY_MS')),
                        begin_turn('turnDirection', 0))], [
                           setv('outerProbeActive', 0), setv('gapActive', 1),
+                          setv('gapDirection', 0), setv('gapDirectionAt', 'turnNow'),
                           setv('gapAt', 'turnNow'), setv('gapConfirm', 0)])])])]
     head = exporter.chain(before)
     last = head
