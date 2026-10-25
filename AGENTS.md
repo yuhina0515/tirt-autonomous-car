@@ -2,6 +2,8 @@
 
 ## Active baseline after user-directed rollback (2026-10-25)
 
+- Latest override: brief F6/F12 straight trim retains the stage, outer at stage PWM and inner minus30, shared80ms event cleared by30ms centered. Freeze stage accumulation during trim/recovery. Strong side/loss/outer hints reset. Curve120/gain120/minimum10 (actual10/60), sharp150/-114. Stage1 stays100, ceiling230. Read docs/STRAIGHT_TRIM_2026-10-25.zh-TW.md; earlier speed/reset notes below are historical. No extra tests or upload.
+
 - User explicitly authorized A5/A1 sharp-turn assistance after repeated section14 wrong-left turns. Read docs/OUTER_TURN_ASSIST.zh-TW.md. General F/PD remains center-only, but raw outers select corner direction after20ms confirmation, inhibit straight acceleration, and may correct center-sourced search once within150ms. Center-only search without outer support stops at150ms. This overrides earlier "outer logged-only" rules for this assistance; thresholds are provisional and unmeasured.
 - Latest user change uses straight stages100/150/190/230 after continuous centered F4 for0/200/500/900ms; any noncentered/other state resets them. Read docs/STRAIGHT_STAGES.zh-TW.md; it replaces the prior +5 per20ms ramp. Curve100/inner8-50 and other states remain.
 - Latest first-corner feedback on c9e7c9d led to curve base100/gain100 (inner8/50), straight start100 then centered200ms and +5 PWM per20ms up to230. Sharp search125/-95 remains; forward capture base100. Read docs/FIRST_CORNER_2026-10-25.zh-TW.md; it overrides prior curve125 and ramp80ms/+10 per10ms notes. No field acceptance.

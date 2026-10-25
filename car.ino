@@ -62,9 +62,22 @@ unsigned long  STRAIGHT_STAGE3_MS;
 unsigned long  STRAIGHT_STAGE4_MS;
 int  STRAIGHT_STAGE2_PWM;
 int  STRAIGHT_STAGE3_PWM;
+int  STRAIGHT_STAGE1_PWM;
+int  STRAIGHT_TRIM_PWM;
+unsigned long  STRAIGHT_TRIM_MAX_MS;
+unsigned long  STRAIGHT_TRIM_CENTER_MS;
 int  straightPending;
-unsigned long  straightAt;
 unsigned long  straightElapsed;
+unsigned long  straightLastAt;
+unsigned long  straightDelta;
+int  straightTrimPending;
+unsigned long  straightTrimAt;
+unsigned long  straightTrimElapsed;
+int  straightTrimCenterPending;
+unsigned long  straightTrimCenterAt;
+unsigned long  straightTrimCenterElapsed;
+int  straightTrimAllowed;
+int  straightTrimInner;
 int  straightPwm;
 unsigned long  MIN_LAP_MS;
 unsigned long  MAX_LAP_MS;
@@ -156,8 +169,8 @@ void stop2() {
  * A1=right/A5=left outer assistance. Center-only search gets
  * at most150ms to capture line or receive confirmed outer
  * support; otherwise stop. Outer evidence may correct it once
- * without resetting the800ms total deadline. Outer forward125/inner
- * reverse95; continuous15ms capture finishes at base100.
+ * without resetting the800ms total deadline. Outer forward150/inner
+ * reverse114; continuous15ms capture finishes at base120.
  */
 void sharp_turn() {
   turnElapsed = turnNow - turnAt;
@@ -402,9 +415,9 @@ void setup()
   pinMode(5, OUTPUT);
   pinMode(4, OUTPUT);
   pinMode(6, OUTPUT);
-    SPEED_CURVE = 100;
-  TURN_OUTER_PWM = 125;
-  TURN_INNER_PWM = 95;
+    SPEED_CURVE = 120;
+  TURN_OUTER_PWM = 150;
+  TURN_INNER_PWM = 114;
   TURN_TIMEOUT_MS = 800;
   TURN_MIN_MS = 30;
   TURN_MEMORY_MS = 250;
@@ -466,9 +479,22 @@ void setup()
   STRAIGHT_STAGE4_MS = 900;
   STRAIGHT_STAGE2_PWM = 150;
   STRAIGHT_STAGE3_PWM = 190;
+  STRAIGHT_STAGE1_PWM = 100;
+  STRAIGHT_TRIM_PWM = 30;
+  STRAIGHT_TRIM_MAX_MS = 80;
+  STRAIGHT_TRIM_CENTER_MS = 30;
   straightPending = 0;
-  straightAt = 0;
   straightElapsed = 0;
+  straightLastAt = 0;
+  straightDelta = 0;
+  straightTrimPending = 0;
+  straightTrimAt = 0;
+  straightTrimElapsed = 0;
+  straightTrimCenterPending = 0;
+  straightTrimCenterAt = 0;
+  straightTrimCenterElapsed = 0;
+  straightTrimAllowed = 0;
+  straightTrimInner = 70;
   straightPwm = 100;
   MIN_LAP_MS = 15000;
   MAX_LAP_MS = 180000;
@@ -518,7 +544,7 @@ void setup()
   sensorA3 = 0;
   sensorA4 = 0;
   sensorA5 = 0;
-  SPEED_TURN_INNER_MEDIUM = 8;
+  SPEED_TURN_INNER_MEDIUM = 10;
   sensorF = 0;
   WHITE_STOP_COUNT = 40;
   whiteCount = 0;
@@ -526,7 +552,7 @@ void setup()
   countOn = 0;
   absW = 0;
   innerSpeed = 0;
-  TURN_KP = 100;
+  TURN_KP = 120;
   rawA1 = 0;
   rawA2 = 0;
   rawA3 = 0;
@@ -574,8 +600,9 @@ void loop()
     if (sensorA4 < LINE_THRESHOLD) {
       sensorF = sensorF + 8;
     }
-    // Position weights: A4=-1, A3=0, A2=+1. Curve base100, gain100; minimum inner8.
-    // Straight stages100/150/190/230 require continuous F4 for0/200/500/900ms.
+    // Curve base120/gain120/minimum10 after20 percent increase. Straight
+    // stages100/150/190/230 retain brief F6/F12 trim without advancing
+    // during correction. Strong side or unresolved trim resets stages.
     sumW = 0;
     countOn = 0;
     if (sensorA2 < LINE_THRESHOLD) {
@@ -639,28 +666,95 @@ void loop()
     if (OUTER_TURN_ASSIST == 1 && outerDirection != 0 && outerAge <= OUTER_MEMORY_MS && (outerCandidate == 0 || outerCandidate == outerDirection)) {
       outerReady = 1;
     }
-    if (outerCandidate == 0 && outerReady == 0 && sensorF == 4 && (liftState == 0 || liftState == 3) && turnActive == 0 && gapActive == 0 && turnFault == 0 && lapDone == 0) {
-      if (straightPending == 0) {
-        straightPending = 1;
-        straightAt = turnNow;
-        straightPwm = SPEED_CURVE;
-      }
-      straightElapsed = turnNow - straightAt;
-      if (straightElapsed >= STRAIGHT_STAGE4_MS) {
-        straightPwm = SPEED_STRAIGHT;
-      } else if (straightElapsed >= STRAIGHT_STAGE3_MS) {
-        straightPwm = STRAIGHT_STAGE3_PWM;
-      } else if (straightElapsed >= STRAIGHT_STAGE2_MS) {
-        straightPwm = STRAIGHT_STAGE2_PWM;
+    straightDelta = turnNow - straightLastAt;
+    straightLastAt = turnNow;
+    straightTrimAllowed = 0;
+    if (outerCandidate == 0 && outerReady == 0 && (liftState == 0 || liftState == 3) && turnActive == 0 && gapActive == 0 && turnFault == 0 && lapDone == 0) {
+      if (sensorF == 4) {
+        if (straightPending == 0) {
+          straightPending = 1;
+          straightElapsed = 0;
+          straightDelta = 0;
+          straightPwm = STRAIGHT_STAGE1_PWM;
+        }
+        if (straightTrimPending == 1) {
+          if (straightTrimCenterPending == 0) {
+            straightTrimCenterPending = 1;
+            straightTrimCenterAt = turnNow;
+          }
+          straightTrimCenterElapsed = turnNow - straightTrimCenterAt;
+          straightTrimElapsed = turnNow - straightTrimAt;
+          if (straightTrimCenterElapsed >= STRAIGHT_TRIM_CENTER_MS) {
+            straightTrimPending = 0;
+            straightTrimCenterPending = 0;
+          } else if (straightTrimElapsed >= STRAIGHT_TRIM_MAX_MS) {
+            straightPending = 0;
+            straightElapsed = 0;
+            straightPwm = STRAIGHT_STAGE1_PWM;
+            straightTrimPending = 0;
+            straightTrimCenterPending = 0;
+            straightTrimAllowed = 0;
+          }
+        } else {
+          straightElapsed = straightElapsed + straightDelta;
+          if (straightElapsed >= STRAIGHT_STAGE4_MS) {
+            straightPwm = SPEED_STRAIGHT;
+          } else if (straightElapsed >= STRAIGHT_STAGE3_MS) {
+            straightPwm = STRAIGHT_STAGE3_PWM;
+          } else if (straightElapsed >= STRAIGHT_STAGE2_MS) {
+            straightPwm = STRAIGHT_STAGE2_PWM;
+          } else {
+            straightPwm = STRAIGHT_STAGE1_PWM;
+          }
+          if (straightPwm >= SPEED_STRAIGHT) {
+            straightPwm = SPEED_STRAIGHT;
+          }
+        }
+      } else if (sensorF == 6 || sensorF == 12) {
+        if (straightPending == 1) {
+          if (straightTrimPending == 0) {
+            straightTrimPending = 1;
+            straightTrimAt = turnNow;
+          }
+          straightTrimCenterPending = 0;
+          straightTrimElapsed = turnNow - straightTrimAt;
+          if (straightTrimElapsed < STRAIGHT_TRIM_MAX_MS) {
+            straightTrimAllowed = 1;
+          } else {
+            straightPending = 0;
+            straightElapsed = 0;
+            straightPwm = STRAIGHT_STAGE1_PWM;
+            straightTrimPending = 0;
+            straightTrimCenterPending = 0;
+            straightTrimAllowed = 0;
+          }
+        } else {
+          straightPending = 0;
+          straightElapsed = 0;
+          straightPwm = STRAIGHT_STAGE1_PWM;
+          straightTrimPending = 0;
+          straightTrimCenterPending = 0;
+          straightTrimAllowed = 0;
+        }
       } else {
-        straightPwm = SPEED_CURVE;
-      }
-      if (straightPwm >= SPEED_STRAIGHT) {
-        straightPwm = SPEED_STRAIGHT;
+        straightPending = 0;
+        straightElapsed = 0;
+        straightPwm = STRAIGHT_STAGE1_PWM;
+        straightTrimPending = 0;
+        straightTrimCenterPending = 0;
+        straightTrimAllowed = 0;
       }
     } else {
       straightPending = 0;
-      straightPwm = SPEED_CURVE;
+      straightElapsed = 0;
+      straightPwm = STRAIGHT_STAGE1_PWM;
+      straightTrimPending = 0;
+      straightTrimCenterPending = 0;
+      straightTrimAllowed = 0;
+    }
+    straightTrimInner = straightPwm - STRAIGHT_TRIM_PWM;
+    if (straightTrimInner < SPEED_TURN_INNER_MEDIUM) {
+      straightTrimInner = SPEED_TURN_INNER_MEDIUM;
     }
     if (LIFT_ENABLED == 1) {
       if (LIFT_CROSSING_INDEX <= 0) {
@@ -841,21 +935,44 @@ void loop()
       digitalWrite(4,HIGH);
       analogWrite(6,WIDE_PWM);
     } else {
-      // Explicit F-based following only. Only stable F4 requests staged
-      // straight PWM100/150/190/230 at0/200/500/900ms. Noncentered
-      // state resets stages. Split F10 or unexpected patterns
-      // latch stop; no default-forward or strict greater-than ADC
-      // gap at threshold70. F0/F14 use higher-priority states.
-      if (sensorF == 8 || sensorF == 12) {
+      // Straight stages100/150/190/230 accumulate centered time only.
+      // Brief F6/F12 trim keeps the current stage, outer wheel at stage PWM and
+      // inner minus30, for a shared80ms event. Centered30ms clears that event.
+      // Strong side/loss/outer warning resets stages. F10/unexpected patterns stop.
+      if (sensorF == 8) {
         digitalWrite(7,LOW);
         analogWrite(5,innerSpeed);
         digitalWrite(4,HIGH);
         analogWrite(6,SPEED_CURVE);
-      } else if (sensorF == 2 || sensorF == 6) {
+      } else if (sensorF == 2) {
         digitalWrite(7,LOW);
         analogWrite(5,SPEED_CURVE);
         digitalWrite(4,HIGH);
         analogWrite(6,innerSpeed);
+      } else if (sensorF == 12) {
+        if (straightTrimAllowed == 1) {
+          digitalWrite(7,LOW);
+          analogWrite(5,straightTrimInner);
+          digitalWrite(4,HIGH);
+          analogWrite(6,straightPwm);
+        } else {
+          digitalWrite(7,LOW);
+          analogWrite(5,innerSpeed);
+          digitalWrite(4,HIGH);
+          analogWrite(6,SPEED_CURVE);
+        }
+      } else if (sensorF == 6) {
+        if (straightTrimAllowed == 1) {
+          digitalWrite(7,LOW);
+          analogWrite(5,straightPwm);
+          digitalWrite(4,HIGH);
+          analogWrite(6,straightTrimInner);
+        } else {
+          digitalWrite(7,LOW);
+          analogWrite(5,SPEED_CURVE);
+          digitalWrite(4,HIGH);
+          analogWrite(6,innerSpeed);
+        }
       } else if (sensorF == 4) {
         digitalWrite(7,LOW);
         analogWrite(5,straightPwm);
