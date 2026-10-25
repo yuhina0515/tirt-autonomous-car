@@ -33,6 +33,8 @@ long departurePwm;
 unsigned long departureConfirmMs;
 unsigned long minLapMs;
 unsigned long finishConfirmMs;
+long widePwm;
+unsigned long wideHintMs;
 unsigned long nowMs;
 unsigned long lastTickMs;
 unsigned long dtMs;
@@ -48,6 +50,7 @@ unsigned long timingFaults;
 unsigned long recoveryBudgetMs;
 unsigned long lineAtMs;
 unsigned long wideAtMs;
+unsigned long hintAtMs;
 long controlState;
 long reason;
 long maskF;
@@ -88,6 +91,9 @@ long recoveryKind;
 long departed;
 long linePending;
 long widePending;
+long hintValid;
+long hintPosition;
+long wideTurn;
 long line0;
 long background0;
 long raw0;
@@ -315,6 +321,9 @@ departed = 0L;
 linePending = 0L;
 widePending = 0L;
 recoveryKind = 0L;
+hintValid = 0L;
+hintPosition = 0L;
+wideTurn = 0L;
 candidatePending = 0L;
 hasPosition = 0L;
 historyReady = 0L;
@@ -421,6 +430,11 @@ rightTarget = (targetBase - correction);
 lastCorrection = correction;
 lastPosition = candidatePos;
 hasPosition = 1L;
+if ((magnitude >= searchEdge)) {
+hintValid = 1L;
+hintPosition = candidatePos;
+hintAtMs = nowMs;
+}
 controlState = 2L;
 reason = 0L;
 candidatePending = 0L;
@@ -445,6 +459,7 @@ uncertainAtMs = nowMs;
 derivative = 0L;
 recoveryKind = 0L;
 recoveryBudgetMs = uncertainStopMs;
+wideTurn = 0L;
 if ((activeCount == 0L)) {
 recoveryKind = 1L;
 recoveryBudgetMs = gapTimeoutMs;
@@ -460,6 +475,15 @@ recoveryBudgetMs = searchTimeoutMs;
 else if ((activeCount == 3L)) {
 recoveryKind = 4L;
 recoveryBudgetMs = wideTimeoutMs;
+elapsedMs = (nowMs - hintAtMs);
+if ((((hintValid == 1L) && (wideHintMs > 0L)) && (elapsedMs <= wideHintMs))) {
+if ((hintPosition < 0L)) {
+wideTurn = -1L;
+}
+else {
+wideTurn = 1L;
+}
+}
 }
 }
 
@@ -481,10 +505,27 @@ leftTarget = uncertainPwm;
 rightTarget = uncertainPwm;
 reason = 15L;
 }
-}
-else if (((activeCount == 3L) && (recoveryKind == 4L))) {
+else if ((recoveryKind == 4L)) {
+if ((wideHintMs > 0L)) {
 leftTarget = uncertainPwm;
 rightTarget = uncertainPwm;
+reason = 15L;
+if ((wideTurn == -1L)) {
+leftTarget = 0L;
+rightTarget = searchPwm;
+reason = 14L;
+}
+else if ((wideTurn == 1L)) {
+rightTarget = 0L;
+leftTarget = searchPwm;
+reason = 14L;
+}
+}
+}
+}
+else if (((activeCount == 3L) && (recoveryKind == 4L))) {
+leftTarget = widePwm;
+rightTarget = widePwm;
 reason = 16L;
 }
 }
@@ -707,6 +748,8 @@ departurePwm = 45L;
 departureConfirmMs = 300L;
 minLapMs = 15000L;
 finishConfirmMs = 250L;
+widePwm = 45L;
+wideHintMs = 0L;
 nowMs = 0L;
 lastTickMs = 0L;
 dtMs = 0L;
@@ -722,6 +765,7 @@ timingFaults = 0L;
 recoveryBudgetMs = 0L;
 lineAtMs = 0L;
 wideAtMs = 0L;
+hintAtMs = 0L;
 controlState = 0L;
 reason = 0L;
 maskF = 0L;
@@ -762,6 +806,9 @@ recoveryKind = 0L;
 departed = 0L;
 linePending = 0L;
 widePending = 0L;
+hintValid = 0L;
+hintPosition = 0L;
+wideTurn = 0L;
 line0 = 35L;
 background0 = 500L;
 raw0 = 0L;

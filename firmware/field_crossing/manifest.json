@@ -1,0 +1,30 @@
+{
+  "profile": "track",
+  "drive_armed": true,
+  "physical_acceptance": false,
+  "telemetry_header": [
+    "millis",
+    "tick",
+    "dt",
+    "rawA5",
+    "rawA4",
+    "rawA3",
+    "rawA2",
+    "rawA1",
+    "mask",
+    "state",
+    "reason",
+    "position",
+    "accepted_position",
+    "contrast",
+    "left_pwm",
+    "right_pwm",
+    "rejected",
+    "timing_faults"
+  ],
+  "config_sha256": "75b0dab898d43a01058caa749c4865e1972d9366631a1fcf19ed9e077aa80ba4",
+  "source_sha256": "261d406258b0927ed59b13f92315291c9b54b2f945ed375526d445f0a6e2961f",
+  "codegen_sha256": "e37f4e2f24e811f3b5cbc4aa59773ee2fa3b1cb78f86bb4ef50929e4450bf469",
+  "xml_sha256": "f6f3274c394f54b89d430ff0895995716c84bcec71197f711aeb9e079d6480ea",
+  "ino_sha256": "dc78f28e8661e926e32d7fad0e96ebb438cfec1c638f46ea0c4e7f8dff09fe40"
+}

@@ -52,6 +52,10 @@ def validate(c):
         raise ValueError('Lap timing must fit run limit')
     if max(c['search_pwm'],c['departure_pwm'])>c['max_pwm']:
         raise ValueError('Recovery/departure PWM exceeds cap')
+    if type(c.get('wide_pwm',c['uncertain_pwm'])) is not int or not c['min_pwm']<=c.get('wide_pwm',c['uncertain_pwm'])<=c['max_pwm']:
+        raise ValueError('Invalid wide PWM')
+    if type(c.get('wide_hint_ms',0)) is not int or not 0<=c.get('wide_hint_ms',0)<=500:
+        raise ValueError('Invalid wide hint age')
 
 def program(c,profile):
     validate(c);variables={};funcs={}
@@ -70,10 +74,11 @@ def program(c,profile):
         'gapTimeoutMs':c['gap_timeout_ms'],'wideTimeoutMs':c['wide_timeout_ms'],
         'searchEdge':c['search_edge'],'searchPwm':c['search_pwm'],'departurePwm':c['departure_pwm'],
         'departureConfirmMs':c['departure_confirm_ms'],'minLapMs':c['min_lap_ms'],
-        'finishConfirmMs':c['finish_confirm_ms']}
+        'finishConfirmMs':c['finish_confirm_ms'],'widePwm':c.get('wide_pwm',c['uncertain_pwm']),
+        'wideHintMs':c.get('wide_hint_ms',0)}
     for n,v in settings.items():var(n,v,'unsigned long' if n.endswith('Ms') else 'long')
     for n in ('nowMs','lastTickMs','dtMs','logAtMs','runAtMs','buttonAtMs','candidateAtMs','uncertainAtMs','elapsedMs','tick','rejected','timingFaults',
-              'recoveryBudgetMs','lineAtMs','wideAtMs'):
+              'recoveryBudgetMs','lineAtMs','wideAtMs','hintAtMs'):
         var(n,0,'unsigned long')
     for n in ('controlState','reason','maskF','activeCount','contrast','maxStrength','minStrength',
               'weighted','totalW','candidatePos','lastPosition','pendingPos','candidatePending',
@@ -81,7 +86,7 @@ def program(c,profile):
               'derivative','slope','tickDt','correction','lastCorrection','magnitude','targetBase','limitPwm',
               'leftTarget','rightTarget','leftPwm','rightPwm','buttonLow','buttonPrevious',
               'buttonReleased','buttonEvent','historyReady','wasTracking',
-              'recoveryKind','departed','linePending','widePending'):
+              'recoveryKind','departed','linePending','widePending','hintValid','hintPosition','wideTurn'):
         var(n,6 if n=='controlState' and capture else 0)
     for i,(a,b) in enumerate(zip(c['line_adc_A5_to_A1'],c['background_adc_A5_to_A1'])):
         for n,v in ((f'line{i}',a),(f'background{i}',b),(f'raw{i}',0),(f'norm{i}',0),
@@ -109,6 +114,7 @@ def program(c,profile):
         cond(both(both(eq('buttonLow',1),eq('buttonReleased',1)),ge('elapsedMs',25)),[setv('buttonReleased',0),setv('buttonEvent',1)])]
     funcs['start_run']=[setv('controlState',1),setv('reason',8),setv('runAtMs','nowMs'),
         setv('departed',0),setv('linePending',0),setv('widePending',0),setv('recoveryKind',0),
+        setv('hintValid',0),setv('hintPosition',0),setv('wideTurn',0),
         setv('candidatePending',0),setv('hasPosition',0),setv('historyReady',0),
         setv('lastPosition',0),setv('lastCorrection',0),setv('derivative',0),
         setv('leftPwm',0),setv('rightPwm',0)]
@@ -144,6 +150,8 @@ def program(c,profile):
         cond(lt('correction',sub(0,'limitPwm')),[setv('correction',sub(0,'limitPwm'))]),
         setv('leftTarget',add('targetBase','correction')),setv('rightTarget',sub('targetBase','correction')),
         setv('lastCorrection','correction'),setv('lastPosition','candidatePos'),setv('hasPosition',1),
+        cond(ge('magnitude','searchEdge'),[
+            setv('hintValid',1),setv('hintPosition','candidatePos'),setv('hintAtMs','nowMs')]),
         setv('controlState',2),setv('reason',0),setv('candidatePending',0)]
     funcs['steer']=steering
     funcs['hold_course']=[setv('limitPwm',sub('uncertainPwm','minPwm')),setv('correction','lastCorrection'),
@@ -151,19 +159,26 @@ def program(c,profile):
         cond(lt('correction',sub(0,'limitPwm')),[setv('correction',sub(0,'limitPwm'))]),
         setv('leftTarget',add('uncertainPwm','correction')),setv('rightTarget',sub('uncertainPwm','correction'))]
     funcs['begin_recovery']=[setv('controlState',3),setv('uncertainAtMs','nowMs'),setv('derivative',0),
-        setv('recoveryKind',0),setv('recoveryBudgetMs','uncertainStopMs'),
+        setv('recoveryKind',0),setv('recoveryBudgetMs','uncertainStopMs'),setv('wideTurn',0),
         cases([(eq('activeCount',0),[
             setv('recoveryKind',1),setv('recoveryBudgetMs','gapTimeoutMs'),
             cases([(le('lastPosition',sub(0,'searchEdge')),[setv('recoveryKind',2),setv('recoveryBudgetMs','searchTimeoutMs')]),
                    (ge('lastPosition','searchEdge'),[setv('recoveryKind',3),setv('recoveryBudgetMs','searchTimeoutMs')])])]),
-               (eq('activeCount',3),[setv('recoveryKind',4),setv('recoveryBudgetMs','wideTimeoutMs')])])]
-    funcs['recover']=[call('hold_course'),
-        cases([(eq('activeCount',0),[
-            cases([(eq('recoveryKind',2),[setv('leftTarget',0),setv('rightTarget','searchPwm'),setv('reason',14)]),
-                   (eq('recoveryKind',3),[setv('rightTarget',0),setv('leftTarget','searchPwm'),setv('reason',14)]),
-                   (eq('recoveryKind',1),[setv('leftTarget','uncertainPwm'),setv('rightTarget','uncertainPwm'),setv('reason',15)])])]),
-               (both(eq('activeCount',3),eq('recoveryKind',4)),[
-                   setv('leftTarget','uncertainPwm'),setv('rightTarget','uncertainPwm'),setv('reason',16)])])]
+               (eq('activeCount',3),[setv('recoveryKind',4),setv('recoveryBudgetMs','wideTimeoutMs'),
+                   setv('elapsedMs',sub('nowMs','hintAtMs')),
+                   cond(both(both(eq('hintValid',1),gt('wideHintMs',0)),le('elapsedMs','wideHintMs')),[
+                       cond(lt('hintPosition',0),[setv('wideTurn',-1)],[setv('wideTurn',1)])])])])]
+    left_search=[setv('leftTarget',0),setv('rightTarget','searchPwm'),setv('reason',14)]
+    right_search=[setv('rightTarget',0),setv('leftTarget','searchPwm'),setv('reason',14)]
+    centered_gap=[setv('leftTarget','uncertainPwm'),setv('rightTarget','uncertainPwm'),setv('reason',15)]
+    wide_lost=[cond(gt('wideHintMs',0),centered_gap+[
+        cases([(eq('wideTurn',-1),left_search),(eq('wideTurn',1),right_search)])])]
+    lost_recovery=[cases([(eq('recoveryKind',2),left_search),(eq('recoveryKind',3),right_search),
+                          (eq('recoveryKind',1),centered_gap),(eq('recoveryKind',4),wide_lost)])]
+    funcs['recover']=[call('hold_course'),cases([
+        (eq('activeCount',0),lost_recovery),
+        (both(eq('activeCount',3),eq('recoveryKind',4)),[
+            setv('leftTarget','widePwm'),setv('rightTarget','widePwm'),setv('reason',16)])])]
     fault=lambda reason:[setv('controlState',5),setv('reason',reason),setv('leftTarget',0),setv('rightTarget',0)]
     normal=[setv('wasTracking',eq('controlState',2)),call('check_candidate'),
         cond(eq('candidateAccepted',1),[call('steer')],[setv('rejected',add('rejected',1)),
