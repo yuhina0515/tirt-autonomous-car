@@ -17,7 +17,9 @@ class Tests(unittest.TestCase):
  def test_config_rejections(self):
   changes=[{'drive_enabled':True},{'min_pwm':100},{'uncertain_stop_ms':20},
            {'on_strength':300},{'period_ms':30},{'log_period_ms':10},
-           {'line_adc_A5_to_A1':[499]*5},{'drive_enabled':'true'}]
+           {'line_adc_A5_to_A1':[499]*5},{'drive_enabled':'true'},
+           {'lap_enabled':1},{'finish_confirm_ms':400},{'min_lap_ms':180000},
+           {'search_pwm':101},{'search_timeout_ms':20},{'departure_confirm_ms':15000}]
   for change in changes:
    c=copy.deepcopy(self.config);c.update(change)
    with self.subTest(change=change),self.assertRaises(ValueError):validate(c)
