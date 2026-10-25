@@ -52,13 +52,14 @@ def add_sharp_turns(root, main, decision):
     """Follow a departing edge into a bounded pivot until the center line returns."""
     exporter = Exporter()
     settings = {
+        'SPEED_CURVE': ('int', 100),
         'TURN_OUTER_PWM': ('int', 100),
         'TURN_INNER_PWM': ('int', 95),
         'TURN_TIMEOUT_MS': ('unsigned long', 800),
         'TURN_MIN_MS': ('unsigned long', 30),
         'TURN_MEMORY_MS': ('unsigned long', 250),
         'TURN_CENTER_CLEAR_MS': ('unsigned long', 80),
-        'TURN_DIRECTION_CONFIRM_MS': ('unsigned long', 30),
+        'TURN_DIRECTION_CONFIRM_MS': ('unsigned long', 15),
         'TURN_CONFIRM_COUNT': ('int', 3),
         'turnDirection': ('int', 0),
         'turnActive': ('int', 0),
@@ -142,31 +143,45 @@ def add_sharp_turns(root, main, decision):
             ('digitalwrite', '4', 1), ('pwm', '6', 'TURN_OUTER_PWM')]
     right = [('digitalwrite', '7', 0), ('pwm', '5', 'TURN_OUTER_PWM'),
              ('digitalwrite', '4', 0), ('pwm', '6', 'TURN_INNER_PWM')]
-    forward = [('digitalwrite', '7', 0), ('pwm', '5', 'SPEED_STRAIGHT'),
-               ('digitalwrite', '4', 1), ('pwm', '6', 'SPEED_STRAIGHT')]
+    forward = [('digitalwrite', '7', 0), ('pwm', '5', 'SPEED_CURVE'),
+               ('digitalwrite', '4', 1), ('pwm', '6', 'SPEED_CURVE')]
+    capture_drive = [cases([
+        (eq('sensorF', 12), [('digitalwrite', '7', 0), ('pwm', '5', 'innerSpeed'),
+                            ('digitalwrite', '4', 1), ('pwm', '6', 'SPEED_CURVE')]),
+        (eq('sensorF', 6), [('digitalwrite', '7', 0), ('pwm', '5', 'SPEED_CURVE'),
+                           ('digitalwrite', '4', 1), ('pwm', '6', 'innerSpeed')])], forward)]
     done = [setv('turnActive', 0), setv('turnDirection', 0),
-            setv('turnConfirm', 0), setv('whiteCount', 0)] + forward
+            setv('turnConfirm', 0), setv('whiteCount', 0)] + capture_drive
     # Deadline is fixed at entry and has priority over reacquisition.
     pivot = [setv('turnElapsed', sub('turnNow', 'turnAt')),
              cond(ge('turnElapsed', 'TURN_TIMEOUT_MS'),
                   [setv('turnFault', 1), setv('turnActive', 0), call('stop')], [
-                 cond(both(ge('turnElapsed', 'TURN_MIN_MS'), eq('sensorF', 4)),
+                 cond(both(ge('turnElapsed', 'TURN_MIN_MS'), anyof('sensorF', [4, 6, 12])),
                       [setv('turnConfirm', add('turnConfirm', 1))],
                       [setv('turnConfirm', 0)]),
                  cond(ge('turnConfirm', 'TURN_CONFIRM_COUNT'), done, [
-                     cond(eq('turnDirection', -1), left, right)])])]
+                     cond(ge('turnConfirm', 1), capture_drive,
+                          [cond(eq('turnDirection', -1), left, right)])])])]
     function = exporter.block('procedures_defnoreturn')
     function.set('x', '900')
     function.set('y', '0')
     exporter.field(function, 'NAME', 'sharp_turn')
     exporter.field(function, 'TYPE', 'void')
     exporter.statement(function, 'STACK', pivot)
-    note(function, 'Bounded left/right pivot for sharp 60/90-degree corners. End on centered line, not a measured angle. Timeout latches stop until reset; no automatic restart.')
+    note(function, 'Bounded sharp-corner pivot. After minimum30ms, F4/F6/F12 starts forward differential capture instead of continued reverse. Three consecutive captures finish the turn at curve PWM100, not straight150. Timeout latches stop; no measured angle or automatic restart.')
     root.append(function)
 
     # A short gap has its own fixed deadline and never inherits a pivot command.
     gap_drive = [('digitalwrite', '7', 0), ('pwm', '5', 'GAP_PWM'),
                  ('digitalwrite', '4', 1), ('pwm', '6', 'GAP_PWM')]
+    def gap_wheels(left_pwm, right_pwm):
+        return [('digitalwrite', '7', 0), ('pwm', '5', left_pwm),
+                ('digitalwrite', '4', 1), ('pwm', '6', right_pwm)]
+    gap_capture = [cases([
+        (eq('sensorF', 8), gap_wheels(25, 'GAP_PWM')),
+        (eq('sensorF', 12), gap_wheels(45, 'GAP_PWM')),
+        (eq('sensorF', 2), gap_wheels('GAP_PWM', 25)),
+        (eq('sensorF', 6), gap_wheels('GAP_PWM', 45))], gap_drive)]
     gap = [setv('gapElapsed', sub('turnNow', 'gapAt')),
            cond(ge('gapElapsed', 'GAP_TIMEOUT_MS'),
                 [setv('turnFault', 1), setv('gapActive', 0), call('stop')], [
@@ -174,14 +189,14 @@ def add_sharp_turns(root, main, decision):
                     [setv('gapConfirm', add('gapConfirm', 1))], [setv('gapConfirm', 0)]),
                cond(either(ge('gapConfirm', 3), eq('sensorF', 14)),
                     [setv('gapActive', 0), setv('turnDirection', 0),
-                     setv('whiteCount', 0)] + gap_drive, gap_drive)])]
+                     setv('whiteCount', 0)] + gap_capture, gap_capture)])]
     function = exporter.block('procedures_defnoreturn')
     function.set('x', '900')
     function.set('y', '650')
     exporter.field(function, 'NAME', 'cross_gap')
     exporter.field(function, 'TYPE', 'void')
     exporter.statement(function, 'STACK', gap)
-    note(function, 'Straight short-gap crossing, PWM70, fixed 250ms total limit. No pivot during a gap. Reacquire narrow line for three samples; wide line returns to marker handling.')
+    note(function, 'Short gap PWM70 with fixed250ms deadline. On side-line return, forward differential capture starts immediately (25/70 or45/70 mirrored). No reverse in gap state. Three narrow samples finish; wide line returns to marker handling.')
     root.append(function)
 
     wide_drive = [('digitalwrite', '7', 0), ('pwm', '5', 'WIDE_PWM'),
@@ -357,8 +372,19 @@ def rewrite():
         and b.find("b:field[@name='VAR']", N).text in unused
     }
     prune_chain(main, 'MySetup', setup_remove)
+    # Straight speed is independent of the curve base and sharp-turn outputs.
+    for block in main.findall(".//b:block[@type='variables_declare']", N):
+        name = block.find("b:field[@name='VAR']", N).text
+        if name in ('SPEED_STRAIGHT', 'TURN_KP'):
+            block.find(".//b:field[@name='NUM']", N).text = str(
+                150 if name == 'SPEED_STRAIGHT' else 100)
     # Outer ADCs stay available as raw telemetry but never enter F or sumW.
     prune_chain(main, 'MyLoop', {'n7018', 'n7050', 'sm0016', 'sm0060'})
+    calculation = main.find(".//b:block[@id='sm0082']", N)
+    # Restrict replacement to the arithmetic body, not its following blocks.
+    for field in calculation.find("b:statement[@name='DO0']", N).findall('.//b:field', N):
+        if field.get('name') == 'VAR' and field.text == 'SPEED_STRAIGHT':
+            field.text = 'SPEED_CURVE'
     decision = main.find(".//b:block[@id='n7142']", N)
     old = {child.get('name'): deepcopy(child) for child in decision
            if child.tag in (tag('value'), tag('statement'))}
@@ -387,6 +413,9 @@ def rewrite():
             if prefix == 'DO' and previous in (6, 7):
                 # Original A3 if/else bodies are identical; keep one motor chain.
                 body = deepcopy(child.find("b:block/b:statement[@name='DO0']/b:block", N))
+                for field in body.findall('.//b:field', N):
+                    if field.get('name') == 'VAR' and field.text == 'SPEED_STRAIGHT':
+                        field.text = 'SPEED_CURVE'
                 child.clear()
                 child.set('name', prefix + str(new))
                 child.append(body)

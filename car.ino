@@ -1,3 +1,4 @@
+int  SPEED_CURVE;
 int  TURN_OUTER_PWM;
 int  TURN_INNER_PWM;
 unsigned long  TURN_TIMEOUT_MS;
@@ -114,9 +115,11 @@ void stop2() {
 }
 
 /**
- * Bounded left/right pivot for sharp 60/90-degree
- * corners. End on centered line, not a measured angle.
- * Timeout latches stop until reset; no automatic restart.
+ * Bounded sharp-corner pivot. After minimum30ms, F4/F6/F12
+ * starts forward differential capture instead of continued
+ * reverse. Three consecutive captures finish the turn
+ * at curve PWM100, not straight150. Timeout latches
+ * stop; no measured angle or automatic restart.
  */
 void sharp_turn() {
   turnElapsed = turnNow - turnAt;
@@ -125,7 +128,7 @@ void sharp_turn() {
     turnActive = 0;
     stop2();
   } else {
-    if (turnElapsed >= TURN_MIN_MS && sensorF == 4) {
+    if (turnElapsed >= TURN_MIN_MS && (sensorF == 4 || sensorF == 6 || sensorF == 12)) {
       turnConfirm = turnConfirm + 1;
     } else {
       turnConfirm = 0;
@@ -135,30 +138,62 @@ void sharp_turn() {
       turnDirection = 0;
       turnConfirm = 0;
       whiteCount = 0;
-      digitalWrite(7,LOW);
-      analogWrite(5,SPEED_STRAIGHT);
-      digitalWrite(4,HIGH);
-      analogWrite(6,SPEED_STRAIGHT);
-    } else {
-      if (turnDirection == -1) {
-        digitalWrite(7,HIGH);
-        analogWrite(5,TURN_INNER_PWM);
+      if (sensorF == 12) {
+        digitalWrite(7,LOW);
+        analogWrite(5,innerSpeed);
         digitalWrite(4,HIGH);
-        analogWrite(6,TURN_OUTER_PWM);
+        analogWrite(6,SPEED_CURVE);
+      } else if (sensorF == 6) {
+        digitalWrite(7,LOW);
+        analogWrite(5,SPEED_CURVE);
+        digitalWrite(4,HIGH);
+        analogWrite(6,innerSpeed);
       } else {
         digitalWrite(7,LOW);
-        analogWrite(5,TURN_OUTER_PWM);
-        digitalWrite(4,LOW);
-        analogWrite(6,TURN_INNER_PWM);
+        analogWrite(5,SPEED_CURVE);
+        digitalWrite(4,HIGH);
+        analogWrite(6,SPEED_CURVE);
+      }
+    } else {
+      if (turnConfirm >= 1) {
+        if (sensorF == 12) {
+          digitalWrite(7,LOW);
+          analogWrite(5,innerSpeed);
+          digitalWrite(4,HIGH);
+          analogWrite(6,SPEED_CURVE);
+        } else if (sensorF == 6) {
+          digitalWrite(7,LOW);
+          analogWrite(5,SPEED_CURVE);
+          digitalWrite(4,HIGH);
+          analogWrite(6,innerSpeed);
+        } else {
+          digitalWrite(7,LOW);
+          analogWrite(5,SPEED_CURVE);
+          digitalWrite(4,HIGH);
+          analogWrite(6,SPEED_CURVE);
+        }
+      } else {
+        if (turnDirection == -1) {
+          digitalWrite(7,HIGH);
+          analogWrite(5,TURN_INNER_PWM);
+          digitalWrite(4,HIGH);
+          analogWrite(6,TURN_OUTER_PWM);
+        } else {
+          digitalWrite(7,LOW);
+          analogWrite(5,TURN_OUTER_PWM);
+          digitalWrite(4,LOW);
+          analogWrite(6,TURN_INNER_PWM);
+        }
       }
     }
   }
 }
 
 /**
- * Straight short-gap crossing, PWM70, fixed 250ms total
- * limit. No pivot during a gap. Reacquire narrow line for
- * three samples; wide line returns to marker handling.
+ * Short gap PWM70 with fixed250ms deadline. On side-line return,
+ * forward differential capture starts immediately (25/70
+ * or45/70 mirrored). No reverse in gap state. Three narrow
+ * samples finish; wide line returns to marker handling.
  */
 void cross_gap() {
   gapElapsed = turnNow - gapAt;
@@ -176,15 +211,59 @@ void cross_gap() {
       gapActive = 0;
       turnDirection = 0;
       whiteCount = 0;
-      digitalWrite(7,LOW);
-      analogWrite(5,GAP_PWM);
-      digitalWrite(4,HIGH);
-      analogWrite(6,GAP_PWM);
+      if (sensorF == 8) {
+        digitalWrite(7,LOW);
+        analogWrite(5,25);
+        digitalWrite(4,HIGH);
+        analogWrite(6,GAP_PWM);
+      } else if (sensorF == 12) {
+        digitalWrite(7,LOW);
+        analogWrite(5,45);
+        digitalWrite(4,HIGH);
+        analogWrite(6,GAP_PWM);
+      } else if (sensorF == 2) {
+        digitalWrite(7,LOW);
+        analogWrite(5,GAP_PWM);
+        digitalWrite(4,HIGH);
+        analogWrite(6,25);
+      } else if (sensorF == 6) {
+        digitalWrite(7,LOW);
+        analogWrite(5,GAP_PWM);
+        digitalWrite(4,HIGH);
+        analogWrite(6,45);
+      } else {
+        digitalWrite(7,LOW);
+        analogWrite(5,GAP_PWM);
+        digitalWrite(4,HIGH);
+        analogWrite(6,GAP_PWM);
+      }
     } else {
-      digitalWrite(7,LOW);
-      analogWrite(5,GAP_PWM);
-      digitalWrite(4,HIGH);
-      analogWrite(6,GAP_PWM);
+      if (sensorF == 8) {
+        digitalWrite(7,LOW);
+        analogWrite(5,25);
+        digitalWrite(4,HIGH);
+        analogWrite(6,GAP_PWM);
+      } else if (sensorF == 12) {
+        digitalWrite(7,LOW);
+        analogWrite(5,45);
+        digitalWrite(4,HIGH);
+        analogWrite(6,GAP_PWM);
+      } else if (sensorF == 2) {
+        digitalWrite(7,LOW);
+        analogWrite(5,GAP_PWM);
+        digitalWrite(4,HIGH);
+        analogWrite(6,25);
+      } else if (sensorF == 6) {
+        digitalWrite(7,LOW);
+        analogWrite(5,GAP_PWM);
+        digitalWrite(4,HIGH);
+        analogWrite(6,45);
+      } else {
+        digitalWrite(7,LOW);
+        analogWrite(5,GAP_PWM);
+        digitalWrite(4,HIGH);
+        analogWrite(6,GAP_PWM);
+      }
     }
   }
 }
@@ -253,13 +332,14 @@ void setup()
   pinMode(5, OUTPUT);
   pinMode(4, OUTPUT);
   pinMode(6, OUTPUT);
-    TURN_OUTER_PWM = 100;
+    SPEED_CURVE = 100;
+  TURN_OUTER_PWM = 100;
   TURN_INNER_PWM = 95;
   TURN_TIMEOUT_MS = 800;
   TURN_MIN_MS = 30;
   TURN_MEMORY_MS = 250;
   TURN_CENTER_CLEAR_MS = 80;
-  TURN_DIRECTION_CONFIRM_MS = 30;
+  TURN_DIRECTION_CONFIRM_MS = 15;
   TURN_CONFIRM_COUNT = 3;
   turnDirection = 0;
   turnActive = 0;
@@ -324,7 +404,7 @@ void setup()
   liftLineAt = 0;
   liftLineElapsed = 0;
   LINE_THRESHOLD = 70;
-  SPEED_STRAIGHT = 100;
+  SPEED_STRAIGHT = 150;
   sensorA1 = 0;
   sensorA2 = 0;
   sensorA3 = 0;
@@ -338,7 +418,7 @@ void setup()
   countOn = 0;
   absW = 0;
   innerSpeed = 0;
-  TURN_KP = 75;
+  TURN_KP = 100;
   rawA1 = 0;
   rawA2 = 0;
   rawA3 = 0;
@@ -405,7 +485,7 @@ void loop()
       absW = 0 - sumW;
     }
     if (countOn > 0) {
-      innerSpeed = SPEED_STRAIGHT - (absW * TURN_KP) / countOn;
+      innerSpeed = SPEED_CURVE - (absW * TURN_KP) / countOn;
     }
     if (innerSpeed < SPEED_TURN_INNER_MEDIUM) {
       innerSpeed = SPEED_TURN_INNER_MEDIUM;
@@ -576,10 +656,10 @@ void loop()
         digitalWrite(7,LOW);
         analogWrite(5,innerSpeed);
         digitalWrite(4,HIGH);
-        analogWrite(6,SPEED_STRAIGHT);
+        analogWrite(6,SPEED_CURVE);
       } else if (sensorA2 < LINE_THRESHOLD && sensorA4 > LINE_THRESHOLD) {
         digitalWrite(7,LOW);
-        analogWrite(5,SPEED_STRAIGHT);
+        analogWrite(5,SPEED_CURVE);
         digitalWrite(4,HIGH);
         analogWrite(6,innerSpeed);
       } else if (sensorF == 0) {
