@@ -2,6 +2,8 @@
 
 ## Active baseline after user-directed rollback (2026-10-25)
 
+- Latest wide-corner entry: retain qualified center direction through F14 unless pending opposite candidate conflicts; retain prior outer confirmation until original120ms expiry without new F14 evidence. F14 plus valid outer/recent center direction starts pivot once per recovery event. Before capture, F14 may pivot only within first90ms of total turn event, then forward correction; never reverse after capture. Read docs/WIDE_CORNER_ENTRY_2026-10-25.zh-TW.md. No angle or field acceptance claim.
+
 - Latest: CORNER_WIDE_STOP_ENABLED0 lets turn/capture/gap F14 failures use low-speed fallback. That sets cornerWideRecovery, suppressing lift candidate, finish and normal wide timeout for the same recovery event until centered F4 stable80ms outside turn/gap. Normal marker logic outside recovery and180s overall stop remain. Read docs/CORNER_WIDE_FALLBACK_2026-10-25.zh-TW.md; no field acceptance.
 
 - Latest loss fallback retains qualified gapDirection: right45/15, left15/45, unknown/expired45/45. GAP_DIRECTION_MS120; repeated gap renewal never refreshes direction time. Fresh outer evidence uses outerSeenAt, actual side returns update direction. LOSS_STOP_ENABLED0 retained. Read docs/DIRECTIONAL_LOSS_RECOVERY_2026-10-25.zh-TW.md; overrides unconditional45/45 fallback. No hardware acceptance.

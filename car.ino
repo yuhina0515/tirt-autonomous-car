@@ -3,6 +3,7 @@ int  TURN_OUTER_PWM;
 int  TURN_INNER_PWM;
 unsigned long  TURN_TIMEOUT_MS;
 unsigned long  TURN_MIN_MS;
+unsigned long  TURN_WIDE_PIVOT_MS;
 int  TURN_CAPTURE_PWM;
 unsigned long  TURN_CAPTURE_GAP_MS;
 int  turnCaptureGapPending;
@@ -215,6 +216,9 @@ void sharp_turn() {
   turnElapsed = turnNow - turnAt;
   if (sensorF == 0) {
     turnDeparted = 1;
+  }
+  if (sensorF == 14) {
+    cornerWideRecovery = 1;
   }
   if (sensorF == 4 || sensorF == 6 || sensorF == 12 || (turnDeparted == 1 || turnCaptureStarted == 1) && ((turnCaptureStarted == 1 || turnDirection == 1) && sensorF == 2 || (turnCaptureStarted == 1 || turnDirection == -1) && sensorF == 8)) {
     turnCaptureVisible = 1;
@@ -432,7 +436,7 @@ void sharp_turn() {
             stop2();
           }
         } else {
-          if (sensorF == 14) {
+          if (sensorF == 14 && turnElapsed >= TURN_WIDE_PIVOT_MS) {
             if (turnCaptureGapPending == 0) {
               turnCaptureGapPending = 1;
               turnCaptureGapAt = turnNow;
@@ -795,6 +799,7 @@ void setup()
   TURN_INNER_PWM = 114;
   TURN_TIMEOUT_MS = 800;
   TURN_MIN_MS = 30;
+  TURN_WIDE_PIVOT_MS = 90;
   TURN_CAPTURE_PWM = 100;
   TURN_CAPTURE_GAP_MS = 60;
   turnCaptureGapPending = 0;
@@ -1114,7 +1119,9 @@ void loop()
       }
     } else {
       outerCandidate = 0;
-      outerDirection = 0;
+      if (sensorF != 14) {
+        outerDirection = 0;
+      }
     }
     outerAge = turnNow - outerSeenAt;
     outerReady = 0;
@@ -1329,10 +1336,10 @@ void loop()
         }
         turnCandidate = 0;
       } else {
-        turnCandidate = 0;
-        if (sensorF == 14) {
+        if (sensorF == 14 && turnCandidate != 0 && turnCandidate != turnDirection) {
           turnDirection = 0;
         }
+        turnCandidate = 0;
       }
       if (sensorF == 4) {
         if (centerPending == 0) {
@@ -1347,7 +1354,31 @@ void loop()
         centerPending = 0;
       }
       turnAge = turnNow - turnSeenAt;
-      if (outerReady == 1 && outerDirection == 1 && sensorF == 2) {
+      if (cornerWideRecovery == 0 && sensorF == 14 && outerReady == 1) {
+        turnDirection = outerDirection;
+        turnDirectionSource = 1;
+        turnActive = 1;
+        turnAt = turnNow;
+        turnConfirm = 0;
+        outerProbeActive = 0;
+        turnDeparted = 0;
+        turnCaptureStarted = 0;
+        turnCaptureGapPending = 0;
+        turnCaptureSide = outerDirection;
+        cornerWideRecovery = 1;
+      } else if (cornerWideRecovery == 0 && sensorF == 14 && turnDirection != 0 && turnAge <= TURN_MEMORY_MS) {
+        turnDirection = turnDirection;
+        turnDirectionSource = 0;
+        turnActive = 1;
+        turnAt = turnNow;
+        turnConfirm = 0;
+        outerProbeActive = 0;
+        turnDeparted = 0;
+        turnCaptureStarted = 0;
+        turnCaptureGapPending = 0;
+        turnCaptureSide = turnDirection;
+        cornerWideRecovery = 1;
+      } else if (outerReady == 1 && outerDirection == 1 && sensorF == 2) {
         turnDirection = 1;
         turnDirectionSource = 1;
         turnActive = 1;

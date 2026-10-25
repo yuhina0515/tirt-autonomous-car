@@ -57,6 +57,7 @@ def add_sharp_turns(root, main, decision):
         'TURN_INNER_PWM': ('int', 114),
         'TURN_TIMEOUT_MS': ('unsigned long', 800),
         'TURN_MIN_MS': ('unsigned long', 30),
+        'TURN_WIDE_PIVOT_MS': ('unsigned long', 90),
         'TURN_CAPTURE_PWM': ('int', 100),
         'TURN_CAPTURE_GAP_MS': ('unsigned long', 60),
         'turnCaptureGapPending': ('int', 0),
@@ -277,6 +278,7 @@ def add_sharp_turns(root, main, decision):
     # Total deadline stays fixed; unsupported-search cutoff only precedes capture.
     pivot = [setv('turnElapsed', sub('turnNow', 'turnAt')),
              cond(eq('sensorF', 0), [setv('turnDeparted', 1)]),
+             cond(eq('sensorF', 14), [setv('cornerWideRecovery', 1)]),
              cond(capture_line, [setv('turnCaptureVisible', 1)], [setv('turnCaptureVisible', 0)]),
              cond(both(eq('turnDirectionSource', 0),
                        both(le('turnElapsed', 'OUTER_OVERRIDE_WINDOW_MS'), eq('outerReady', 1))), [
@@ -301,7 +303,7 @@ def add_sharp_turns(root, main, decision):
                           [cond(eq('turnCaptureStarted', 1),
                                 [cond(anyof('sensorF', [0, 14]), capture_dropout,
                                       [setv('turnFault', 1), setv('turnActive', 0), call('stop')])],
-                                [cond(eq('sensorF', 14), capture_dropout,
+                                [cond(both(eq('sensorF', 14), ge('turnElapsed', 'TURN_WIDE_PIVOT_MS')), capture_dropout,
                                       [cond(eq('turnDirection', -1), left, right)])])])])])]
     function = exporter.block('procedures_defnoreturn')
     function.set('x', '900')
@@ -458,7 +460,8 @@ def add_sharp_turns(root, main, decision):
                  outer_candidate(-1))], [setv('outerCandidate', 0)]),
             cond(both(lt('rawA1', 'OUTER_LINE_THRESHOLD'), lt('rawA5', 'OUTER_LINE_THRESHOLD')),
                  [setv('outerDirection', 0)])],
-             [setv('outerCandidate', 0), setv('outerDirection', 0)]),
+             [setv('outerCandidate', 0),
+              cond(ne('sensorF', 14), [setv('outerDirection', 0)])]),
         setv('outerAge', sub('turnNow', 'outerSeenAt')), setv('outerReady', 0),
         cond(both(eq('OUTER_TURN_ASSIST', 1),
                   both(ne('outerDirection', 0), both(le('outerAge', 'OUTER_MEMORY_MS'),
@@ -559,8 +562,8 @@ def add_sharp_turns(root, main, decision):
                                  both(eq('turnCandidate', 1), eq('turnDirection', -1))),
                                   [setv('turnDirection', 0)]),
                              setv('turnCandidate', 0)])],
-                        [setv('turnCandidate', 0),
-                         cond(eq('sensorF', 14), [setv('turnDirection', 0)])]),
+                        [cond(both(eq('sensorF', 14), both(ne('turnCandidate', 0), ne('turnCandidate', 'turnDirection'))),
+                              [setv('turnDirection', 0)]), setv('turnCandidate', 0)]),
                   # A brief center observation must not erase an approaching corner.
                   # Sustained centered travel still clears stale direction for gaps.
                   cond(eq('sensorF', 4), [
@@ -572,6 +575,11 @@ def add_sharp_turns(root, main, decision):
                   setv('turnAge', sub('turnNow', 'turnSeenAt')),
                   # Confirmed outer and matching single center-edge start before full loss.
                   cases([
+                      (both(eq('cornerWideRecovery', 0), both(eq('sensorF', 14), eq('outerReady', 1))),
+                       begin_turn('outerDirection', 1) + [setv('cornerWideRecovery', 1)]),
+                      (both(eq('cornerWideRecovery', 0), both(eq('sensorF', 14),
+                            both(ne('turnDirection', 0), le('turnAge', 'TURN_MEMORY_MS')))),
+                       begin_turn('turnDirection', 0) + [setv('cornerWideRecovery', 1)]),
                       (both(eq('outerReady', 1), both(eq('outerDirection', 1), eq('sensorF', 2))),
                        begin_turn(1, 1)),
                       (both(eq('outerReady', 1), both(eq('outerDirection', -1), eq('sensorF', 8))),
