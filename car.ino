@@ -137,7 +137,7 @@ void stop2() {
 /**
  * Bounded sharp-corner pivot. Outer forward125, inner reverse95.
  * After minimum30ms, F4/F6/F12 starts forward differential
- * capture; continuous15ms finishes at curve base125. Confirmation
+ * capture; continuous15ms finishes at curve base100. Confirmation
  * uses elapsed time, not loop count. Timeout latches stop.
  */
 void sharp_turn() {
@@ -379,7 +379,7 @@ void setup()
   pinMode(5, OUTPUT);
   pinMode(4, OUTPUT);
   pinMode(6, OUTPUT);
-    SPEED_CURVE = 125;
+    SPEED_CURVE = 100;
   TURN_OUTER_PWM = 125;
   TURN_INNER_PWM = 95;
   TURN_TIMEOUT_MS = 800;
@@ -420,15 +420,15 @@ void setup()
   telemetryElapsed = 0;
   ledStatus = 1;
   ledDesired = 1;
-  STRAIGHT_CONFIRM_MS = 80;
-  STRAIGHT_STEP_MS = 10;
-  STRAIGHT_STEP_PWM = 10;
+  STRAIGHT_CONFIRM_MS = 200;
+  STRAIGHT_STEP_MS = 20;
+  STRAIGHT_STEP_PWM = 5;
   straightPending = 0;
   straightAt = 0;
   straightElapsed = 0;
   straightStepAt = 0;
   straightStepElapsed = 0;
-  straightPwm = 125;
+  straightPwm = 100;
   MIN_LAP_MS = 15000;
   MAX_LAP_MS = 180000;
   DEPART_CONFIRM_MS = 100;
@@ -532,8 +532,8 @@ void loop()
     if (sensorA4 < LINE_THRESHOLD) {
       sensorF = sensorF + 8;
     }
-    // Position weights: A4=-1, A3=0, A2=+1. Curve base125,
-    // gain100; minimum inner8. Straight command230 is separate.
+    // Position weights: A4=-1, A3=0, A2=+1. Curve base100, gain100; minimum
+    // inner8. Straight limit230 requires centered200ms and ramp5 PWM per20ms.
     sumW = 0;
     countOn = 0;
     if (sensorA2 < LINE_THRESHOLD) {

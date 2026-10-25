@@ -52,7 +52,7 @@ def add_sharp_turns(root, main, decision):
     """Follow a departing edge into a bounded pivot until the center line returns."""
     exporter = Exporter()
     settings = {
-        'SPEED_CURVE': ('int', 125),
+        'SPEED_CURVE': ('int', 100),
         'TURN_OUTER_PWM': ('int', 125),
         'TURN_INNER_PWM': ('int', 95),
         'TURN_TIMEOUT_MS': ('unsigned long', 800),
@@ -93,15 +93,15 @@ def add_sharp_turns(root, main, decision):
         'telemetryElapsed': ('unsigned long', 0),
         'ledStatus': ('int', 1),
         'ledDesired': ('int', 1),
-        'STRAIGHT_CONFIRM_MS': ('unsigned long', 80),
-        'STRAIGHT_STEP_MS': ('unsigned long', 10),
-        'STRAIGHT_STEP_PWM': ('int', 10),
+        'STRAIGHT_CONFIRM_MS': ('unsigned long', 200),
+        'STRAIGHT_STEP_MS': ('unsigned long', 20),
+        'STRAIGHT_STEP_PWM': ('int', 5),
         'straightPending': ('int', 0),
         'straightAt': ('unsigned long', 0),
         'straightElapsed': ('unsigned long', 0),
         'straightStepAt': ('unsigned long', 0),
         'straightStepElapsed': ('unsigned long', 0),
-        'straightPwm': ('int', 125),
+        'straightPwm': ('int', 100),
         'MIN_LAP_MS': ('unsigned long', 15000),
         'MAX_LAP_MS': ('unsigned long', 180000),
         'DEPART_CONFIRM_MS': ('unsigned long', 100),
@@ -190,7 +190,7 @@ def add_sharp_turns(root, main, decision):
     exporter.field(function, 'NAME', 'sharp_turn')
     exporter.field(function, 'TYPE', 'void')
     exporter.statement(function, 'STACK', pivot)
-    note(function, 'Bounded sharp-corner pivot. Outer forward125, inner reverse95. After minimum30ms, F4/F6/F12 starts forward differential capture; continuous15ms finishes at curve base125. Confirmation uses elapsed time, not loop count. Timeout latches stop.')
+    note(function, 'Bounded sharp-corner pivot. Outer forward125, inner reverse95. After minimum30ms, F4/F6/F12 starts forward differential capture; continuous15ms finishes at curve base100. Confirmation uses elapsed time, not loop count. Timeout latches stop.')
     root.append(function)
 
     # A short gap has its own fixed deadline and never inherits a pivot command.
@@ -584,7 +584,7 @@ def rewrite():
         ('n0232', 'Read all five ADCs; preserve original raw telemetry.'),
         ('three1', 'Exclude A1 and A5 from decisions; control uses A4/A3/A2 only.'),
         ('n7010', 'Build F = 8*A4_on + 4*A3_on + 2*A2_on.'),
-        ('sm0002', 'Position weights: A4=-1, A3=0, A2=+1. Curve base125, gain100; minimum inner8. Straight command230 is separate.'),
+        ('sm0002', 'Position weights: A4=-1, A3=0, A2=+1. Curve base100, gain100; minimum inner8. Straight limit230 requires centered200ms and ramp5 PWM per20ms.'),
         ('n0210', 'Original 115200-baud raw ADC/F telemetry; no new capture protocol.'),
     ):
         note(main.find(".//b:block[@id='%s']" % block_id, N), text)
