@@ -57,7 +57,6 @@ def add_sharp_turns(root, main, decision):
         'TURN_INNER_PWM': ('int', 114),
         'TURN_TIMEOUT_MS': ('unsigned long', 800),
         'TURN_MIN_MS': ('unsigned long', 30),
-        'TURN_WIDE_PIVOT_MS': ('unsigned long', 90),
         'TURN_CAPTURE_PWM': ('int', 100),
         'TURN_CAPTURE_GAP_MS': ('unsigned long', 60),
         'turnCaptureGapPending': ('int', 0),
@@ -77,6 +76,9 @@ def add_sharp_turns(root, main, decision):
         'LOSS_STOP_ENABLED': ('int', 0),
         'CORNER_WIDE_STOP_ENABLED': ('int', 0),
         'cornerWideRecovery': ('int', 0),
+        'wideDirection': ('int', 0),
+        'wideDirectionAt': ('unsigned long', 0),
+        'wideDirectionAge': ('unsigned long', 0),
         'cornerWideClearPending': ('int', 0),
         'cornerWideClearAt': ('unsigned long', 0),
         'cornerWideClearElapsed': ('unsigned long', 0),
@@ -257,6 +259,8 @@ def add_sharp_turns(root, main, decision):
                 [setv('gapDirection', 'turnDirection'), setv('gapDirectionAt', 'turnSeenAt')])],
               [cond(eq('gapActive', 0), [setv('gapDirection', 0)])]),
         setv('gapDirectionAge', sub('turnNow', 'gapDirectionAt')),
+        cond(eq('sensorF', 14), [setv('wideDirection', 'gapDirection'),
+             setv('wideDirectionAt', 'gapDirectionAt')]),
         setv('turnActive', 0), setv('turnDirection', 0),
         setv('outerProbeActive', 0), setv('gapActive', 1),
         setv('gapAt', 'turnNow'), setv('gapConfirm', 0),
@@ -303,7 +307,8 @@ def add_sharp_turns(root, main, decision):
                           [cond(eq('turnCaptureStarted', 1),
                                 [cond(anyof('sensorF', [0, 14]), capture_dropout,
                                       [setv('turnFault', 1), setv('turnActive', 0), call('stop')])],
-                                [cond(both(eq('sensorF', 14), ge('turnElapsed', 'TURN_WIDE_PIVOT_MS')), capture_dropout,
+                                [cond(eq('sensorF', 14),
+                                      [cond(eq('turnDirection', -1), capture_wheels(50, 100), capture_wheels(100, 50))],
                                       [cond(eq('turnDirection', -1), left, right)])])])])])]
     function = exporter.block('procedures_defnoreturn')
     function.set('x', '900')
@@ -311,7 +316,7 @@ def add_sharp_turns(root, main, decision):
     exporter.field(function, 'NAME', 'sharp_turn')
     exporter.field(function, 'TYPE', 'void')
     exporter.statement(function, 'STACK', pivot)
-    note(function, 'A1=right/A5=left outer assistance. Center-only search gets at most150ms to capture line or receive confirmed outer support; otherwise stop. Outer evidence may correct it once without resetting the800ms total deadline. Confirmed outer plus matching F2/F8 starts before full loss. Outer forward150/inner reverse114; After actual loss, matching single edge also starts capture at100/20 or100/50. Active-turn F14 and post-capture F0 share a fixed60ms forward-only uncertainty budget; normal lift/finish marker handling is unchanged. Split F10 uses its own bounded confirmation. The150ms unsupported-search cutoff applies only before capture; the800ms total deadline stays fixed. Continuous15ms capture completes turn.')
+    note(function, 'A1=right/A5=left outer assistance. Center-only search gets at most150ms to capture line or receive confirmed outer support; otherwise stop. Outer evidence may correct it once without resetting the800ms total deadline. Normal corners may enter early on qualified F2/F8; a wide-corner recovery instead follows visible side line forward and only F0 starts search. Outer forward150/inner reverse114; After actual loss, matching single edge also starts capture at100/20 or100/50. Active-turn F14 and post-capture F0 share a fixed60ms forward-only uncertainty budget; normal lift/finish marker handling is unchanged. Split F10 uses its own bounded confirmation. The150ms unsupported-search cutoff applies only before capture; the800ms total deadline stays fixed. Continuous15ms capture completes turn.')
     root.append(function)
 
     # A short gap has its own fixed deadline and never inherits a pivot command.
@@ -351,8 +356,13 @@ def add_sharp_turns(root, main, decision):
     note(function, 'Gap base45. Qualified retained right direction uses45/15, left15/45, for at most120ms without fresh evidence; renewal does not refresh direction age. Unknown/expired direction uses45/45. Normal120ms deadline remains; LOSS_STOP_ENABLED0 uses forward fallback instead of F0 fault. Side-line return starts differential capture20/45 or30/45 immediately. Continuous narrow line15ms finishes; invalid observations reset confirmation, not the event deadline. Wide line returns to marker handling.')
     root.append(function)
 
-    wide_drive = [('digitalwrite', '7', 0), ('pwm', '5', 'WIDE_PWM'),
-                  ('digitalwrite', '4', 1), ('pwm', '6', 'WIDE_PWM')]
+    wide_drive = [setv('wideDirectionAge', sub('turnNow', 'wideDirectionAt')),
+        cond(eq('cornerWideRecovery', 1), [cases([
+            (both(eq('wideDirection', -1), le('wideDirectionAge', 'GAP_DIRECTION_MS')),
+             capture_wheels(50, 100)),
+            (both(eq('wideDirection', 1), le('wideDirectionAge', 'GAP_DIRECTION_MS')),
+             capture_wheels(100, 50))], capture_wheels(100, 100))],
+             capture_wheels('WIDE_PWM', 'WIDE_PWM'))]
     narrow = anyof('sensorF', [2, 4, 6, 8, 12])
     normal_lift_state = either(eq('liftState', 0), eq('liftState', 3))
     lift_update = [cond(eq('LIFT_ENABLED', 1), [
@@ -573,13 +583,15 @@ def add_sharp_turns(root, main, decision):
                       cond(ge('centerElapsed', 'TURN_CENTER_CLEAR_MS'),
                            [setv('turnDirection', 0)])], [setv('centerPending', 0)]),
                   setv('turnAge', sub('turnNow', 'turnSeenAt')),
-                  # Confirmed outer and matching single center-edge start before full loss.
-                  cases([
-                      (both(eq('cornerWideRecovery', 0), both(eq('sensorF', 14), eq('outerReady', 1))),
-                       begin_turn('outerDirection', 1) + [setv('cornerWideRecovery', 1)]),
-                      (both(eq('cornerWideRecovery', 0), both(eq('sensorF', 14),
-                            both(ne('turnDirection', 0), le('turnAge', 'TURN_MEMORY_MS')))),
-                       begin_turn('turnDirection', 0) + [setv('cornerWideRecovery', 1)]),
+                  # A wide corner remains forward-following while line is visible.
+                  cond(both(eq('cornerWideRecovery', 0), eq('sensorF', 14)), [cases([
+                      (eq('outerReady', 1), [setv('wideDirection', 'outerDirection'),
+                           setv('wideDirectionAt', 'outerSeenAt'), setv('cornerWideRecovery', 1)]),
+                      (both(ne('turnDirection', 0), le('turnAge', 'TURN_MEMORY_MS')),
+                       [setv('wideDirection', 'turnDirection'), setv('wideDirectionAt', 'turnSeenAt'),
+                        setv('cornerWideRecovery', 1)])])]),
+                  # Visible side-line after this wide event uses ordinary curve output.
+                  cond(eq('cornerWideRecovery', 0), [cases([
                       (both(eq('outerReady', 1), both(eq('outerDirection', 1), eq('sensorF', 2))),
                        begin_turn(1, 1)),
                       (both(eq('outerReady', 1), both(eq('outerDirection', -1), eq('sensorF', 8))),
@@ -595,7 +607,7 @@ def add_sharp_turns(root, main, decision):
                       (both(both(eq('outerReady', 0), eq('outerCandidate', 0)),
                             both(eq('sensorF', 8), both(eq('turnCandidate', -1),
                                  ge('turnCandidateElapsed', 'TURN_DIRECTION_CONFIRM_MS')))),
-                       begin_turn(-1, 0))]),
+                       begin_turn(-1, 0))])]),
                   cond(eq('sensorF', 0), [cases([
                       (eq('outerReady', 1), begin_turn('outerDirection', 1)),
                       (ne('outerCandidate', 0), [
