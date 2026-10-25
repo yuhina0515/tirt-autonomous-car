@@ -1,0 +1,28 @@
+{
+  "origin": "https://hina-tw.ddns.net/tirt-data",
+  "synthetic_session": "fb3e8b39-6e3a-4fff-bb01-4e2e116c7b05",
+  "records": 206,
+  "lost_ack_retry": true,
+  "export_matches": true,
+  "read_role_separation": true,
+  "physical_bluetooth_acceptance": false,
+  "windows_launcher_upload": true,
+  "container_restart_persistence": true,
+  "export_sha256": "bc65052e4fec04f95bee859ea296d60df4c781d512993df0709ba2468808b936",
+  "date": "2026-10-25",
+  "release": "v0.3.0-rc.1",
+  "python_tests_passed": 15,
+  "existing_container_identities_preserved": 14,
+  "caddy_change": "Only /tirt-data routing block added",
+  "serial_receive_contract": "Existing collect.ps1; real Bluetooth acceptance pending",
+  "windows_credentials": "DPAPI encrypted; private credentials excluded from Git and release",
+  "sha256": {
+    "server/ingest.py": "d3bef39bcb552f4804e1d8ee0afdbe2fd1873e6a2504bdae54a8c273d71350b2",
+    "server/compose.yaml": "5b94e1252cd383572949f9ce939c3b01d431bf5c7ec3667b18ddcf784f30f00d",
+    "server/deploy.py": "b751aad8b13ced05e76aa9b0308c805781442832d5e7c4ae7ae5a89dcb24f023",
+    "tools/upload.py": "058cbbab1a8ff293c0a252b460ee54d3fcb7737efdd997e103f49d14a4b23585",
+    "tools/Configure-Upload.ps1": "00cce5a0749211c0cc5d712325866b1598893f53b28bd215917c0aee4235c0ff",
+    "tools/Start-LiveCapture.ps1": "c8f428e34f5459c0a62233e783795a2cae48a1727924689e2debdd7afd915aaa",
+    "tests/test_ingest.py": "e02a1a2f62220008148a20234d925199533760b7a61a1f12e797e4f335ddb1fb"
+  }
+}
