@@ -2,6 +2,8 @@
 
 ## Active baseline after user-directed rollback (2026-10-25)
 
+- Active-turn F14 now shares fixed60ms forward-only uncertainty event with post-capture F0; no immediate post-capture F14 fault or pre-capture reverse on F14. Initialize correction side from selected turn. Normal lift/finish F14 handling remains. Color polarity is not established by legacy labels; do not equate physical white with F0/F14 without ADC evidence. Read docs/CORNER_WIDE_2026-10-25.zh-TW.md.
+
 - CAGEBOT import fix: never compare a Boolean block with numeric0; use integer turnCaptureVisible set by conditional first. export_car.mjs now waits for Blockly onchange and checks every XML parent connection before writing Arduino. Old XML detached two comparison inputs; fixed XML passes. Read docs/CAGEBOT_CONNECTION_FIX_2026-10-25.zh-TW.md. No vehicle tests/upload.
 
 - Latest Taiwan stop fix:150ms unsupported-search cutoff only before valid capture;800ms total remains. After capture, either single edge steers forward; F0 has one fixed60ms forward-only dropout budget (30/60 or45/45), never restart reverse. F10 is zero-output confirmed20ms, with15ms stable valid clearing; repeated blips share deadline. Read docs/TAIWAN_CORNER_STOP_2026-10-25.zh-TW.md; overrides earlier immediate F10 and post-capture stop rules. No field verification.

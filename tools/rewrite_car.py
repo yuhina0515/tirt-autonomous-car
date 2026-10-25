@@ -264,16 +264,17 @@ def add_sharp_turns(root, main, decision):
                  cond(both(anyof('sensorF', [4, 6, 12]), both(eq('turnConfirm', 1), ge('turnCaptureElapsed', 'TURN_REACQUIRE_MS'))), done, [
                      cond(ge('turnConfirm', 1), capture_drive,
                           [cond(eq('turnCaptureStarted', 1),
-                                [cond(eq('sensorF', 0), capture_dropout,
+                                [cond(anyof('sensorF', [0, 14]), capture_dropout,
                                       [setv('turnFault', 1), setv('turnActive', 0), call('stop')])],
-                                [cond(eq('turnDirection', -1), left, right)])])])])]
+                                [cond(eq('sensorF', 14), capture_dropout,
+                                      [cond(eq('turnDirection', -1), left, right)])])])])])]
     function = exporter.block('procedures_defnoreturn')
     function.set('x', '900')
     function.set('y', '0')
     exporter.field(function, 'NAME', 'sharp_turn')
     exporter.field(function, 'TYPE', 'void')
     exporter.statement(function, 'STACK', pivot)
-    note(function, 'A1=right/A5=left outer assistance. Center-only search gets at most150ms to capture line or receive confirmed outer support; otherwise stop. Outer evidence may correct it once without resetting the800ms total deadline. Confirmed outer plus matching F2/F8 starts before full loss. Outer forward150/inner reverse114; After actual loss, matching single edge also starts capture at100/20 or100/50. After capture, F0 gets a fixed60ms forward-only dropout budget; ambiguous patterns stop. The150ms unsupported-search cutoff applies only before capture; the800ms total deadline stays fixed. Continuous15ms capture completes turn.')
+    note(function, 'A1=right/A5=left outer assistance. Center-only search gets at most150ms to capture line or receive confirmed outer support; otherwise stop. Outer evidence may correct it once without resetting the800ms total deadline. Confirmed outer plus matching F2/F8 starts before full loss. Outer forward150/inner reverse114; After actual loss, matching single edge also starts capture at100/20 or100/50. Active-turn F14 and post-capture F0 share a fixed60ms forward-only uncertainty budget; normal lift/finish marker handling is unchanged. Split F10 uses its own bounded confirmation. The150ms unsupported-search cutoff applies only before capture; the800ms total deadline stays fixed. Continuous15ms capture completes turn.')
     root.append(function)
 
     # A short gap has its own fixed deadline and never inherits a pivot command.
@@ -422,7 +423,7 @@ def add_sharp_turns(root, main, decision):
                 setv('turnActive', 1), setv('turnAt', 'turnNow'),
                 setv('turnConfirm', 0), setv('outerProbeActive', 0),
                 setv('turnDeparted', 0), setv('turnCaptureStarted', 0),
-                setv('turnCaptureGapPending', 0), setv('turnCaptureSide', 0)]
+                setv('turnCaptureGapPending', 0), setv('turnCaptureSide', direction)]
     reset_straight = [setv('straightPending', 0), setv('straightElapsed', 0),
                       setv('straightPwm', 'STRAIGHT_STAGE1_PWM'),
                       setv('straightTrimPending', 0), setv('straightTrimCenterPending', 0),

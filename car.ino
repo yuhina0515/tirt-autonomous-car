@@ -186,16 +186,19 @@ void stop2() {
 }
 
 /**
- * A1=right/A5=left outer assistance. Center-only search gets at
- * most150ms to capture line or receive confirmed outer support;
- * otherwise stop. Outer evidence may correct it once without
- * resetting the800ms total deadline. Confirmed outer plus
- * matching F2/F8 starts before full loss. Outer forward150/inner
- * reverse114; After actual loss, matching single edge also
- * starts capture at100/20 or100/50. After capture, F0 gets a
- * fixed60ms forward-only dropout budget; ambiguous patterns stop.
- * The150ms unsupported-search cutoff applies only before capture; the800ms
- * total deadline stays fixed. Continuous15ms capture completes turn.
+ * A1=right/A5=left outer assistance. Center-only search
+ * gets at most150ms to capture line or receive confirmed
+ * outer support; otherwise stop. Outer evidence may
+ * correct it once without resetting the800ms total
+ * deadline. Confirmed outer plus matching F2/F8 starts
+ * before full loss. Outer forward150/inner reverse114;
+ * After actual loss, matching single edge also starts capture
+ * at100/20 or100/50. Active-turn F14 and post-capture F0
+ * share a fixed60ms forward-only uncertainty budget; normal
+ * lift/finish marker handling is unchanged. Split F10 uses
+ * its own bounded confirmation. The150ms unsupported-search
+ * cutoff applies only before capture; the800ms total deadline
+ * stays fixed. Continuous15ms capture completes turn.
  */
 void sharp_turn() {
   turnElapsed = turnNow - turnAt;
@@ -294,7 +297,7 @@ void sharp_turn() {
         }
       } else {
         if (turnCaptureStarted == 1) {
-          if (sensorF == 0) {
+          if (sensorF == 0 || sensorF == 14) {
             if (turnCaptureGapPending == 0) {
               turnCaptureGapPending = 1;
               turnCaptureGapAt = turnNow;
@@ -328,16 +331,46 @@ void sharp_turn() {
             stop2();
           }
         } else {
-          if (turnDirection == -1) {
-            digitalWrite(7,HIGH);
-            analogWrite(5,TURN_INNER_PWM);
-            digitalWrite(4,HIGH);
-            analogWrite(6,TURN_OUTER_PWM);
+          if (sensorF == 14) {
+            if (turnCaptureGapPending == 0) {
+              turnCaptureGapPending = 1;
+              turnCaptureGapAt = turnNow;
+            }
+            turnCaptureGapElapsed = turnNow - turnCaptureGapAt;
+            if (turnCaptureGapElapsed >= TURN_CAPTURE_GAP_MS) {
+              turnFault = 1;
+              turnActive = 0;
+              stop2();
+            } else {
+              if (turnCaptureSide == -1) {
+                digitalWrite(7,LOW);
+                analogWrite(5,30);
+                digitalWrite(4,HIGH);
+                analogWrite(6,60);
+              } else if (turnCaptureSide == 1) {
+                digitalWrite(7,LOW);
+                analogWrite(5,60);
+                digitalWrite(4,HIGH);
+                analogWrite(6,30);
+              } else {
+                digitalWrite(7,LOW);
+                analogWrite(5,45);
+                digitalWrite(4,HIGH);
+                analogWrite(6,45);
+              }
+            }
           } else {
-            digitalWrite(7,LOW);
-            analogWrite(5,TURN_OUTER_PWM);
-            digitalWrite(4,LOW);
-            analogWrite(6,TURN_INNER_PWM);
+            if (turnDirection == -1) {
+              digitalWrite(7,HIGH);
+              analogWrite(5,TURN_INNER_PWM);
+              digitalWrite(4,HIGH);
+              analogWrite(6,TURN_OUTER_PWM);
+            } else {
+              digitalWrite(7,LOW);
+              analogWrite(5,TURN_OUTER_PWM);
+              digitalWrite(4,LOW);
+              analogWrite(6,TURN_INNER_PWM);
+            }
           }
         }
       }
@@ -1048,7 +1081,7 @@ void loop()
         turnDeparted = 0;
         turnCaptureStarted = 0;
         turnCaptureGapPending = 0;
-        turnCaptureSide = 0;
+        turnCaptureSide = 1;
       } else if (outerReady == 1 && outerDirection == -1 && sensorF == 8) {
         turnDirection = -1;
         turnDirectionSource = 1;
@@ -1059,7 +1092,7 @@ void loop()
         turnDeparted = 0;
         turnCaptureStarted = 0;
         turnCaptureGapPending = 0;
-        turnCaptureSide = 0;
+        turnCaptureSide = -1;
       } else if (outerCandidate == 1 && sensorF == 2) {
         turnDirection = 1;
         turnDirectionSource = 0;
@@ -1070,7 +1103,7 @@ void loop()
         turnDeparted = 0;
         turnCaptureStarted = 0;
         turnCaptureGapPending = 0;
-        turnCaptureSide = 0;
+        turnCaptureSide = 1;
       } else if (outerCandidate == -1 && sensorF == 8) {
         turnDirection = -1;
         turnDirectionSource = 0;
@@ -1081,7 +1114,7 @@ void loop()
         turnDeparted = 0;
         turnCaptureStarted = 0;
         turnCaptureGapPending = 0;
-        turnCaptureSide = 0;
+        turnCaptureSide = -1;
       } else if (outerReady == 0 && outerCandidate == 0 && sensorF == 2 && turnCandidate == 1 && turnCandidateElapsed >= TURN_DIRECTION_CONFIRM_MS) {
         turnDirection = 1;
         turnDirectionSource = 0;
@@ -1092,7 +1125,7 @@ void loop()
         turnDeparted = 0;
         turnCaptureStarted = 0;
         turnCaptureGapPending = 0;
-        turnCaptureSide = 0;
+        turnCaptureSide = 1;
       } else if (outerReady == 0 && outerCandidate == 0 && sensorF == 8 && turnCandidate == -1 && turnCandidateElapsed >= TURN_DIRECTION_CONFIRM_MS) {
         turnDirection = -1;
         turnDirectionSource = 0;
@@ -1103,7 +1136,7 @@ void loop()
         turnDeparted = 0;
         turnCaptureStarted = 0;
         turnCaptureGapPending = 0;
-        turnCaptureSide = 0;
+        turnCaptureSide = -1;
       }
       if (sensorF == 0) {
         if (outerReady == 1) {
@@ -1116,7 +1149,7 @@ void loop()
           turnDeparted = 0;
           turnCaptureStarted = 0;
           turnCaptureGapPending = 0;
-          turnCaptureSide = 0;
+          turnCaptureSide = outerDirection;
         } else if (outerCandidate != 0) {
           if (outerProbeActive == 0) {
             outerProbeActive = 1;
@@ -1138,7 +1171,7 @@ void loop()
           turnDeparted = 0;
           turnCaptureStarted = 0;
           turnCaptureGapPending = 0;
-          turnCaptureSide = 0;
+          turnCaptureSide = turnDirection;
         } else {
           outerProbeActive = 0;
           gapActive = 1;
