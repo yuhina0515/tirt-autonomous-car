@@ -11,11 +11,10 @@ HEADER=['millis','tick','dt','rawA5','rawA4','rawA3','rawA2','rawA1',
         'left_pwm','right_pwm','rejected','timing_faults']
 # States: WAIT=0 ACQUIRE=1 TRACK=2 UNCERTAIN=3 STOP=4 FAULT=5 CAPTURE=6.
 # Reasons: OK=0 LOST=1 WIDE=2 SPLIT=3 JUMP=4 UNARMED=5 TIMING=6
-#          MANUAL_STOP=7 CONFIRM=8 ACQUIRE_TIMEOUT=9 RUN_LIMIT=10 LOW_CONTRAST=11
-#          DEPART=12 FINISH=13 SEARCH=14 GAP=15 CROSSING=16.
+#          MANUAL_STOP=7 CONFIRM=8 ACQUIRE_TIMEOUT=9 RUN_LIMIT=10 LOW_CONTRAST=11.
 
 def validate(c):
-    for n in ('calibration_measured','drive_enabled','lap_enabled'):
+    for n in ('calibration_measured','drive_enabled'):
         if type(c[n]) is not bool:raise ValueError(n+' must be boolean')
     if c['drive_enabled'] and not c['calibration_measured']:
         raise ValueError('Drive enable requires measured calibration')
@@ -30,12 +29,7 @@ def validate(c):
             'max_jump':(1,2000),'uncertain_stop_ms':(40,500),'acquire_timeout_ms':(200,5000),
             'max_run_ms':(1000,300000),'base_pwm':(1,255),'curve_pwm':(1,255),
             'uncertain_pwm':(1,255),'min_pwm':(1,254),'max_pwm':(2,255),
-            'kp':(0,150),'kd':(0,10),'slew_pwm_per_tick':(1,50),
-            'search_timeout_ms':(100,1500),'gap_timeout_ms':(40,500),
-            'wide_timeout_ms':(100,1000),'search_edge':(300,1000),
-            'search_pwm':(25,100),'departure_pwm':(25,100),
-            'departure_confirm_ms':(100,2000),'min_lap_ms':(1000,240000),
-            'finish_confirm_ms':(50,900)}
+            'kp':(0,150),'kd':(0,10),'slew_pwm_per_tick':(1,50)}
     for n,(lo,hi) in bounds.items():
         if type(c[n]) is not int or not lo<=c[n]<=hi:raise ValueError('Invalid '+n)
     if not c['weight_floor']<c['off_strength']<c['on_strength']:raise ValueError('Invalid hysteresis/floor')
@@ -44,20 +38,6 @@ def validate(c):
     if not c['period_ms']<=c['valid_confirm_ms']<c['uncertain_stop_ms']:
         raise ValueError('Confirmation must fit uncertainty deadline')
     if c['max_tick_gap_ms']<2*c['period_ms']:raise ValueError('Timing gap too small')
-    if not c['valid_confirm_ms']<min(c['search_timeout_ms'],c['gap_timeout_ms']):
-        raise ValueError('Recovery must allow line confirmation')
-    if not c['valid_confirm_ms']<c['finish_confirm_ms']<c['wide_timeout_ms']:
-        raise ValueError('Finish confirmation must fit wide deadline')
-    if not c['departure_confirm_ms']<c['min_lap_ms']<c['max_run_ms']:
-        raise ValueError('Lap timing must fit run limit')
-    if max(c['search_pwm'],c['departure_pwm'])>c['max_pwm']:
-        raise ValueError('Recovery/departure PWM exceeds cap')
-    if type(c.get('wide_pwm',c['uncertain_pwm'])) is not int or not c['min_pwm']<=c.get('wide_pwm',c['uncertain_pwm'])<=c['max_pwm']:
-        raise ValueError('Invalid wide PWM')
-    if type(c.get('wide_hint_ms',0)) is not int or not 0<=c.get('wide_hint_ms',0)<=500:
-        raise ValueError('Invalid wide hint age')
-    if type(c.get('swap_motor_channels',False)) is not bool:
-        raise ValueError('swap_motor_channels must be boolean')
 
 def program(c,profile):
     validate(c);variables={};funcs={}
@@ -71,24 +51,16 @@ def program(c,profile):
         'maxJump':c['max_jump'],'uncertainStopMs':c['uncertain_stop_ms'],
         'acquireTimeoutMs':c['acquire_timeout_ms'],'maxRunMs':c['max_run_ms'],
         'basePwm':c['base_pwm'],'curvePwm':c['curve_pwm'],'uncertainPwm':c['uncertain_pwm'],
-        'minPwm':c['min_pwm'],'maxPwm':c['max_pwm'],'kp':c['kp'],'kd':c['kd'],'slewPwm':c['slew_pwm_per_tick'],
-        'lapEnabled':int(c['lap_enabled']),'searchTimeoutMs':c['search_timeout_ms'],
-        'gapTimeoutMs':c['gap_timeout_ms'],'wideTimeoutMs':c['wide_timeout_ms'],
-        'searchEdge':c['search_edge'],'searchPwm':c['search_pwm'],'departurePwm':c['departure_pwm'],
-        'departureConfirmMs':c['departure_confirm_ms'],'minLapMs':c['min_lap_ms'],
-        'finishConfirmMs':c['finish_confirm_ms'],'widePwm':c.get('wide_pwm',c['uncertain_pwm']),
-        'wideHintMs':c.get('wide_hint_ms',0),'swapMotorChannels':int(c.get('swap_motor_channels',False))}
+        'minPwm':c['min_pwm'],'maxPwm':c['max_pwm'],'kp':c['kp'],'kd':c['kd'],'slewPwm':c['slew_pwm_per_tick']}
     for n,v in settings.items():var(n,v,'unsigned long' if n.endswith('Ms') else 'long')
-    for n in ('nowMs','lastTickMs','dtMs','logAtMs','runAtMs','buttonAtMs','candidateAtMs','uncertainAtMs','elapsedMs','tick','rejected','timingFaults',
-              'recoveryBudgetMs','lineAtMs','wideAtMs','hintAtMs'):
+    for n in ('nowMs','lastTickMs','dtMs','logAtMs','runAtMs','buttonAtMs','candidateAtMs','uncertainAtMs','elapsedMs','tick','rejected','timingFaults'):
         var(n,0,'unsigned long')
     for n in ('controlState','reason','maskF','activeCount','contrast','maxStrength','minStrength',
               'weighted','totalW','candidatePos','lastPosition','pendingPos','candidatePending',
               'difference','absDifference','validCandidate','candidateAccepted','hasPosition',
               'derivative','slope','tickDt','correction','lastCorrection','magnitude','targetBase','limitPwm',
               'leftTarget','rightTarget','leftPwm','rightPwm','buttonLow','buttonPrevious',
-              'buttonReleased','buttonEvent','historyReady','wasTracking',
-              'recoveryKind','departed','linePending','widePending','hintValid','hintPosition','wideTurn'):
+              'buttonReleased','buttonEvent','historyReady','wasTracking'):
         var(n,6 if n=='controlState' and capture else 0)
     for i,(a,b) in enumerate(zip(c['line_adc_A5_to_A1'],c['background_adc_A5_to_A1'])):
         for n,v in ((f'line{i}',a),(f'background{i}',b),(f'raw{i}',0),(f'norm{i}',0),
@@ -115,8 +87,6 @@ def program(c,profile):
         cond(both(eq('buttonLow',0),ge('elapsedMs',25)),[setv('buttonReleased',1)]),
         cond(both(both(eq('buttonLow',1),eq('buttonReleased',1)),ge('elapsedMs',25)),[setv('buttonReleased',0),setv('buttonEvent',1)])]
     funcs['start_run']=[setv('controlState',1),setv('reason',8),setv('runAtMs','nowMs'),
-        setv('departed',0),setv('linePending',0),setv('widePending',0),setv('recoveryKind',0),
-        setv('hintValid',0),setv('hintPosition',0),setv('wideTurn',0),
         setv('candidatePending',0),setv('hasPosition',0),setv('historyReady',0),
         setv('lastPosition',0),setv('lastCorrection',0),setv('derivative',0),
         setv('leftPwm',0),setv('rightPwm',0)]
@@ -125,7 +95,7 @@ def program(c,profile):
                (both(eq('on1',1),both(eq('on2',0),eq('on3',1))),[setv('reason',3)]),
                (lt('contrast','minContrast'),[setv('reason',11)])],
               [setv('validCandidate',1),setv('reason',0),setv('candidatePos',div('weighted','totalW'))])]
-    # Freeze one recovery budget/direction on entry. Blips or reason changes never extend it.
+    # All uncertainty reasons share ONE deadline. Brief valid blips cannot reset it.
     funcs['check_candidate']=[call('classify'),cond(eq('validCandidate',1),[
         setv('difference',sub('candidatePos','lastPosition')),setv('absDifference','difference'),
         cond(lt('absDifference',0),[setv('absDifference',sub(0,'absDifference'))]),
@@ -152,70 +122,29 @@ def program(c,profile):
         cond(lt('correction',sub(0,'limitPwm')),[setv('correction',sub(0,'limitPwm'))]),
         setv('leftTarget',add('targetBase','correction')),setv('rightTarget',sub('targetBase','correction')),
         setv('lastCorrection','correction'),setv('lastPosition','candidatePos'),setv('hasPosition',1),
-        cond(ge('magnitude','searchEdge'),[
-            setv('hintValid',1),setv('hintPosition','candidatePos'),setv('hintAtMs','nowMs')]),
         setv('controlState',2),setv('reason',0),setv('candidatePending',0)]
     funcs['steer']=steering
     funcs['hold_course']=[setv('limitPwm',sub('uncertainPwm','minPwm')),setv('correction','lastCorrection'),
         cond(gt('correction','limitPwm'),[setv('correction','limitPwm')]),
         cond(lt('correction',sub(0,'limitPwm')),[setv('correction',sub(0,'limitPwm'))]),
         setv('leftTarget',add('uncertainPwm','correction')),setv('rightTarget',sub('uncertainPwm','correction'))]
-    funcs['begin_recovery']=[setv('controlState',3),setv('uncertainAtMs','nowMs'),setv('derivative',0),
-        setv('recoveryKind',0),setv('recoveryBudgetMs','uncertainStopMs'),setv('wideTurn',0),
-        cases([(eq('activeCount',0),[
-            setv('recoveryKind',1),setv('recoveryBudgetMs','gapTimeoutMs'),
-            cases([(le('lastPosition',sub(0,'searchEdge')),[setv('recoveryKind',2),setv('recoveryBudgetMs','searchTimeoutMs')]),
-                   (ge('lastPosition','searchEdge'),[setv('recoveryKind',3),setv('recoveryBudgetMs','searchTimeoutMs')])])]),
-               (eq('activeCount',3),[setv('recoveryKind',4),setv('recoveryBudgetMs','wideTimeoutMs'),
-                   setv('elapsedMs',sub('nowMs','hintAtMs')),
-                   cond(both(both(eq('hintValid',1),gt('wideHintMs',0)),le('elapsedMs','wideHintMs')),[
-                       cond(lt('hintPosition',0),[setv('wideTurn',-1)],[setv('wideTurn',1)])])])])]
-    left_search=[setv('leftTarget',0),setv('rightTarget','searchPwm'),setv('reason',14)]
-    right_search=[setv('rightTarget',0),setv('leftTarget','searchPwm'),setv('reason',14)]
-    centered_gap=[setv('leftTarget','uncertainPwm'),setv('rightTarget','uncertainPwm'),setv('reason',15)]
-    wide_lost=[cond(gt('wideHintMs',0),centered_gap+[
-        cases([(eq('wideTurn',-1),left_search),(eq('wideTurn',1),right_search)])])]
-    lost_recovery=[cases([(eq('recoveryKind',2),left_search),(eq('recoveryKind',3),right_search),
-                          (eq('recoveryKind',1),centered_gap),(eq('recoveryKind',4),wide_lost)])]
-    funcs['recover']=[call('hold_course'),cases([
-        (eq('activeCount',0),lost_recovery),
-        (both(eq('activeCount',3),eq('recoveryKind',4)),[
-            setv('leftTarget','widePwm'),setv('rightTarget','widePwm'),setv('reason',16)])])]
     fault=lambda reason:[setv('controlState',5),setv('reason',reason),setv('leftTarget',0),setv('rightTarget',0)]
     normal=[setv('wasTracking',eq('controlState',2)),call('check_candidate'),
         cond(eq('candidateAccepted',1),[call('steer')],[setv('rejected',add('rejected',1)),
-            cond(eq('controlState',2),[call('begin_recovery')]),
-            cond(eq('controlState',3),[call('recover')]),
-            cond(both(both(eq('controlState',1),eq('lapEnabled',1)),eq('activeCount',3)),[
-                setv('leftTarget','departurePwm'),setv('rightTarget','departurePwm'),setv('reason',12)])])]
-    funcs['lap_update']=[
-        cond(both(eq('controlState',2),eq('candidateAccepted',1)),[
-            cond(eq('linePending',0),[setv('linePending',1),setv('lineAtMs','nowMs')]),
-            setv('elapsedMs',sub('nowMs','lineAtMs')),
-            cond(ge('elapsedMs','departureConfirmMs'),[setv('departed',1)])],[setv('linePending',0)]),
-        cond(both(both(eq('lapEnabled',1),eq('departed',1)),
-                  both(both(eq('controlState',3),eq('recoveryKind',4)),eq('activeCount',3))),[
-            setv('elapsedMs',sub('nowMs','runAtMs')),
-            cond(ge('elapsedMs','minLapMs'),[
-                cond(eq('widePending',0),[setv('widePending',1),setv('wideAtMs','nowMs')]),
-                setv('elapsedMs',sub('nowMs','wideAtMs')),
-                cond(ge('elapsedMs','finishConfirmMs'),[
-                    setv('controlState',4),setv('reason',13),setv('leftTarget',0),setv('rightTarget',0)])],
-                [setv('widePending',0)])],[setv('widePending',0)])]
+            cond(eq('controlState',2),[setv('controlState',3),setv('uncertainAtMs','nowMs'),setv('derivative',0)]),
+            cond(eq('controlState',3),[call('hold_course')])])]
     funcs['run_control']=[setv('elapsedMs',sub('nowMs','runAtMs')),
         cases([(ge('elapsedMs','maxRunMs'),[setv('controlState',4),setv('reason',10)]),
                (both(eq('controlState',1),ge('elapsedMs','acquireTimeoutMs')),fault(9))],[
             setv('elapsedMs',sub('nowMs','uncertainAtMs')),
-            cond(both(eq('controlState',3),ge('elapsedMs','recoveryBudgetMs')),fault(1),normal+[call('lap_update')])])]
+            cond(both(eq('controlState',3),ge('elapsedMs','uncertainStopMs')),fault(1),normal)])]
     motors=[]
     for side in ('left','right'):
         t=side+'Target';p=side+'Pwm'
         motors += [cond(gt(t,'maxPwm'),[setv(t,'maxPwm')]),cond(lt(t,0),[setv(t,0)]),
             cases([(le(t,0),[setv(p,0)]),(gt(t,p),[
                 setv(p,add(p,'slewPwm')),cond(lt(p,'minPwm'),[setv(p,'minPwm')]),cond(gt(p,t),[setv(p,t)])])],[setv(p,t)])]
-    motors += [('digitalwrite','7',0),('digitalwrite','4',1),
-        cond(eq('swapMotorChannels',1),[('pwm','5','rightPwm'),('pwm','6','leftPwm')],
-             [('pwm','5','leftPwm'),('pwm','6','rightPwm')])]
+    motors += [('digitalwrite','7',0),('digitalwrite','4',1),('pwm','5','leftPwm'),('pwm','6','rightPwm')]
     funcs['write_motors']=motors
     fields=['nowMs','tick','dtMs']+[f'raw{i}' for i in range(5)]+['maskF','controlState','reason',
         'candidatePos','lastPosition','contrast','leftPwm','rightPwm','rejected','timingFaults']

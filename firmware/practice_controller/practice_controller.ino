@@ -23,19 +23,6 @@ long maxPwm;
 long kp;
 long kd;
 long slewPwm;
-long lapEnabled;
-unsigned long searchTimeoutMs;
-unsigned long gapTimeoutMs;
-unsigned long wideTimeoutMs;
-long searchEdge;
-long searchPwm;
-long departurePwm;
-unsigned long departureConfirmMs;
-unsigned long minLapMs;
-unsigned long finishConfirmMs;
-long widePwm;
-unsigned long wideHintMs;
-long swapMotorChannels;
 unsigned long nowMs;
 unsigned long lastTickMs;
 unsigned long dtMs;
@@ -48,10 +35,6 @@ unsigned long elapsedMs;
 unsigned long tick;
 unsigned long rejected;
 unsigned long timingFaults;
-unsigned long recoveryBudgetMs;
-unsigned long lineAtMs;
-unsigned long wideAtMs;
-unsigned long hintAtMs;
 long controlState;
 long reason;
 long maskF;
@@ -88,13 +71,6 @@ long buttonReleased;
 long buttonEvent;
 long historyReady;
 long wasTracking;
-long recoveryKind;
-long departed;
-long linePending;
-long widePending;
-long hintValid;
-long hintPosition;
-long wideTurn;
 long line0;
 long background0;
 long raw0;
@@ -137,9 +113,6 @@ void classify();
 void check_candidate();
 void steer();
 void hold_course();
-void begin_recovery();
-void recover();
-void lap_update();
 void run_control();
 void write_motors();
 void telemetry();
@@ -318,13 +291,6 @@ void start_run() {
 controlState = 1L;
 reason = 8L;
 runAtMs = nowMs;
-departed = 0L;
-linePending = 0L;
-widePending = 0L;
-recoveryKind = 0L;
-hintValid = 0L;
-hintPosition = 0L;
-wideTurn = 0L;
 candidatePending = 0L;
 hasPosition = 0L;
 historyReady = 0L;
@@ -431,11 +397,6 @@ rightTarget = (targetBase - correction);
 lastCorrection = correction;
 lastPosition = candidatePos;
 hasPosition = 1L;
-if ((magnitude >= searchEdge)) {
-hintValid = 1L;
-hintPosition = candidatePos;
-hintAtMs = nowMs;
-}
 controlState = 2L;
 reason = 0L;
 candidatePending = 0L;
@@ -454,121 +415,6 @@ leftTarget = (uncertainPwm + correction);
 rightTarget = (uncertainPwm - correction);
 }
 
-void begin_recovery() {
-controlState = 3L;
-uncertainAtMs = nowMs;
-derivative = 0L;
-recoveryKind = 0L;
-recoveryBudgetMs = uncertainStopMs;
-wideTurn = 0L;
-if ((activeCount == 0L)) {
-recoveryKind = 1L;
-recoveryBudgetMs = gapTimeoutMs;
-if ((lastPosition <= (0L - searchEdge))) {
-recoveryKind = 2L;
-recoveryBudgetMs = searchTimeoutMs;
-}
-else if ((lastPosition >= searchEdge)) {
-recoveryKind = 3L;
-recoveryBudgetMs = searchTimeoutMs;
-}
-}
-else if ((activeCount == 3L)) {
-recoveryKind = 4L;
-recoveryBudgetMs = wideTimeoutMs;
-elapsedMs = (nowMs - hintAtMs);
-if ((((hintValid == 1L) && (wideHintMs > 0L)) && (elapsedMs <= wideHintMs))) {
-if ((hintPosition < 0L)) {
-wideTurn = -1L;
-}
-else {
-wideTurn = 1L;
-}
-}
-}
-}
-
-void recover() {
-hold_course();
-if ((activeCount == 0L)) {
-if ((recoveryKind == 2L)) {
-leftTarget = 0L;
-rightTarget = searchPwm;
-reason = 14L;
-}
-else if ((recoveryKind == 3L)) {
-rightTarget = 0L;
-leftTarget = searchPwm;
-reason = 14L;
-}
-else if ((recoveryKind == 1L)) {
-leftTarget = uncertainPwm;
-rightTarget = uncertainPwm;
-reason = 15L;
-}
-else if ((recoveryKind == 4L)) {
-if ((wideHintMs > 0L)) {
-leftTarget = uncertainPwm;
-rightTarget = uncertainPwm;
-reason = 15L;
-if ((wideTurn == -1L)) {
-leftTarget = 0L;
-rightTarget = searchPwm;
-reason = 14L;
-}
-else if ((wideTurn == 1L)) {
-rightTarget = 0L;
-leftTarget = searchPwm;
-reason = 14L;
-}
-}
-}
-}
-else if (((activeCount == 3L) && (recoveryKind == 4L))) {
-leftTarget = widePwm;
-rightTarget = widePwm;
-reason = 16L;
-}
-}
-
-void lap_update() {
-if (((controlState == 2L) && (candidateAccepted == 1L))) {
-if ((linePending == 0L)) {
-linePending = 1L;
-lineAtMs = nowMs;
-}
-elapsedMs = (nowMs - lineAtMs);
-if ((elapsedMs >= departureConfirmMs)) {
-departed = 1L;
-}
-}
-else {
-linePending = 0L;
-}
-if ((((lapEnabled == 1L) && (departed == 1L)) && (((controlState == 3L) && (recoveryKind == 4L)) && (activeCount == 3L)))) {
-elapsedMs = (nowMs - runAtMs);
-if ((elapsedMs >= minLapMs)) {
-if ((widePending == 0L)) {
-widePending = 1L;
-wideAtMs = nowMs;
-}
-elapsedMs = (nowMs - wideAtMs);
-if ((elapsedMs >= finishConfirmMs)) {
-controlState = 4L;
-reason = 13L;
-leftTarget = 0L;
-rightTarget = 0L;
-}
-}
-else {
-widePending = 0L;
-}
-}
-else {
-widePending = 0L;
-}
-}
-
 void run_control() {
 elapsedMs = (nowMs - runAtMs);
 if ((elapsedMs >= maxRunMs)) {
@@ -583,7 +429,7 @@ rightTarget = 0L;
 }
 else {
 elapsedMs = (nowMs - uncertainAtMs);
-if (((controlState == 3L) && (elapsedMs >= recoveryBudgetMs))) {
+if (((controlState == 3L) && (elapsedMs >= uncertainStopMs))) {
 controlState = 5L;
 reason = 1L;
 leftTarget = 0L;
@@ -598,18 +444,14 @@ steer();
 else {
 rejected = (rejected + 1L);
 if ((controlState == 2L)) {
-begin_recovery();
+controlState = 3L;
+uncertainAtMs = nowMs;
+derivative = 0L;
 }
 if ((controlState == 3L)) {
-recover();
-}
-if ((((controlState == 1L) && (lapEnabled == 1L)) && (activeCount == 3L))) {
-leftTarget = departurePwm;
-rightTarget = departurePwm;
-reason = 12L;
+hold_course();
 }
 }
-lap_update();
 }
 }
 }
@@ -659,14 +501,8 @@ rightPwm = rightTarget;
 }
 digitalWrite(7,LOW);
 digitalWrite(4,HIGH);
-if ((swapMotorChannels == 1L)) {
-analogWrite(5,rightPwm);
-analogWrite(6,leftPwm);
-}
-else {
 analogWrite(5,leftPwm);
 analogWrite(6,rightPwm);
-}
 }
 
 void telemetry() {
@@ -736,7 +572,7 @@ candidateBand = 250L;
 maxJump = 450L;
 uncertainStopMs = 120L;
 acquireTimeoutMs = 2000L;
-maxRunMs = 180000L;
+maxRunMs = 60000L;
 basePwm = 100L;
 curvePwm = 65L;
 uncertainPwm = 45L;
@@ -745,19 +581,6 @@ maxPwm = 100L;
 kp = 45L;
 kd = 1L;
 slewPwm = 6L;
-lapEnabled = 1L;
-searchTimeoutMs = 650L;
-gapTimeoutMs = 200L;
-wideTimeoutMs = 350L;
-searchEdge = 600L;
-searchPwm = 65L;
-departurePwm = 45L;
-departureConfirmMs = 300L;
-minLapMs = 15000L;
-finishConfirmMs = 250L;
-widePwm = 45L;
-wideHintMs = 0L;
-swapMotorChannels = 0L;
 nowMs = 0L;
 lastTickMs = 0L;
 dtMs = 0L;
@@ -770,10 +593,6 @@ elapsedMs = 0L;
 tick = 0L;
 rejected = 0L;
 timingFaults = 0L;
-recoveryBudgetMs = 0L;
-lineAtMs = 0L;
-wideAtMs = 0L;
-hintAtMs = 0L;
 controlState = 0L;
 reason = 0L;
 maskF = 0L;
@@ -810,13 +629,6 @@ buttonReleased = 0L;
 buttonEvent = 0L;
 historyReady = 0L;
 wasTracking = 0L;
-recoveryKind = 0L;
-departed = 0L;
-linePending = 0L;
-widePending = 0L;
-hintValid = 0L;
-hintPosition = 0L;
-wideTurn = 0L;
 line0 = 35L;
 background0 = 500L;
 raw0 = 0L;

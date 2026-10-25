@@ -31,118 +31,20 @@ int main(){
 #ifdef CAPTURE_TEST
  reset();configReady=1;
  for(int m=0;m<32;++m){mockButton=m%2;stable(m,30);check(controlState==6&&leftPwm==0&&rightPwm==0);}
-#elif defined(FIELD_PROFILE_TEST) || defined(FIELD_CROSSING_TEST) || defined(FIELD_MOTOR_SWAP_TEST)
- // Execute the measured, armed field profile, not the unarmed default profile.
- reset();check(configReady==1&&lapEnabled==0&&maxPwm==70&&basePwm==60&&maxRunMs==60000);
- stable(4,30);check(controlState==0&&leftPwm==0&&rightPwm==0); // Boot never starts motion.
- reset();mockButton=0;stable(4,30);check(controlState==0&&leftPwm==0&&rightPwm==0);
- start();check(controlState==2&&leftPwm==basePwm&&rightPwm==basePwm);
- for(int edge:{8,2}){
-  start();stable(edge,15);check(controlState==2);
-  if(edge==8)check(leftPwm<rightPwm);else check(rightPwm<leftPwm);
-  stable(0,8);check(controlState==3&&reason==14);
-  if(edge==8)check(leftPwm==0&&rightPwm==searchPwm);else check(rightPwm==0&&leftPwm==searchPwm);
-  stable(edge,8);check(controlState==2);
-  stable(0,80);check(controlState==5&&leftPwm==0&&rightPwm==0);
- }
- start();stable(0,8);check(controlState==3&&reason==15&&leftPwm==rightPwm);
- stable(4,8);check(controlState==2);
- start();stable(0,35);check(controlState==5&&leftPwm==0&&rightPwm==0);
- start();stable(14,(int)(wideTimeoutMs/10+10));check(controlState==5&&reason!=13); // Lap detection stays disabled.
- reset();stable(14,4);mockButton=0;stable(14,4);mockButton=1;stable(14,30);
- check(controlState==1&&leftPwm==0&&rightPwm==0); // Narrow-line start required.
- stable(14,200);check(controlState==5&&reason==9);
- start();mockButton=0;stable(4,4);check(controlState==4&&reason==7&&leftPwm==0&&rightPwm==0);
- start();sample(4,51);check(controlState==5&&reason==6&&leftPwm==0&&rightPwm==0);
- start();runAtMs=mockNow-maxRunMs;sample(4);check(controlState==4&&reason==10&&leftPwm==0&&rightPwm==0);
- // Outer detectors remain logged-only under the measured endpoints.
- for(int outer=0;outer<4;++outer){
-  start();stable(4|((outer&1)?1:0)|((outer&2)?16:0),20);
-  check(controlState==2&&lastPosition==0&&leftPwm==basePwm&&rightPwm==basePwm);
- }
-#if defined(FIELD_CROSSING_TEST) || defined(FIELD_MOTOR_SWAP_TEST)
- check(widePwm==50&&wideTimeoutMs==900&&wideHintMs==250&&searchEdge==400);
- start();stable(14,45);check(controlState==3&&reason==16&&leftPwm==50&&rightPwm==50);
- stable(4,8);check(controlState==2); // Crossing lasting longer than the old 350 ms deadline.
- for(int edge:{12,6}){
-  start();stable(edge,15);stable(4,6);check(controlState==2&&lastPosition==0);
-  stable(14,8);check(controlState==3&&wideTurn==(edge==12?-1:1));
-  unsigned long entry=uncertainAtMs;
-  stable(0,8);check(controlState==3&&reason==14&&uncertainAtMs==entry);
-  if(edge==12)check(leftPwm==0&&rightPwm==searchPwm);else check(rightPwm==0&&leftPwm==searchPwm);
-  stable(edge,8);check(controlState==2);
- }
- start();stable(12,15);stable(4,40);stable(14,8);check(wideTurn==0);
- stable(0,8);check(controlState==3&&reason==15&&leftPwm==rightPwm); // Expired hint cannot choose a corner.
- start();stable(14,8);unsigned long entry=uncertainAtMs;
- for(int i=0;i<100;++i)sample(i%2?4:14);
- check(controlState==5&&uncertainAtMs==entry&&leftPwm==0&&rightPwm==0); // Blips cannot extend deadline.
- start();stable(12,15);stable(14,8);stable(0,85);
- check(controlState==5&&leftPwm==0&&rightPwm==0); // Wide-to-black cannot restart a search timer.
- start();stable(14,8);mockButton=0;stable(14,4);check(controlState==4&&reason==7&&leftPwm==0&&rightPwm==0);
-#endif
-#ifdef FIELD_MOTOR_SWAP_TEST
- check(swapMotorChannels==1);
- reset();stable(4,30);check(mockPwm[5]==0&&mockPwm[6]==0);
- reset();mockButton=0;stable(4,30);check(mockPwm[5]==0&&mockPwm[6]==0);
- for(int edge:{2,8}){
-  start();stable(edge,15);
-  check(mockPwm[5]==rightPwm&&mockPwm[6]==leftPwm);
-  if(edge==2)check(mockPwm[6]>mockPwm[5]);else check(mockPwm[5]>mockPwm[6]);
-  stable(0,8);check(reason==14&&controlState==3);
-  if(edge==2)check(mockPwm[6]==searchPwm&&mockPwm[5]==0);else check(mockPwm[5]==searchPwm&&mockPwm[6]==0);
-  stable(0,80);check(controlState==5&&mockPwm[5]==0&&mockPwm[6]==0);
- }
- start();stable(14,8);check(mockPwm[5]==50&&mockPwm[6]==50);
- mockButton=0;stable(14,4);check(controlState==4&&mockPwm[5]==0&&mockPwm[6]==0);
- start();stable(2,15);sample(2,51);check(controlState==5&&mockPwm[5]==0&&mockPwm[6]==0);
-#endif
 #else
  reset();mockButton=0;stable(4,30);check(controlState==0&&leftPwm==0&&rightPwm==0); // Unarmed cannot drive.
  reset();configReady=1;mockButton=0;stable(4,30);check(controlState==0); // Held at boot cannot start.
  start();check(leftPwm==100&&rightPwm==100);
  // Short all-on white-text flash: reject, slow, never reinterpret as straight intersection.
- sample(14);check(controlState==3&&reason==16);check(leftPwm<=65&&rightPwm<=65);
+ sample(14);check(controlState==3&&reason==2);check(leftPwm<=65&&rightPwm<=65);
  stable(4,2);check(controlState==3);stable(4,5);check(controlState==2&&derivative==0);
  // Sustained full-width, split and lost observations all have bounded motion.
- for(int m:{0,10,14}){start();stable(m,40);check(controlState==5&&leftPwm==0&&rightPwm==0);stable(4,20);check(controlState==5);}
+ for(int m:{0,10,14}){start();stable(m,20);check(controlState==5&&leftPwm==0&&rightPwm==0);stable(4,20);check(controlState==5);}
  start();for(int i=0;i<20;++i)sample(i%2?0:10);check(controlState==5); // Alternation cannot reset watchdog.
- start();for(int i=0;i<50;++i)sample(i%2?4:14);check(controlState==5); // Brief valid blips cannot reset it.
+ start();for(int i=0;i<20;++i)sample(i%2?4:14);check(controlState==5); // Brief valid blips cannot reset it.
  start();sample(8);check(controlState==3);stable(4,8);check(controlState==2&&lastPosition==0); // Reject brief side text.
  start();stable(8,15);check(controlState==2&&lastPosition<0&&leftPwm<rightPwm);
  start();stable(2,15);check(controlState==2&&lastPosition>0&&rightPwm<leftPwm);
- // Recent edge position selects a bounded tight turn with the inner wheel stopped.
- for(int edge:{8,2}){
-  start();stable(edge,15);stable(0,8);check(controlState==3&&reason==14);
-  if(edge==8)check(leftPwm==0&&rightPwm==searchPwm);else check(rightPwm==0&&leftPwm==searchPwm);
-  stable(edge,8);check(controlState==2); // Continuous reacquisition exits recovery.
-  stable(0,80);check(controlState==5&&leftPwm==0&&rightPwm==0);
- }
- start();stable(0,8);check(controlState==3&&reason==15&&leftPwm==rightPwm);
- stable(4,8);check(controlState==2); // Short centered gap is traversed without inventing a turn.
- start();stable(8,15);stable(4,15);stable(0,8);check(recoveryKind==1); // Old corner direction is not reused.
- start();stable(8,15);stable(0,3);unsigned long deadline=uncertainAtMs;
- for(int i=0;i<80;++i)sample(i%2?4:0);check(controlState==5&&uncertainAtMs==deadline);
- // Starting on the full-width patch drives straight; black at start remains unpowered.
- reset();configReady=1;stable(14,4);mockButton=0;stable(14,4);mockButton=1;
- stable(14,30);check(controlState==1&&reason==12&&leftPwm==departurePwm&&rightPwm==departurePwm&&departed==0);
- stable(4,40);check(controlState==2&&departed==1);
- stable(14,30);check(controlState==3); // Early full-width patch is not a finish.
- stable(4,10);check(controlState==2);
- // Only a new continuously wide patch after departure and the minimum lap time can finish.
- runAtMs=mockNow-minLapMs;stable(14,30);check(controlState==4&&reason==13&&leftPwm==0&&rightPwm==0);
- stable(4,30);check(controlState==4&&reason==13);
- mockButton=0;stable(4,4);check(controlState==1&&departed==0); // Manual restart resets the lap latch.
- start();stable(4,40);runAtMs=mockNow-minLapMs;stable(14,10);stable(4,8);
- check(controlState==2);stable(14,10);check(controlState==3); // White bursts do not accumulate.
- start();lapEnabled=0;stable(4,40);runAtMs=mockNow-minLapMs;stable(14,45);check(controlState==5&&reason!=13);
- reset();configReady=1;stable(0,4);mockButton=0;stable(0,4);stable(0,10);check(leftPwm==0&&rightPwm==0);
- reset();configReady=1;stable(14,4);mockButton=0;stable(14,4);stable(14,210);
- check(controlState==5&&reason==9&&leftPwm==0&&rightPwm==0); // Cannot leave start: acquisition deadline.
- start();runAtMs=mockNow-minLapMs;stable(14,45);check(departed==0&&controlState==5&&reason!=13);
- // Manual/timing stops override active corner search.
- start();stable(8,15);stable(0,5);mockButton=0;stable(0,4);check(controlState==4&&leftPwm==0&&rightPwm==0);
- start();stable(8,15);stable(0,5);sample(0,51);check(controlState==5&&reason==6&&leftPwm==0&&rightPwm==0);
  // Every center pattern responds identically under any raw outer detector values.
  for(int middle=0;middle<8;++middle){
   long reference[7]={};

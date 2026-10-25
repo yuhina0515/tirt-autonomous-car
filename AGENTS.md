@@ -1,5 +1,13 @@
 # Project working rules
 
+## Active baseline after user-directed rollback (2026-10-25)
+
+- Root car.xml and car.ino are the active three-center-sensor PWM100 baseline from self-driving_car. Read README.md, car.md and three_sensor/README.md before strategy changes.
+- The user requested removal of today's controller experiments and restoration of the original strategy. Preserve its behavior until a concrete strategy change is specified.
+- For this baseline edit CAGEBOT XML and export Arduino from that XML. build.py/config.json only own the retained temporal candidate under firmware/, not root car.xml.
+- The user requested no additional testing for this rollback. No tests or upload were run; do not imply new hardware acceptance.
+- The temporal-controller rules below apply to that retained candidate.
+
 - Use Traditional Chinese for teammate guidance; code, logs and commits use English.
 - Change behavior in build.py and parameters in config JSON; regenerate XML and
   Arduino together. Both must describe the same program. Never promise arbitrary

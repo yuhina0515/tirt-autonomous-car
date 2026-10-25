@@ -37,12 +37,6 @@ try {
   if(-not $captureBaud){$captureBaud=9600}
   $captureLabel=Read-Host 'Label: LINE BACKGROUND TEXT TRACK MARKER UNLABELLED (Enter=UNLABELLED)'
   if(-not $captureLabel){$captureLabel='UNLABELLED'}
-  $captureLabel=$captureLabel.Trim().ToUpperInvariant()
-  $labelAliases=@{L='LINE';G='BACKGROUND';T='TEXT';R='TRACK';M='MARKER';U='UNLABELLED'}
-  if($labelAliases.ContainsKey($captureLabel)){$captureLabel=$labelAliases[$captureLabel]}
-  if($captureLabel -notin @('LINE','BACKGROUND','TEXT','TRACK','MARKER','UNLABELLED')){
-   throw 'Unknown label. Use L/G/T/R/M/U or LINE/BACKGROUND/TEXT/TRACK/MARKER/UNLABELLED.'
-  }
   & powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$PSScriptRoot\collect.ps1" -Port $capturePort -Baud $captureBaud -Label $captureLabel -Seconds 1800 -OutputDirectory $captureRoot
   $captureResult=$LASTEXITCODE
   Write-Host "Capture exit code: $captureResult"
