@@ -31,6 +31,35 @@ int main(){
 #ifdef CAPTURE_TEST
  reset();configReady=1;
  for(int m=0;m<32;++m){mockButton=m%2;stable(m,30);check(controlState==6&&leftPwm==0&&rightPwm==0);}
+#elif defined(FIELD_PROFILE_TEST)
+ // Execute the measured, armed field profile, not the unarmed default profile.
+ reset();check(configReady==1&&lapEnabled==0&&maxPwm==70&&basePwm==60&&maxRunMs==60000);
+ stable(4,30);check(controlState==0&&leftPwm==0&&rightPwm==0); // Boot never starts motion.
+ reset();mockButton=0;stable(4,30);check(controlState==0&&leftPwm==0&&rightPwm==0);
+ start();check(controlState==2&&leftPwm==basePwm&&rightPwm==basePwm);
+ for(int edge:{8,2}){
+  start();stable(edge,15);check(controlState==2);
+  if(edge==8)check(leftPwm<rightPwm);else check(rightPwm<leftPwm);
+  stable(0,8);check(controlState==3&&reason==14);
+  if(edge==8)check(leftPwm==0&&rightPwm==searchPwm);else check(rightPwm==0&&leftPwm==searchPwm);
+  stable(edge,8);check(controlState==2);
+  stable(0,80);check(controlState==5&&leftPwm==0&&rightPwm==0);
+ }
+ start();stable(0,8);check(controlState==3&&reason==15&&leftPwm==rightPwm);
+ stable(4,8);check(controlState==2);
+ start();stable(0,35);check(controlState==5&&leftPwm==0&&rightPwm==0);
+ start();stable(14,45);check(controlState==5&&reason!=13); // Lap detection stays disabled.
+ reset();stable(14,4);mockButton=0;stable(14,4);mockButton=1;stable(14,30);
+ check(controlState==1&&leftPwm==0&&rightPwm==0); // Narrow-line start required.
+ stable(14,200);check(controlState==5&&reason==9);
+ start();mockButton=0;stable(4,4);check(controlState==4&&reason==7&&leftPwm==0&&rightPwm==0);
+ start();sample(4,51);check(controlState==5&&reason==6&&leftPwm==0&&rightPwm==0);
+ start();runAtMs=mockNow-maxRunMs;sample(4);check(controlState==4&&reason==10&&leftPwm==0&&rightPwm==0);
+ // Outer detectors remain logged-only under the measured endpoints.
+ for(int outer=0;outer<4;++outer){
+  start();stable(4|((outer&1)?1:0)|((outer&2)?16:0),20);
+  check(controlState==2&&lastPosition==0&&leftPwm==basePwm&&rightPwm==basePwm);
+ }
 #else
  reset();mockButton=0;stable(4,30);check(controlState==0&&leftPwm==0&&rightPwm==0); // Unarmed cannot drive.
  reset();configReady=1;mockButton=0;stable(4,30);check(controlState==0); // Held at boot cannot start.

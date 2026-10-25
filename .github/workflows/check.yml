@@ -23,3 +23,7 @@ jobs:
         run: |
           g++ -m32 -std=c++17 -I tests -DCAPTURE_TEST '-DSKETCH_FILE="../firmware/stationary_capture/stationary_capture.ino"' tests/native.cpp -o test-output/capture
           test-output/capture
+      - name: Verify measured low-speed field profile
+        run: |
+          g++ -m32 -std=c++17 -I tests -DFIELD_PROFILE_TEST '-DSKETCH_FILE="../firmware/field_low_speed/field_low_speed.ino"' tests/native.cpp -o test-output/field
+          test-output/field

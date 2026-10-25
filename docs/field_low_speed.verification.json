@@ -1,0 +1,47 @@
+{
+  "date": "2026-10-25",
+  "release": "v0.3.1-rc.1",
+  "python_tests_passed": 16,
+  "native_field": {
+    "assertions": 2304,
+    "trace": "46645c4a",
+    "unsigned_long_bytes": 4
+  },
+  "native_default": {
+    "assertions": 9090,
+    "trace": "204e974a"
+  },
+  "native_capture": {
+    "assertions": 1952,
+    "trace": "17512a2b"
+  },
+  "vendor_import_blocks": 1501,
+  "vendor_native_trace_parity": true,
+  "vendor_xml_roundtrip_byte_parity": true,
+  "local_and_vendor_avr": {
+    "fqbn": "arduino:avr:nano:cpu=atmega328old",
+    "flash_bytes": 14006,
+    "ram_bytes": 638
+  },
+  "capture_avr": {
+    "flash_bytes": 7984,
+    "ram_bytes": 438
+  },
+  "drive_armed": true,
+  "lap_enabled": false,
+  "max_pwm": 70,
+  "physical_acceptance": false,
+  "hardware_upload": "NOT RUN",
+  "files": {
+    "build.py": "66463334f1ac768d1f004331a4b5e92e7d975f3a3d3aaef7b137857bba82c712",
+    "blockly_codegen.py": "e37f4e2f24e811f3b5cbc4aa59773ee2fa3b1cb78f86bb4ef50929e4450bf469",
+    "configs/field_low_speed_20261025.json": "9c3a9af40e6b6c80050627babe45ec061920488d63300bf52107b7cf2a48a469",
+    "configs/field_low_speed_20261025.evidence.json": "c4feec7f38243a2abb546d4865a58a271e70b7e5b9356f1eecdbfe7b963aa6dd",
+    "firmware/field_low_speed/manifest.json": "d6608b88edad04f926a2736572e50f4d852068f3eb561943c3aa318699e5022e",
+    "firmware/field_low_speed/field_low_speed.xml": "f3cb2f5228cde8f5bae3226556014bf8a76475e442e5c9654df941efcddf10a3",
+    "firmware/field_low_speed/field_low_speed.ino": "adee07ff28fc32483a222636142ba1524c3533210c7d988f34ce82d4dcb1dacc",
+    "tests/native.cpp": "70165479b2f55b800b99af3de57a922ad85072e4c2d66dd7c8832b0858abfc72",
+    "tests/test_tools.py": "6940c59c39e788e5bbabe2695778444e62a01ee7a2560387af3995636ae1c82a",
+    "tools/Start-LiveCapture.ps1": "9169e75b655dfae7e3dfdad64c272a72b6530aa5398394a14f9aad8cbe8d83ed"
+  }
+}
