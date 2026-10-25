@@ -2,6 +2,8 @@
 
 ## Active baseline after user-directed rollback (2026-10-25)
 
+- CAGEBOT import fix: never compare a Boolean block with numeric0; use integer turnCaptureVisible set by conditional first. export_car.mjs now waits for Blockly onchange and checks every XML parent connection before writing Arduino. Old XML detached two comparison inputs; fixed XML passes. Read docs/CAGEBOT_CONNECTION_FIX_2026-10-25.zh-TW.md. No vehicle tests/upload.
+
 - Latest Taiwan stop fix:150ms unsupported-search cutoff only before valid capture;800ms total remains. After capture, either single edge steers forward; F0 has one fixed60ms forward-only dropout budget (30/60 or45/45), never restart reverse. F10 is zero-output confirmed20ms, with15ms stable valid clearing; repeated blips share deadline. Read docs/TAIWAN_CORNER_STOP_2026-10-25.zh-TW.md; overrides earlier immediate F10 and post-capture stop rules. No field verification.
 
 - Latest: mild trim expiry retains stage/time, uses curve output until centered30ms; brief trims retain stage throughout. Candidate-only outer warning freezes stage and limits output, confirmed outer/strong side/loss resets. Matching outer candidate plus F2/F8 may enter source0 provisional turn immediately, bounded150ms until outer confirmation. Read docs/STRAIGHT_HOLD_CORNER_ENTRY_2026-10-25.zh-TW.md. Overrides earlier reset-on-trim-expiry rules.

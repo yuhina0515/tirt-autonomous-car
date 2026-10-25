@@ -14,9 +14,27 @@ try {
     await page.addScriptTag({path: path.join(vendorDir, filename)});
   }
   const source = await fs.readFile(xmlPath, 'utf8');
-  const output = await page.evaluate(text => {
+  const output = await page.evaluate(async text => {
     const workspace = new Blockly.Workspace();
-    Blockly.Xml.domToWorkspace(Blockly.Xml.textToDom(text), workspace);
+    const dom = Blockly.Xml.textToDom(text);
+    const warnings = [];
+    Blockly.alert = message => warnings.push(String(message));
+    window.alert = message => warnings.push(String(message));
+    Blockly.Xml.domToWorkspace(dom, workspace);
+    // Loading alone is insufficient: comparison onchange may detach bad inputs.
+    await new Promise(resolve => setTimeout(resolve, 50));
+    const disconnected = [];
+    for (const element of dom.getElementsByTagName('block')) {
+      let parent = element.parentNode;
+      while (parent && parent.nodeName.toLowerCase() !== 'block') parent = parent.parentNode;
+      const block = workspace.getBlockById(element.getAttribute('id'));
+      const expected = parent ? parent.getAttribute('id') : null;
+      const actual = block && block.getParent() ? block.getParent().id : null;
+      if (!block || expected !== actual) disconnected.push(element.getAttribute('id') + ': expected parent ' + expected + ', got ' + actual);
+    }
+    if (warnings.length || disconnected.length) {
+      throw new Error('CAGEBOT import rejected connections: ' + [...warnings, ...disconnected].join('; '));
+    }
     const missing = workspace.getAllBlocks(false).filter(b => !Blockly.Arduino[b.type]);
     if (missing.length) throw new Error('Missing CAGEBOT generators: ' + missing.map(b => b.type).join(','));
     return Blockly.Arduino.workspaceToCode(workspace);

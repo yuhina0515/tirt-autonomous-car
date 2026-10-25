@@ -65,6 +65,7 @@ def add_sharp_turns(root, main, decision):
         'turnCaptureSide': ('int', 0),
         'turnDeparted': ('int', 0),
         'turnCaptureStarted': ('int', 0),
+        'turnCaptureVisible': ('int', 0),
         'TURN_MEMORY_MS': ('unsigned long', 250),
         'TURN_CENTER_CLEAR_MS': ('unsigned long', 80),
         'TURN_DIRECTION_CONFIRM_MS': ('unsigned long', 15),
@@ -241,6 +242,7 @@ def add_sharp_turns(root, main, decision):
     # Total deadline stays fixed; unsupported-search cutoff only precedes capture.
     pivot = [setv('turnElapsed', sub('turnNow', 'turnAt')),
              cond(eq('sensorF', 0), [setv('turnDeparted', 1)]),
+             cond(capture_line, [setv('turnCaptureVisible', 1)], [setv('turnCaptureVisible', 0)]),
              cond(both(eq('turnDirectionSource', 0),
                        both(le('turnElapsed', 'OUTER_OVERRIDE_WINDOW_MS'), eq('outerReady', 1))), [
                  setv('turnDirection', 'outerDirection'), setv('turnDirectionSource', 1)]),
@@ -248,9 +250,9 @@ def add_sharp_turns(root, main, decision):
                          both(eq('OUTER_TURN_ASSIST', 1),
                               both(eq('turnDirectionSource', 0),
                                    both(eq('turnCaptureStarted', 0),
-                                        both(eq(capture_line, False), ge('turnElapsed', 'OUTER_OVERRIDE_WINDOW_MS')))))),
+                                        both(eq('turnCaptureVisible', 0), ge('turnElapsed', 'OUTER_OVERRIDE_WINDOW_MS')))))),
                   [setv('turnFault', 1), setv('turnActive', 0), call('stop')], [
-                 cond(both(ge('turnElapsed', 'TURN_MIN_MS'), capture_line),
+                 cond(both(ge('turnElapsed', 'TURN_MIN_MS'), eq('turnCaptureVisible', 1)),
                       [setv('turnCaptureStarted', 1),
                        cases([(anyof('sensorF', [8, 12]), [setv('turnCaptureSide', -1)]),
                               (anyof('sensorF', [2, 6]), [setv('turnCaptureSide', 1)])],

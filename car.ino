@@ -11,6 +11,7 @@ unsigned long  turnCaptureGapElapsed;
 int  turnCaptureSide;
 int  turnDeparted;
 int  turnCaptureStarted;
+int  turnCaptureVisible;
 unsigned long  TURN_MEMORY_MS;
 unsigned long  TURN_CENTER_CLEAR_MS;
 unsigned long  TURN_DIRECTION_CONFIRM_MS;
@@ -201,16 +202,21 @@ void sharp_turn() {
   if (sensorF == 0) {
     turnDeparted = 1;
   }
+  if (sensorF == 4 || sensorF == 6 || sensorF == 12 || (turnDeparted == 1 || turnCaptureStarted == 1) && ((turnCaptureStarted == 1 || turnDirection == 1) && sensorF == 2 || (turnCaptureStarted == 1 || turnDirection == -1) && sensorF == 8)) {
+    turnCaptureVisible = 1;
+  } else {
+    turnCaptureVisible = 0;
+  }
   if (turnDirectionSource == 0 && turnElapsed <= OUTER_OVERRIDE_WINDOW_MS && outerReady == 1) {
     turnDirection = outerDirection;
     turnDirectionSource = 1;
   }
-  if (turnElapsed >= TURN_TIMEOUT_MS || OUTER_TURN_ASSIST == 1 && turnDirectionSource == 0 && turnCaptureStarted == 0 && (sensorF == 4 || sensorF == 6 || sensorF == 12 || (turnDeparted == 1 || turnCaptureStarted == 1) && ((turnCaptureStarted == 1 || turnDirection == 1) && sensorF == 2 || (turnCaptureStarted == 1 || turnDirection == -1) && sensorF == 8)) == 0 && turnElapsed >= OUTER_OVERRIDE_WINDOW_MS) {
+  if (turnElapsed >= TURN_TIMEOUT_MS || OUTER_TURN_ASSIST == 1 && turnDirectionSource == 0 && turnCaptureStarted == 0 && turnCaptureVisible == 0 && turnElapsed >= OUTER_OVERRIDE_WINDOW_MS) {
     turnFault = 1;
     turnActive = 0;
     stop2();
   } else {
-    if (turnElapsed >= TURN_MIN_MS && (sensorF == 4 || sensorF == 6 || sensorF == 12 || (turnDeparted == 1 || turnCaptureStarted == 1) && ((turnCaptureStarted == 1 || turnDirection == 1) && sensorF == 2 || (turnCaptureStarted == 1 || turnDirection == -1) && sensorF == 8))) {
+    if (turnElapsed >= TURN_MIN_MS && turnCaptureVisible == 1) {
       turnCaptureStarted = 1;
       if (sensorF == 8 || sensorF == 12) {
         turnCaptureSide = -1;
@@ -519,6 +525,7 @@ void setup()
   turnCaptureSide = 0;
   turnDeparted = 0;
   turnCaptureStarted = 0;
+  turnCaptureVisible = 0;
   TURN_MEMORY_MS = 250;
   TURN_CENTER_CLEAR_MS = 80;
   TURN_DIRECTION_CONFIRM_MS = 15;
