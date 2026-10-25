@@ -39,6 +39,15 @@ unsigned long  telemetryAt;
 unsigned long  telemetryElapsed;
 int  ledStatus;
 int  ledDesired;
+unsigned long  STRAIGHT_CONFIRM_MS;
+unsigned long  STRAIGHT_STEP_MS;
+int  STRAIGHT_STEP_PWM;
+int  straightPending;
+unsigned long  straightAt;
+unsigned long  straightElapsed;
+unsigned long  straightStepAt;
+unsigned long  straightStepElapsed;
+int  straightPwm;
 unsigned long  MIN_LAP_MS;
 unsigned long  MAX_LAP_MS;
 unsigned long  DEPART_CONFIRM_MS;
@@ -128,7 +137,7 @@ void stop2() {
 /**
  * Bounded sharp-corner pivot. Outer forward125, inner reverse95.
  * After minimum30ms, F4/F6/F12 starts forward differential
- * capture; continuous1ms finishes at curve base125. Confirmation
+ * capture; continuous15ms finishes at curve base125. Confirmation
  * uses elapsed time, not loop count. Timeout latches stop.
  */
 void sharp_turn() {
@@ -204,10 +213,10 @@ void sharp_turn() {
 }
 
 /**
- * Short gap PWM70 with fixed250ms deadline. Side-line return starts
- * differential capture immediately. Continuous narrow line1ms
- * finishes; invalid observations reset confirmation, not
- * the event deadline. Wide line returns to marker handling.
+ * Short gap PWM45 with fixed120ms deadline. Side-line return starts
+ * differential capture20/45 or30/45 immediately. Continuous narrow
+ * line15ms finishes; invalid observations reset confirmation,
+ * not the event deadline. Wide line returns to marker handling.
  */
 void cross_gap() {
   gapElapsed = turnNow - gapAt;
@@ -231,24 +240,24 @@ void cross_gap() {
       whiteCount = 0;
       if (sensorF == 8) {
         digitalWrite(7,LOW);
-        analogWrite(5,25);
+        analogWrite(5,20);
         digitalWrite(4,HIGH);
         analogWrite(6,GAP_PWM);
       } else if (sensorF == 12) {
         digitalWrite(7,LOW);
-        analogWrite(5,45);
+        analogWrite(5,30);
         digitalWrite(4,HIGH);
         analogWrite(6,GAP_PWM);
       } else if (sensorF == 2) {
         digitalWrite(7,LOW);
         analogWrite(5,GAP_PWM);
         digitalWrite(4,HIGH);
-        analogWrite(6,25);
+        analogWrite(6,20);
       } else if (sensorF == 6) {
         digitalWrite(7,LOW);
         analogWrite(5,GAP_PWM);
         digitalWrite(4,HIGH);
-        analogWrite(6,45);
+        analogWrite(6,30);
       } else {
         digitalWrite(7,LOW);
         analogWrite(5,GAP_PWM);
@@ -258,24 +267,24 @@ void cross_gap() {
     } else {
       if (sensorF == 8) {
         digitalWrite(7,LOW);
-        analogWrite(5,25);
+        analogWrite(5,20);
         digitalWrite(4,HIGH);
         analogWrite(6,GAP_PWM);
       } else if (sensorF == 12) {
         digitalWrite(7,LOW);
-        analogWrite(5,45);
+        analogWrite(5,30);
         digitalWrite(4,HIGH);
         analogWrite(6,GAP_PWM);
       } else if (sensorF == 2) {
         digitalWrite(7,LOW);
         analogWrite(5,GAP_PWM);
         digitalWrite(4,HIGH);
-        analogWrite(6,25);
+        analogWrite(6,20);
       } else if (sensorF == 6) {
         digitalWrite(7,LOW);
         analogWrite(5,GAP_PWM);
         digitalWrite(4,HIGH);
-        analogWrite(6,45);
+        analogWrite(6,30);
       } else {
         digitalWrite(7,LOW);
         analogWrite(5,GAP_PWM);
@@ -377,8 +386,8 @@ void setup()
   TURN_MIN_MS = 30;
   TURN_MEMORY_MS = 250;
   TURN_CENTER_CLEAR_MS = 80;
-  TURN_DIRECTION_CONFIRM_MS = 1;
-  TURN_REACQUIRE_MS = 1;
+  TURN_DIRECTION_CONFIRM_MS = 15;
+  TURN_REACQUIRE_MS = 15;
   turnDirection = 0;
   turnActive = 0;
   turnFault = 0;
@@ -396,13 +405,13 @@ void setup()
   turnCandidate = 0;
   turnCandidateAt = 0;
   turnCandidateElapsed = 0;
-  GAP_PWM = 70;
-  GAP_TIMEOUT_MS = 250;
+  GAP_PWM = 45;
+  GAP_TIMEOUT_MS = 120;
   gapActive = 0;
   gapAt = 0;
   gapElapsed = 0;
   gapConfirm = 0;
-  GAP_REACQUIRE_MS = 1;
+  GAP_REACQUIRE_MS = 15;
   gapCaptureAt = 0;
   gapCaptureElapsed = 0;
   DEBUG_SERIAL = 0;
@@ -411,6 +420,15 @@ void setup()
   telemetryElapsed = 0;
   ledStatus = 1;
   ledDesired = 1;
+  STRAIGHT_CONFIRM_MS = 80;
+  STRAIGHT_STEP_MS = 10;
+  STRAIGHT_STEP_PWM = 10;
+  straightPending = 0;
+  straightAt = 0;
+  straightElapsed = 0;
+  straightStepAt = 0;
+  straightStepElapsed = 0;
+  straightPwm = 125;
   MIN_LAP_MS = 15000;
   MAX_LAP_MS = 180000;
   DEPART_CONFIRM_MS = 100;
@@ -540,6 +558,26 @@ void loop()
       innerSpeed = SPEED_TURN_INNER_MEDIUM;
     }
     turnNow = millis();
+    if (sensorF == 4 && (liftState == 0 || liftState == 3) && turnActive == 0 && gapActive == 0 && turnFault == 0 && lapDone == 0) {
+      if (straightPending == 0) {
+        straightPending = 1;
+        straightAt = turnNow;
+        straightStepAt = turnNow;
+        straightPwm = SPEED_CURVE;
+      }
+      straightElapsed = turnNow - straightAt;
+      straightStepElapsed = turnNow - straightStepAt;
+      if (straightElapsed >= STRAIGHT_CONFIRM_MS && straightStepElapsed >= STRAIGHT_STEP_MS) {
+        straightPwm = straightPwm + STRAIGHT_STEP_PWM;
+        if (straightPwm >= SPEED_STRAIGHT) {
+          straightPwm = SPEED_STRAIGHT;
+        }
+        straightStepAt = turnNow;
+      }
+    } else {
+      straightPending = 0;
+      straightPwm = SPEED_CURVE;
+    }
     if (LIFT_ENABLED == 1) {
       if (LIFT_CROSSING_INDEX <= 0) {
         turnFault = 1;
@@ -695,32 +733,29 @@ void loop()
       digitalWrite(4,HIGH);
       analogWrite(6,WIDE_PWM);
     } else {
-      // Normal follow fallback: F=10 holds; left/right proportional
-      // steering. Lap finish, wide marker, short gap and
-      // sharp-turn states have priority. The preserved legacy
-      // F=0 loop counter is bypassed by the gap/turn states.
-      if (sensorF == 10) {
-      } else if (sensorA4 < LINE_THRESHOLD && sensorA2 > LINE_THRESHOLD) {
+      // Explicit F-based following only. No strict greater-than
+      // ADC steering gap at threshold70. Only F4 requests the
+      // guarded/ramped straight PWM. Split F10 or unexpected
+      // patterns latch stop instead of preserving a prior high-speed
+      // command. F0/F14 belong to higher-priority states.
+      if (sensorF == 8 || sensorF == 12) {
         digitalWrite(7,LOW);
         analogWrite(5,innerSpeed);
         digitalWrite(4,HIGH);
         analogWrite(6,SPEED_CURVE);
-      } else if (sensorA2 < LINE_THRESHOLD && sensorA4 > LINE_THRESHOLD) {
+      } else if (sensorF == 2 || sensorF == 6) {
         digitalWrite(7,LOW);
         analogWrite(5,SPEED_CURVE);
         digitalWrite(4,HIGH);
         analogWrite(6,innerSpeed);
-      } else if (sensorF == 0) {
-        if (whiteCount < WHITE_STOP_COUNT) {
-          whiteCount = whiteCount + 1;
-        } else {
-          stop2();
-        }
-      } else {
+      } else if (sensorF == 4) {
         digitalWrite(7,LOW);
-        analogWrite(5,SPEED_STRAIGHT);
+        analogWrite(5,straightPwm);
         digitalWrite(4,HIGH);
-        analogWrite(6,SPEED_STRAIGHT);
+        analogWrite(6,straightPwm);
+      } else {
+        turnFault = 1;
+        stop2();
       }
     }
     update_status_led();

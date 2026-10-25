@@ -59,8 +59,8 @@ def add_sharp_turns(root, main, decision):
         'TURN_MIN_MS': ('unsigned long', 30),
         'TURN_MEMORY_MS': ('unsigned long', 250),
         'TURN_CENTER_CLEAR_MS': ('unsigned long', 80),
-        'TURN_DIRECTION_CONFIRM_MS': ('unsigned long', 1),
-        'TURN_REACQUIRE_MS': ('unsigned long', 1),
+        'TURN_DIRECTION_CONFIRM_MS': ('unsigned long', 15),
+        'TURN_REACQUIRE_MS': ('unsigned long', 15),
         'turnDirection': ('int', 0),
         'turnActive': ('int', 0),
         'turnFault': ('int', 0),
@@ -78,13 +78,13 @@ def add_sharp_turns(root, main, decision):
         'turnCandidate': ('int', 0),
         'turnCandidateAt': ('unsigned long', 0),
         'turnCandidateElapsed': ('unsigned long', 0),
-        'GAP_PWM': ('int', 70),
-        'GAP_TIMEOUT_MS': ('unsigned long', 250),
+        'GAP_PWM': ('int', 45),
+        'GAP_TIMEOUT_MS': ('unsigned long', 120),
         'gapActive': ('int', 0),
         'gapAt': ('unsigned long', 0),
         'gapElapsed': ('unsigned long', 0),
         'gapConfirm': ('int', 0),
-        'GAP_REACQUIRE_MS': ('unsigned long', 1),
+        'GAP_REACQUIRE_MS': ('unsigned long', 15),
         'gapCaptureAt': ('unsigned long', 0),
         'gapCaptureElapsed': ('unsigned long', 0),
         'DEBUG_SERIAL': ('int', 0),
@@ -93,6 +93,15 @@ def add_sharp_turns(root, main, decision):
         'telemetryElapsed': ('unsigned long', 0),
         'ledStatus': ('int', 1),
         'ledDesired': ('int', 1),
+        'STRAIGHT_CONFIRM_MS': ('unsigned long', 80),
+        'STRAIGHT_STEP_MS': ('unsigned long', 10),
+        'STRAIGHT_STEP_PWM': ('int', 10),
+        'straightPending': ('int', 0),
+        'straightAt': ('unsigned long', 0),
+        'straightElapsed': ('unsigned long', 0),
+        'straightStepAt': ('unsigned long', 0),
+        'straightStepElapsed': ('unsigned long', 0),
+        'straightPwm': ('int', 125),
         'MIN_LAP_MS': ('unsigned long', 15000),
         'MAX_LAP_MS': ('unsigned long', 180000),
         'DEPART_CONFIRM_MS': ('unsigned long', 100),
@@ -181,7 +190,7 @@ def add_sharp_turns(root, main, decision):
     exporter.field(function, 'NAME', 'sharp_turn')
     exporter.field(function, 'TYPE', 'void')
     exporter.statement(function, 'STACK', pivot)
-    note(function, 'Bounded sharp-corner pivot. Outer forward125, inner reverse95. After minimum30ms, F4/F6/F12 starts forward differential capture; continuous1ms finishes at curve base125. Confirmation uses elapsed time, not loop count. Timeout latches stop.')
+    note(function, 'Bounded sharp-corner pivot. Outer forward125, inner reverse95. After minimum30ms, F4/F6/F12 starts forward differential capture; continuous15ms finishes at curve base125. Confirmation uses elapsed time, not loop count. Timeout latches stop.')
     root.append(function)
 
     # A short gap has its own fixed deadline and never inherits a pivot command.
@@ -191,10 +200,10 @@ def add_sharp_turns(root, main, decision):
         return [('digitalwrite', '7', 0), ('pwm', '5', left_pwm),
                 ('digitalwrite', '4', 1), ('pwm', '6', right_pwm)]
     gap_capture = [cases([
-        (eq('sensorF', 8), gap_wheels(25, 'GAP_PWM')),
-        (eq('sensorF', 12), gap_wheels(45, 'GAP_PWM')),
-        (eq('sensorF', 2), gap_wheels('GAP_PWM', 25)),
-        (eq('sensorF', 6), gap_wheels('GAP_PWM', 45))], gap_drive)]
+        (eq('sensorF', 8), gap_wheels(20, 'GAP_PWM')),
+        (eq('sensorF', 12), gap_wheels(30, 'GAP_PWM')),
+        (eq('sensorF', 2), gap_wheels('GAP_PWM', 20)),
+        (eq('sensorF', 6), gap_wheels('GAP_PWM', 30))], gap_drive)]
     gap = [setv('gapElapsed', sub('turnNow', 'gapAt')),
            cond(ge('gapElapsed', 'GAP_TIMEOUT_MS'),
                 [setv('turnFault', 1), setv('gapActive', 0), call('stop')], [
@@ -213,7 +222,7 @@ def add_sharp_turns(root, main, decision):
     exporter.field(function, 'NAME', 'cross_gap')
     exporter.field(function, 'TYPE', 'void')
     exporter.statement(function, 'STACK', gap)
-    note(function, 'Short gap PWM70 with fixed250ms deadline. Side-line return starts differential capture immediately. Continuous narrow line1ms finishes; invalid observations reset confirmation, not the event deadline. Wide line returns to marker handling.')
+    note(function, 'Short gap PWM45 with fixed120ms deadline. Side-line return starts differential capture20/45 or30/45 immediately. Continuous narrow line15ms finishes; invalid observations reset confirmation, not the event deadline. Wide line returns to marker handling.')
     root.append(function)
 
     wide_drive = [('digitalwrite', '7', 0), ('pwm', '5', 'WIDE_PWM'),
@@ -303,7 +312,23 @@ def add_sharp_turns(root, main, decision):
             setv('turnCandidateElapsed', sub('turnNow', 'turnCandidateAt')),
             cond(ge('turnCandidateElapsed', 'TURN_DIRECTION_CONFIRM_MS'),
                  [setv('turnDirection', direction), setv('turnSeenAt', 'turnNow')])]
+    straight_update = [cond(
+        both(eq('sensorF', 4), both(normal_lift_state,
+             both(eq('turnActive', 0), both(eq('gapActive', 0),
+                  both(eq('turnFault', 0), eq('lapDone', 0)))))), [
+            cond(eq('straightPending', 0), [setv('straightPending', 1),
+                 setv('straightAt', 'turnNow'), setv('straightStepAt', 'turnNow'),
+                 setv('straightPwm', 'SPEED_CURVE')]),
+            setv('straightElapsed', sub('turnNow', 'straightAt')),
+            setv('straightStepElapsed', sub('turnNow', 'straightStepAt')),
+            cond(both(ge('straightElapsed', 'STRAIGHT_CONFIRM_MS'),
+                      ge('straightStepElapsed', 'STRAIGHT_STEP_MS')), [
+                setv('straightPwm', add('straightPwm', 'STRAIGHT_STEP_PWM')),
+                cond(ge('straightPwm', 'SPEED_STRAIGHT'), [setv('straightPwm', 'SPEED_STRAIGHT')]),
+                setv('straightStepAt', 'turnNow')])],
+        [setv('straightPending', 0), setv('straightPwm', 'SPEED_CURVE')])]
     before = [setv('turnNow', ('millis',)),
+              *straight_update,
               *lift_update,
               *lap_update,
               cond(both(normal_lift_state,
@@ -376,6 +401,26 @@ def add_sharp_turns(root, main, decision):
     for field in root.findall('.//b:field', N):
         if field.get('name') == 'VAR':
             field.set('id', ids[field.text])
+
+
+def replace_normal_follow(main):
+    """Only an explicitly centered observation may request straight speed."""
+    exporter = Exporter()
+    exporter.seq = 200000
+    def wheels(left, right):
+        return [('digitalwrite', '7', 0), ('pwm', '5', left),
+                ('digitalwrite', '4', 1), ('pwm', '6', right)]
+    # No empty Error branch and no unclassified default-forward branch.
+    decision = main.find(".//b:block[@id='car_decision']", N)
+    parent = next(p for p in main.iter() if decision in list(p))
+    normal = exporter.stmt(cases([
+        (anyof('sensorF', [8, 12]), wheels('innerSpeed', 'SPEED_CURVE')),
+        (anyof('sensorF', [2, 6]), wheels('SPEED_CURVE', 'innerSpeed')),
+        (eq('sensorF', 4), wheels('straightPwm', 'straightPwm'))],
+        [setv('turnFault', 1), call('stop')]))
+    note(normal, 'Explicit F-based following only. No strict greater-than ADC steering gap at threshold70. Only F4 requests the guarded/ramped straight PWM. Split F10 or unexpected patterns latch stop instead of preserving a prior high-speed command. F0/F14 belong to higher-priority states.')
+    parent.remove(decision)
+    parent.append(normal)
 
 
 def streamline_loop_io(root, main):
@@ -544,7 +589,12 @@ def rewrite():
     ):
         note(main.find(".//b:block[@id='%s']" % block_id, N), text)
     add_sharp_turns(root, main, decision)
+    replace_normal_follow(main)
     streamline_loop_io(root, main)
+    ids = {v.text: v.get('id') for v in root.find('b:variables', N)}
+    for field in root.findall('.//b:field', N):
+        if field.get('name') == 'VAR':
+            field.set('id', ids[field.text])
     ET.indent(root, space='  ')
     (ROOT / 'car.xml').write_text(ET.tostring(root, encoding='unicode') + '\n', encoding='utf-8')
     print('Rewrote car.xml from the preserved legacy XML; export Arduino next.')
