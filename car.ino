@@ -4,6 +4,11 @@ int  TURN_INNER_PWM;
 unsigned long  TURN_TIMEOUT_MS;
 unsigned long  TURN_MIN_MS;
 int  TURN_CAPTURE_PWM;
+unsigned long  TURN_CAPTURE_GAP_MS;
+int  turnCaptureGapPending;
+unsigned long  turnCaptureGapAt;
+unsigned long  turnCaptureGapElapsed;
+int  turnCaptureSide;
 int  turnDeparted;
 int  turnCaptureStarted;
 unsigned long  TURN_MEMORY_MS;
@@ -13,6 +18,15 @@ unsigned long  TURN_REACQUIRE_MS;
 int  turnDirection;
 int  turnActive;
 int  turnFault;
+unsigned long  SPLIT_CONFIRM_MS;
+unsigned long  SPLIT_CLEAR_MS;
+int  splitPending;
+int  splitActive;
+unsigned long  splitAt;
+unsigned long  splitElapsed;
+int  splitClearPending;
+unsigned long  splitClearAt;
+unsigned long  splitClearElapsed;
 int  OUTER_TURN_ASSIST;
 int  OUTER_LINE_THRESHOLD;
 int  OUTER_BACKGROUND_THRESHOLD;
@@ -171,15 +185,16 @@ void stop2() {
 }
 
 /**
- * A1=right/A5=left outer assistance. Center-only search gets
- * at most150ms to capture line or receive confirmed outer
- * support; otherwise stop. Outer evidence may correct
- * it once without resetting the800ms total deadline.
- * Confirmed outer plus matching F2/F8 starts before full
- * loss. Outer forward150/inner reverse114; After actual loss,
- * matching single edge also starts capture at100/20 or100/50.
- * Once capture starts, invalid readings stop instead of
- * resuming reverse. Continuous15ms capture completes turn.
+ * A1=right/A5=left outer assistance. Center-only search gets at
+ * most150ms to capture line or receive confirmed outer support;
+ * otherwise stop. Outer evidence may correct it once without
+ * resetting the800ms total deadline. Confirmed outer plus
+ * matching F2/F8 starts before full loss. Outer forward150/inner
+ * reverse114; After actual loss, matching single edge also
+ * starts capture at100/20 or100/50. After capture, F0 gets a
+ * fixed60ms forward-only dropout budget; ambiguous patterns stop.
+ * The150ms unsupported-search cutoff applies only before capture; the800ms
+ * total deadline stays fixed. Continuous15ms capture completes turn.
  */
 void sharp_turn() {
   turnElapsed = turnNow - turnAt;
@@ -190,13 +205,20 @@ void sharp_turn() {
     turnDirection = outerDirection;
     turnDirectionSource = 1;
   }
-  if (turnElapsed >= TURN_TIMEOUT_MS || OUTER_TURN_ASSIST == 1 && turnDirectionSource == 0 && turnElapsed >= OUTER_OVERRIDE_WINDOW_MS) {
+  if (turnElapsed >= TURN_TIMEOUT_MS || OUTER_TURN_ASSIST == 1 && turnDirectionSource == 0 && turnCaptureStarted == 0 && (sensorF == 4 || sensorF == 6 || sensorF == 12 || (turnDeparted == 1 || turnCaptureStarted == 1) && ((turnCaptureStarted == 1 || turnDirection == 1) && sensorF == 2 || (turnCaptureStarted == 1 || turnDirection == -1) && sensorF == 8)) == 0 && turnElapsed >= OUTER_OVERRIDE_WINDOW_MS) {
     turnFault = 1;
     turnActive = 0;
     stop2();
   } else {
-    if (turnElapsed >= TURN_MIN_MS && (sensorF == 4 || sensorF == 6 || sensorF == 12 || turnDeparted == 1 && (turnDirection == 1 && sensorF == 2 || turnDirection == -1 && sensorF == 8))) {
+    if (turnElapsed >= TURN_MIN_MS && (sensorF == 4 || sensorF == 6 || sensorF == 12 || (turnDeparted == 1 || turnCaptureStarted == 1) && ((turnCaptureStarted == 1 || turnDirection == 1) && sensorF == 2 || (turnCaptureStarted == 1 || turnDirection == -1) && sensorF == 8))) {
       turnCaptureStarted = 1;
+      if (sensorF == 8 || sensorF == 12) {
+        turnCaptureSide = -1;
+      } else if (sensorF == 2 || sensorF == 6) {
+        turnCaptureSide = 1;
+      } else {
+        turnCaptureSide = 0;
+      }
       if (turnConfirm == 0) {
         turnConfirm = 1;
         turnCaptureAt = turnNow;
@@ -266,7 +288,39 @@ void sharp_turn() {
         }
       } else {
         if (turnCaptureStarted == 1) {
-          stop2();
+          if (sensorF == 0) {
+            if (turnCaptureGapPending == 0) {
+              turnCaptureGapPending = 1;
+              turnCaptureGapAt = turnNow;
+            }
+            turnCaptureGapElapsed = turnNow - turnCaptureGapAt;
+            if (turnCaptureGapElapsed >= TURN_CAPTURE_GAP_MS) {
+              turnFault = 1;
+              turnActive = 0;
+              stop2();
+            } else {
+              if (turnCaptureSide == -1) {
+                digitalWrite(7,LOW);
+                analogWrite(5,30);
+                digitalWrite(4,HIGH);
+                analogWrite(6,60);
+              } else if (turnCaptureSide == 1) {
+                digitalWrite(7,LOW);
+                analogWrite(5,60);
+                digitalWrite(4,HIGH);
+                analogWrite(6,30);
+              } else {
+                digitalWrite(7,LOW);
+                analogWrite(5,45);
+                digitalWrite(4,HIGH);
+                analogWrite(6,45);
+              }
+            }
+          } else {
+            turnFault = 1;
+            turnActive = 0;
+            stop2();
+          }
         } else {
           if (turnDirection == -1) {
             digitalWrite(7,HIGH);
@@ -458,6 +512,11 @@ void setup()
   TURN_TIMEOUT_MS = 800;
   TURN_MIN_MS = 30;
   TURN_CAPTURE_PWM = 100;
+  TURN_CAPTURE_GAP_MS = 60;
+  turnCaptureGapPending = 0;
+  turnCaptureGapAt = 0;
+  turnCaptureGapElapsed = 0;
+  turnCaptureSide = 0;
   turnDeparted = 0;
   turnCaptureStarted = 0;
   TURN_MEMORY_MS = 250;
@@ -467,6 +526,15 @@ void setup()
   turnDirection = 0;
   turnActive = 0;
   turnFault = 0;
+  SPLIT_CONFIRM_MS = 20;
+  SPLIT_CLEAR_MS = 15;
+  splitPending = 0;
+  splitActive = 0;
+  splitAt = 0;
+  splitElapsed = 0;
+  splitClearPending = 0;
+  splitClearAt = 0;
+  splitClearElapsed = 0;
   OUTER_TURN_ASSIST = 1;
   OUTER_LINE_THRESHOLD = 70;
   OUTER_BACKGROUND_THRESHOLD = 120;
@@ -671,6 +739,38 @@ void loop()
       innerSpeed = SPEED_TURN_INNER_MEDIUM;
     }
     turnNow = millis();
+    splitActive = 0;
+    if ((liftState == 0 || liftState == 3) && gapActive == 0 && turnFault == 0 && lapDone == 0) {
+      if (sensorF == 10) {
+        splitActive = 1;
+        splitClearPending = 0;
+        if (splitPending == 0) {
+          splitPending = 1;
+          splitAt = turnNow;
+        }
+        splitElapsed = turnNow - splitAt;
+        if (splitElapsed >= SPLIT_CONFIRM_MS) {
+          turnFault = 1;
+        }
+      } else {
+        if (splitPending == 1 && (sensorF == 2 || sensorF == 4 || sensorF == 6 || sensorF == 8 || sensorF == 12)) {
+          if (splitClearPending == 0) {
+            splitClearPending = 1;
+            splitClearAt = turnNow;
+          }
+          splitClearElapsed = turnNow - splitClearAt;
+          if (splitClearElapsed >= SPLIT_CLEAR_MS) {
+            splitPending = 0;
+            splitClearPending = 0;
+          }
+        } else {
+          splitClearPending = 0;
+        }
+      }
+    } else {
+      splitPending = 0;
+      splitClearPending = 0;
+    }
     if (sensorF != 0) {
       outerProbeActive = 0;
     }
@@ -940,6 +1040,8 @@ void loop()
         outerProbeActive = 0;
         turnDeparted = 0;
         turnCaptureStarted = 0;
+        turnCaptureGapPending = 0;
+        turnCaptureSide = 0;
       } else if (outerReady == 1 && outerDirection == -1 && sensorF == 8) {
         turnDirection = -1;
         turnDirectionSource = 1;
@@ -949,6 +1051,8 @@ void loop()
         outerProbeActive = 0;
         turnDeparted = 0;
         turnCaptureStarted = 0;
+        turnCaptureGapPending = 0;
+        turnCaptureSide = 0;
       } else if (outerCandidate == 1 && sensorF == 2) {
         turnDirection = 1;
         turnDirectionSource = 0;
@@ -958,6 +1062,8 @@ void loop()
         outerProbeActive = 0;
         turnDeparted = 0;
         turnCaptureStarted = 0;
+        turnCaptureGapPending = 0;
+        turnCaptureSide = 0;
       } else if (outerCandidate == -1 && sensorF == 8) {
         turnDirection = -1;
         turnDirectionSource = 0;
@@ -967,6 +1073,8 @@ void loop()
         outerProbeActive = 0;
         turnDeparted = 0;
         turnCaptureStarted = 0;
+        turnCaptureGapPending = 0;
+        turnCaptureSide = 0;
       } else if (outerReady == 0 && outerCandidate == 0 && sensorF == 2 && turnCandidate == 1 && turnCandidateElapsed >= TURN_DIRECTION_CONFIRM_MS) {
         turnDirection = 1;
         turnDirectionSource = 0;
@@ -976,6 +1084,8 @@ void loop()
         outerProbeActive = 0;
         turnDeparted = 0;
         turnCaptureStarted = 0;
+        turnCaptureGapPending = 0;
+        turnCaptureSide = 0;
       } else if (outerReady == 0 && outerCandidate == 0 && sensorF == 8 && turnCandidate == -1 && turnCandidateElapsed >= TURN_DIRECTION_CONFIRM_MS) {
         turnDirection = -1;
         turnDirectionSource = 0;
@@ -985,6 +1095,8 @@ void loop()
         outerProbeActive = 0;
         turnDeparted = 0;
         turnCaptureStarted = 0;
+        turnCaptureGapPending = 0;
+        turnCaptureSide = 0;
       }
       if (sensorF == 0) {
         if (outerReady == 1) {
@@ -996,6 +1108,8 @@ void loop()
           outerProbeActive = 0;
           turnDeparted = 0;
           turnCaptureStarted = 0;
+          turnCaptureGapPending = 0;
+          turnCaptureSide = 0;
         } else if (outerCandidate != 0) {
           if (outerProbeActive == 0) {
             outerProbeActive = 1;
@@ -1016,6 +1130,8 @@ void loop()
           outerProbeActive = 0;
           turnDeparted = 0;
           turnCaptureStarted = 0;
+          turnCaptureGapPending = 0;
+          turnCaptureSide = 0;
         } else {
           outerProbeActive = 0;
           gapActive = 1;
@@ -1028,6 +1144,8 @@ void loop()
       stop2();
     } else if (LIFT_ENABLED == 1 && (liftState == 1 || liftState == 2)) {
       lift_control();
+    } else if (splitActive == 1) {
+      stop2();
     } else if (outerProbeActive == 1) {
       stop2();
     } else if (turnActive == 1) {
@@ -1042,10 +1160,12 @@ void loop()
     } else {
       // Straight stages100/150/190/230 accumulate centered time only.
       // Brief F6/F12 trim keeps the current stage, outer wheel at stage
-      // PWM and inner minus30, for a shared30ms event. Centered30ms clears
-      // that event. Mild correction expiry uses curve output without
-      // clearing stage; centered30ms restores retained stage. Strong
-      // side/loss/confirmed outer resets stages. F10/unexpected patterns stop.
+      // PWM and inner minus30, for a shared30ms event. Centered30ms
+      // clears that event. Mild correction expiry uses curve output
+      // without clearing stage; centered30ms restores retained stage.
+      // Strong side/loss/confirmed outer resets stages. F10 is intercepted
+      // by a20ms bounded zero-output confirmation; repeated blips share a
+      // deadline until15ms valid line. Unexpected normal patterns stop.
       if (sensorF == 8) {
         digitalWrite(7,LOW);
         analogWrite(5,innerSpeed);

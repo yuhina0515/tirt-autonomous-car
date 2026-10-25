@@ -58,6 +58,11 @@ def add_sharp_turns(root, main, decision):
         'TURN_TIMEOUT_MS': ('unsigned long', 800),
         'TURN_MIN_MS': ('unsigned long', 30),
         'TURN_CAPTURE_PWM': ('int', 100),
+        'TURN_CAPTURE_GAP_MS': ('unsigned long', 60),
+        'turnCaptureGapPending': ('int', 0),
+        'turnCaptureGapAt': ('unsigned long', 0),
+        'turnCaptureGapElapsed': ('unsigned long', 0),
+        'turnCaptureSide': ('int', 0),
         'turnDeparted': ('int', 0),
         'turnCaptureStarted': ('int', 0),
         'TURN_MEMORY_MS': ('unsigned long', 250),
@@ -67,6 +72,15 @@ def add_sharp_turns(root, main, decision):
         'turnDirection': ('int', 0),
         'turnActive': ('int', 0),
         'turnFault': ('int', 0),
+        'SPLIT_CONFIRM_MS': ('unsigned long', 20),
+        'SPLIT_CLEAR_MS': ('unsigned long', 15),
+        'splitPending': ('int', 0),
+        'splitActive': ('int', 0),
+        'splitAt': ('unsigned long', 0),
+        'splitElapsed': ('unsigned long', 0),
+        'splitClearPending': ('int', 0),
+        'splitClearAt': ('unsigned long', 0),
+        'splitClearElapsed': ('unsigned long', 0),
         'OUTER_TURN_ASSIST': ('int', 1),
         'OUTER_LINE_THRESHOLD': ('int', 70),
         'OUTER_BACKGROUND_THRESHOLD': ('int', 120),
@@ -209,12 +223,22 @@ def add_sharp_turns(root, main, decision):
         (eq('sensorF', 2), capture_wheels('TURN_CAPTURE_PWM', 20)),
         (eq('sensorF', 6), capture_wheels('TURN_CAPTURE_PWM', 50))], forward)]
     capture_line = either(anyof('sensorF', [4, 6, 12]),
-        both(eq('turnDeparted', 1), either(
-            both(eq('turnDirection', 1), eq('sensorF', 2)),
-            both(eq('turnDirection', -1), eq('sensorF', 8)))))
+        both(either(eq('turnDeparted', 1), eq('turnCaptureStarted', 1)), either(
+            both(either(eq('turnCaptureStarted', 1), eq('turnDirection', 1)), eq('sensorF', 2)),
+            both(either(eq('turnCaptureStarted', 1), eq('turnDirection', -1)), eq('sensorF', 8)))))
     done = [setv('turnActive', 0), setv('turnDirection', 0),
             setv('turnConfirm', 0), setv('whiteCount', 0)] + capture_drive
-    # Deadline is fixed at entry and has priority over reacquisition.
+    # A fixed dropout event permits bounded forward-only correction after capture.
+    capture_dropout = [
+        cond(eq('turnCaptureGapPending', 0), [
+            setv('turnCaptureGapPending', 1), setv('turnCaptureGapAt', 'turnNow')]),
+        setv('turnCaptureGapElapsed', sub('turnNow', 'turnCaptureGapAt')),
+        cond(ge('turnCaptureGapElapsed', 'TURN_CAPTURE_GAP_MS'),
+             [setv('turnFault', 1), setv('turnActive', 0), call('stop')],
+             [cases([(eq('turnCaptureSide', -1), capture_wheels(30, 60)),
+                     (eq('turnCaptureSide', 1), capture_wheels(60, 30))],
+                    capture_wheels(45, 45))])]
+    # Total deadline stays fixed; unsupported-search cutoff only precedes capture.
     pivot = [setv('turnElapsed', sub('turnNow', 'turnAt')),
              cond(eq('sensorF', 0), [setv('turnDeparted', 1)]),
              cond(both(eq('turnDirectionSource', 0),
@@ -223,16 +247,23 @@ def add_sharp_turns(root, main, decision):
              cond(either(ge('turnElapsed', 'TURN_TIMEOUT_MS'),
                          both(eq('OUTER_TURN_ASSIST', 1),
                               both(eq('turnDirectionSource', 0),
-                                   ge('turnElapsed', 'OUTER_OVERRIDE_WINDOW_MS')))),
+                                   both(eq('turnCaptureStarted', 0),
+                                        both(eq(capture_line, False), ge('turnElapsed', 'OUTER_OVERRIDE_WINDOW_MS')))))),
                   [setv('turnFault', 1), setv('turnActive', 0), call('stop')], [
                  cond(both(ge('turnElapsed', 'TURN_MIN_MS'), capture_line),
-                      [setv('turnCaptureStarted', 1), cond(eq('turnConfirm', 0), [
+                      [setv('turnCaptureStarted', 1),
+                       cases([(anyof('sensorF', [8, 12]), [setv('turnCaptureSide', -1)]),
+                              (anyof('sensorF', [2, 6]), [setv('turnCaptureSide', 1)])],
+                             [setv('turnCaptureSide', 0)]),
+                       cond(eq('turnConfirm', 0), [
                           setv('turnConfirm', 1), setv('turnCaptureAt', 'turnNow')]),
                        setv('turnCaptureElapsed', sub('turnNow', 'turnCaptureAt'))],
                       [setv('turnConfirm', 0)]),
                  cond(both(anyof('sensorF', [4, 6, 12]), both(eq('turnConfirm', 1), ge('turnCaptureElapsed', 'TURN_REACQUIRE_MS'))), done, [
                      cond(ge('turnConfirm', 1), capture_drive,
-                          [cond(eq('turnCaptureStarted', 1), [call('stop')],
+                          [cond(eq('turnCaptureStarted', 1),
+                                [cond(eq('sensorF', 0), capture_dropout,
+                                      [setv('turnFault', 1), setv('turnActive', 0), call('stop')])],
                                 [cond(eq('turnDirection', -1), left, right)])])])])]
     function = exporter.block('procedures_defnoreturn')
     function.set('x', '900')
@@ -240,7 +271,7 @@ def add_sharp_turns(root, main, decision):
     exporter.field(function, 'NAME', 'sharp_turn')
     exporter.field(function, 'TYPE', 'void')
     exporter.statement(function, 'STACK', pivot)
-    note(function, 'A1=right/A5=left outer assistance. Center-only search gets at most150ms to capture line or receive confirmed outer support; otherwise stop. Outer evidence may correct it once without resetting the800ms total deadline. Confirmed outer plus matching F2/F8 starts before full loss. Outer forward150/inner reverse114; After actual loss, matching single edge also starts capture at100/20 or100/50. Once capture starts, invalid readings stop instead of resuming reverse. Continuous15ms capture completes turn.')
+    note(function, 'A1=right/A5=left outer assistance. Center-only search gets at most150ms to capture line or receive confirmed outer support; otherwise stop. Outer evidence may correct it once without resetting the800ms total deadline. Confirmed outer plus matching F2/F8 starts before full loss. Outer forward150/inner reverse114; After actual loss, matching single edge also starts capture at100/20 or100/50. After capture, F0 gets a fixed60ms forward-only dropout budget; ambiguous patterns stop. The150ms unsupported-search cutoff applies only before capture; the800ms total deadline stays fixed. Continuous15ms capture completes turn.')
     root.append(function)
 
     # A short gap has its own fixed deadline and never inherits a pivot command.
@@ -388,7 +419,8 @@ def add_sharp_turns(root, main, decision):
         return [setv('turnDirection', direction), setv('turnDirectionSource', source),
                 setv('turnActive', 1), setv('turnAt', 'turnNow'),
                 setv('turnConfirm', 0), setv('outerProbeActive', 0),
-                setv('turnDeparted', 0), setv('turnCaptureStarted', 0)]
+                setv('turnDeparted', 0), setv('turnCaptureStarted', 0),
+                setv('turnCaptureGapPending', 0), setv('turnCaptureSide', 0)]
     reset_straight = [setv('straightPending', 0), setv('straightElapsed', 0),
                       setv('straightPwm', 'STRAIGHT_STAGE1_PWM'),
                       setv('straightTrimPending', 0), setv('straightTrimCenterPending', 0),
@@ -433,7 +465,24 @@ def add_sharp_turns(root, main, decision):
         setv('straightTrimInner', sub('straightPwm', 'STRAIGHT_TRIM_PWM')),
         cond(lt('straightTrimInner', 'SPEED_TURN_INNER_MEDIUM'),
              [setv('straightTrimInner', 'SPEED_TURN_INNER_MEDIUM')])]
+    split_update = [setv('splitActive', 0),
+        cond(both(normal_lift_state, both(eq('gapActive', 0),
+                  both(eq('turnFault', 0), eq('lapDone', 0)))), [
+            cond(eq('sensorF', 10), [
+                setv('splitActive', 1), setv('splitClearPending', 0),
+                cond(eq('splitPending', 0), [setv('splitPending', 1), setv('splitAt', 'turnNow')]),
+                setv('splitElapsed', sub('turnNow', 'splitAt')),
+                cond(ge('splitElapsed', 'SPLIT_CONFIRM_MS'), [setv('turnFault', 1)])], [
+                cond(both(eq('splitPending', 1), narrow), [
+                    cond(eq('splitClearPending', 0), [setv('splitClearPending', 1),
+                         setv('splitClearAt', 'turnNow')]),
+                    setv('splitClearElapsed', sub('turnNow', 'splitClearAt')),
+                    cond(ge('splitClearElapsed', 'SPLIT_CLEAR_MS'),
+                         [setv('splitPending', 0), setv('splitClearPending', 0)])],
+                     [setv('splitClearPending', 0)])])],
+             [setv('splitPending', 0), setv('splitClearPending', 0)])]
     before = [setv('turnNow', ('millis',)),
+              *split_update,
               *outer_update,
               *straight_update,
               *lift_update,
@@ -502,6 +551,7 @@ def add_sharp_turns(root, main, decision):
         (either(eq('turnFault', 1), eq('lapDone', 1)), [call('stop')]),
         (both(eq('LIFT_ENABLED', 1), either(eq('liftState', 1), eq('liftState', 2))),
          [call('lift_control')]),
+        (eq('splitActive', 1), [call('stop')]),
         (eq('outerProbeActive', 1), [call('stop')]),
         (eq('turnActive', 1), [call('sharp_turn')]),
         (eq('gapActive', 1), [call('cross_gap')]),
@@ -557,7 +607,7 @@ def replace_normal_follow(main):
              [cond(both(eq('straightTrimSlow', 1), ge('straightPwm', 'SPEED_CURVE')),
                    wheels('SPEED_CURVE', 'SPEED_CURVE'), wheels('straightPwm', 'straightPwm'))])])],
         [setv('turnFault', 1), call('stop')]))
-    note(normal, 'Straight stages100/150/190/230 accumulate centered time only. Brief F6/F12 trim keeps the current stage, outer wheel at stage PWM and inner minus30, for a shared30ms event. Centered30ms clears that event. Mild correction expiry uses curve output without clearing stage; centered30ms restores retained stage. Strong side/loss/confirmed outer resets stages. F10/unexpected patterns stop.')
+    note(normal, 'Straight stages100/150/190/230 accumulate centered time only. Brief F6/F12 trim keeps the current stage, outer wheel at stage PWM and inner minus30, for a shared30ms event. Centered30ms clears that event. Mild correction expiry uses curve output without clearing stage; centered30ms restores retained stage. Strong side/loss/confirmed outer resets stages. F10 is intercepted by a20ms bounded zero-output confirmation; repeated blips share a deadline until15ms valid line. Unexpected normal patterns stop.')
     parent.remove(decision)
     parent.append(normal)
 

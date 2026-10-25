@@ -2,6 +2,8 @@
 
 ## Active baseline after user-directed rollback (2026-10-25)
 
+- Latest Taiwan stop fix:150ms unsupported-search cutoff only before valid capture;800ms total remains. After capture, either single edge steers forward; F0 has one fixed60ms forward-only dropout budget (30/60 or45/45), never restart reverse. F10 is zero-output confirmed20ms, with15ms stable valid clearing; repeated blips share deadline. Read docs/TAIWAN_CORNER_STOP_2026-10-25.zh-TW.md; overrides earlier immediate F10 and post-capture stop rules. No field verification.
+
 - Latest: mild trim expiry retains stage/time, uses curve output until centered30ms; brief trims retain stage throughout. Candidate-only outer warning freezes stage and limits output, confirmed outer/strong side/loss resets. Matching outer candidate plus F2/F8 may enter source0 provisional turn immediately, bounded150ms until outer confirmation. Read docs/STRAIGHT_HOLD_CORNER_ENTRY_2026-10-25.zh-TW.md. Overrides earlier reset-on-trim-expiry rules.
 
 - Latest corner fix: center candidate confirmed15ms with matching F2/F8 and no outer candidate/ready may enter early (source0,150ms bound). After actual F0, matching single edge initiates forward capture. TURN_CAPTURE_PWM100, inner20/50. Once capture starts, invalid readings stop instead of resuming reverse. Exit requires F4/6/12 plus15ms valid capture. Read docs/CORNER_CAPTURE_2026-10-25.zh-TW.md; overrides shared174 capture.
