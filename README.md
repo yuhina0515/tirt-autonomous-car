@@ -4,6 +4,7 @@
 
 ## 使用檔案
 
+- [00000～11111 完整對照表](docs/SENSOR_TRUTH_TABLE.zh-TW.md)：原五感測器設計與目前三感測器版的對應行為。
 - **[car.xml](car.xml)**：在 CAGEBOT 開啟及編輯的主檔，與 10/24 保存的三感測器舊檔完全相同。
 - [car.ino](car.ino)：該舊檔既有的原廠 Arduino 匯出，沒有修改控制行為。
 - [程式說明](car.md)、[硬體紀錄](hardware.md)、[三感測器差異](three_sensor/README.md)：修改前先參考；部分說明保留歷史五感測器設計，現用差異以三感測器說明為準。
