@@ -183,6 +183,7 @@ def add_sharp_turns(root, main, decision):
         'liftCrossings': ('int', 0),
         'liftMarkerLatched': ('int', 0),
         'liftMarkerPending': ('int', 0),
+        'liftMarkerArmed': ('int', 0),
         'liftMarkerAt': ('unsigned long', 0),
         'liftMarkerElapsed': ('unsigned long', 0),
         'liftClearPending': ('int', 0),
@@ -315,8 +316,9 @@ def add_sharp_turns(root, main, decision):
     normal_lift_state = either(eq('liftState', 0), eq('liftState', 3))
     lift_update = [cond(eq('LIFT_ENABLED', 1), [
         cond(le('LIFT_CROSSING_INDEX', 0), [setv('turnFault', 1)]),
-        cond(both(eq('lapReady', 1),
-                  both(normal_lift_state, both(eq('turnActive', 0), eq('gapActive', 0)))), [
+        cond(both(eq('lapReady', 1), both(eq('liftState', 0),
+                  both(eq('turnActive', 0), both(eq('gapActive', 0),
+                       both(eq('turnFault', 0), eq('lapDone', 0)))))), [
             cond(eq('sensorF', 14), [
                 setv('liftClearPending', 0),
                 cond(eq('liftMarkerLatched', 0), [
@@ -324,14 +326,19 @@ def add_sharp_turns(root, main, decision):
                         setv('liftMarkerPending', 1), setv('liftMarkerAt', 'turnNow')]),
                     setv('liftMarkerElapsed', sub('turnNow', 'liftMarkerAt')),
                     cond(ge('liftMarkerElapsed', 'LIFT_MARKER_CONFIRM_MS'), [
-                        setv('liftMarkerLatched', 1), setv('liftMarkerPending', 0),
-                        setv('liftCrossings', add('liftCrossings', 1)),
-                        cond(both(eq('liftState', 0), eq('liftCrossings', 'LIFT_CROSSING_INDEX')), [
-                            setv('liftState', 1), setv('liftWaitAt', 'turnNow'),
-                            setv('liftExitPending', 0), setv('turnDirection', 0),
-                            setv('turnCandidate', 0), setv('wideActive', 0)])])])], [
-                setv('liftMarkerPending', 0)])], [setv('liftMarkerPending', 0)]),
-        # A marker is consumed until stable narrow line, including during exit.
+                        setv('liftMarkerLatched', 1), setv('liftMarkerArmed', 1),
+                        setv('liftMarkerPending', 0)])])], [
+                cond(both(eq('liftMarkerArmed', 1),
+                          both(eq('sensorF', 4), both(eq('outerCandidate', 0), eq('outerReady', 0)))), [
+                    setv('liftCrossings', add('liftCrossings', 1)),
+                    cond(eq('liftCrossings', 'LIFT_CROSSING_INDEX'), [
+                        setv('liftState', 1), setv('liftWaitAt', 'turnNow'),
+                        setv('liftExitPending', 0), setv('turnDirection', 0),
+                        setv('turnCandidate', 0), setv('wideActive', 0)])]),
+                # First non-wide sample decides: only centered/no-turn exit qualifies.
+                setv('liftMarkerArmed', 0), setv('liftMarkerPending', 0)])],
+             [setv('liftMarkerPending', 0), setv('liftMarkerArmed', 0)]),
+        # Require stable narrow line before another wide event may arm.
         cond(narrow, [
             cond(eq('liftClearPending', 0), [
                 setv('liftClearPending', 1), setv('liftClearAt', 'turnNow')]),
@@ -366,7 +373,7 @@ def add_sharp_turns(root, main, decision):
     exporter.field(function, 'NAME', 'lift_control')
     exporter.field(function, 'TYPE', 'void')
     exporter.statement(function, 'STACK', lift_control)
-    note(function, 'Lift: first confirmed wide marker after narrow-line departure, based on user route assumption. Stop without alignment drive; user-requested wait23350ms from stop command, not measured settled feedback. This is below the published27s +/-5% timing. Auto exit PWM45 with1500ms limit. Consume marker once. PWM zero is not active braking. Disable LIFT_ENABLED for the earlier practice mat without a lift.')
+    note(function, 'Lift: wide F14 confirms30ms but only arms a candidate. First non-wide sample must be centered F4 with no outer turn evidence; side/loss/split or active turn/gap cancels. Stop immediately on qualifying centered exit; user-requested wait23350ms from stop command, not measured settled feedback. This is below the published27s +/-5% timing. Auto exit PWM45 with1500ms limit. Consume marker once. PWM zero is not active braking. Disable LIFT_ENABLED for the earlier practice mat without a lift.')
     root.append(function)
     lap_update = [
         cond(eq('lapStarted', 0), [setv('lapStarted', 1), setv('lapAt', 'turnNow')]),

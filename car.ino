@@ -128,6 +128,7 @@ int  liftState;
 int  liftCrossings;
 int  liftMarkerLatched;
 int  liftMarkerPending;
+int  liftMarkerArmed;
 unsigned long  liftMarkerAt;
 unsigned long  liftMarkerElapsed;
 int  liftClearPending;
@@ -462,13 +463,14 @@ void cross_gap() {
 }
 
 /**
- * Lift: first confirmed wide marker after narrow-line departure,
- * based on user route assumption. Stop without alignment drive;
- * user-requested wait23350ms from stop command, not measured
- * settled feedback. This is below the published27s +/-5% timing.
- * Auto exit PWM45 with1500ms limit. Consume marker once.
- * PWM zero is not active braking. Disable LIFT_ENABLED
- * for the earlier practice mat without a lift.
+ * Lift: wide F14 confirms30ms but only arms a candidate.
+ * First non-wide sample must be centered F4 with no outer turn
+ * evidence; side/loss/split or active turn/gap cancels. Stop
+ * immediately on qualifying centered exit; user-requested wait23350ms
+ * from stop command, not measured settled feedback. This is below
+ * the published27s +/-5% timing. Auto exit PWM45 with1500ms limit.
+ * Consume marker once. PWM zero is not active braking. Disable
+ * LIFT_ENABLED for the earlier practice mat without a lift.
  */
 void lift_control() {
   if (liftState == 1) {
@@ -675,6 +677,7 @@ void setup()
   liftCrossings = 0;
   liftMarkerLatched = 0;
   liftMarkerPending = 0;
+  liftMarkerArmed = 0;
   liftMarkerAt = 0;
   liftMarkerElapsed = 0;
   liftClearPending = 0;
@@ -946,7 +949,7 @@ void loop()
       if (LIFT_CROSSING_INDEX <= 0) {
         turnFault = 1;
       }
-      if (lapReady == 1 && (liftState == 0 || liftState == 3) && turnActive == 0 && gapActive == 0) {
+      if (lapReady == 1 && liftState == 0 && turnActive == 0 && gapActive == 0 && turnFault == 0 && lapDone == 0) {
         if (sensorF == 14) {
           liftClearPending = 0;
           if (liftMarkerLatched == 0) {
@@ -957,23 +960,28 @@ void loop()
             liftMarkerElapsed = turnNow - liftMarkerAt;
             if (liftMarkerElapsed >= LIFT_MARKER_CONFIRM_MS) {
               liftMarkerLatched = 1;
+              liftMarkerArmed = 1;
               liftMarkerPending = 0;
-              liftCrossings = liftCrossings + 1;
-              if (liftState == 0 && liftCrossings == LIFT_CROSSING_INDEX) {
-                liftState = 1;
-                liftWaitAt = turnNow;
-                liftExitPending = 0;
-                turnDirection = 0;
-                turnCandidate = 0;
-                wideActive = 0;
-              }
             }
           }
         } else {
+          if (liftMarkerArmed == 1 && sensorF == 4 && outerCandidate == 0 && outerReady == 0) {
+            liftCrossings = liftCrossings + 1;
+            if (liftCrossings == LIFT_CROSSING_INDEX) {
+              liftState = 1;
+              liftWaitAt = turnNow;
+              liftExitPending = 0;
+              turnDirection = 0;
+              turnCandidate = 0;
+              wideActive = 0;
+            }
+          }
+          liftMarkerArmed = 0;
           liftMarkerPending = 0;
         }
       } else {
         liftMarkerPending = 0;
+        liftMarkerArmed = 0;
       }
       if (sensorF == 2 || sensorF == 4 || sensorF == 6 || sensorF == 8 || sensorF == 12) {
         if (liftClearPending == 0) {

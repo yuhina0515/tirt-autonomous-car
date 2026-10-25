@@ -2,6 +2,8 @@
 
 ## Active baseline after user-directed rollback (2026-10-25)
 
+- Latest lift sequence: F14 continuous30ms only arms marker. First non-F14 must be F4 with no outer candidate/ready to count crossing and stop immediately that loop. Side/loss/split or active turn/gap cancels candidate; later F4 cannot consume it. Stable narrow100ms re-arms marker latch. Wait23350ms/exit45 unchanged. Read docs/LIFT_CROSS_EXIT_2026-10-25.zh-TW.md; overrides stop-on-F14 rules. No geometry/unique-marker/hardware acceptance claim.
+
 - Active-turn F14 now shares fixed60ms forward-only uncertainty event with post-capture F0; no immediate post-capture F14 fault or pre-capture reverse on F14. Initialize correction side from selected turn. Normal lift/finish F14 handling remains. Color polarity is not established by legacy labels; do not equate physical white with F0/F14 without ADC evidence. Read docs/CORNER_WIDE_2026-10-25.zh-TW.md.
 
 - CAGEBOT import fix: never compare a Boolean block with numeric0; use integer turnCaptureVisible set by conditional first. export_car.mjs now waits for Blockly onchange and checks every XML parent connection before writing Arduino. Old XML detached two comparison inputs; fixed XML passes. Read docs/CAGEBOT_CONNECTION_FIX_2026-10-25.zh-TW.md. No vehicle tests/upload.
