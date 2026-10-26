@@ -1,85 +1,34 @@
-# TIRT autonomous-car practice
+# TIRT 自駕車專案
 
-祥儀 CAGEBOT 自駕車的隊友同步儲存庫。保留可編輯的 **CAGEBOT XML 與同源 Arduino**，
-以實際採集資料調整循跡策略。
+**最新交接（2026-10-26）**：[專案儲存與總結](docs/PROJECT_SUMMARY_2026-10-26.zh-TW.md)。六部門與Opus審查已完成，三個確認問題尚未修復；控制來源仍為434af1d。
 
-目前車上是先前燒錄的三顆感測器／PWM 100 版本。此儲存庫的新控制器已通過軟體測試，
-**尚未上車或完成賽道驗證**。三顆感測器不能保證把所有白色文字與白線區分開。
+現況程式為 **434af1d**，開發分支 `docs/legacy-sensor-truth-table`。2026-10-25已整理來源快照；這是尚未完成實車驗收的開發版。最新正式Release仍為 **v0.4.0／e19e214**，沒有用本次快照取代它。
 
-## 明天先做什麼
+- [現況、完整速度與正式版對比](docs/CURRENT_STATE_2026-10-25.zh-TW.md)
+- [現行速度表](docs/SPEED_SETTINGS.zh-TW.md)、[程式與維護說明](car.md)
+- [快照參數與雜湊](docs/snapshots/2026-10-25-434af1d.json)
+- [v0.4.0發布說明](docs/RELEASE_v0.4.0.zh-TW.md)、[GitHub正式Release](https://github.com/yuhina0515/tirt-autonomous-car/releases/tag/v0.4.0)
 
-1. 下載本儲存庫 ZIP 並解壓縮。保持輪子架空，在 CAGEBOT 開啟
-   `firmware/stationary_capture/stationary_capture.xml` 並燒錄。
-   **這份採集程式不驅動馬達、不需要按啟動鈕。**
-2. 接 USB，關閉其他序列監控器，雙擊 `Start-Capture.cmd`，選 USB 的 COM 埠、115200。
-   若改用已測通的藍牙，主機端選 9600；車上 UART 仍為 115200。一次只連一台電腦。
-3. 以實際車身高度分別量白線 `LINE`、黑底 `BACKGROUND`、白色文字 `TEXT`。
-   先把感測器列**沿著白線方向**擺放，讓五顆都在白線上，再取黑底；每種至少 30 筆。
-   不要把「一顆在線、四顆在黑底」標成五顆白線校正。
-4. 產生校正建議、檢查範圍後，啟用測試設定並重新產生跑圖 XML，步驟見
-   [明天測試單](docs/FIELD_TEST.zh-TW.md)。未校正的預設跑圖檔**不會啟動馬達**。
-5. 架空確認左右方向、啟動／停止按鈕，再落地依序測直線、彎道、短文字、長文字及失線。
+## 審查結果
 
-記錄工具的 `Q` 只結束收資料，**不會讓車停車**。跑圖時按車上按鈕停止；必要時關閉電源。
+[六部門失敗原因審查（2026-10-25）](docs/audits/2026-10-25-corner-failure-squad.zh-TW.md)：確認2個狀態交接實作缺陷，另列策略／感測／版本證據風險。本輪只診斷，控制程式未修改，缺陷尚未修復。
 
-## 策略改了什麼
+[Opus5.5 medium獨立審查原文](docs/audits/2026-10-25-opus-5-5-medium.zh-TW.md)與[主審核對](docs/audits/2026-10-25-opus-5-5-medium-verification.zh-TW.md)：同意舊候選重用問題，新增收線備援使用舊入彎方向的缺陷；保留對上一輪審查優先序的不同意見。僅審查，尚未修復。
 
-- 仍只用中間 **A4、A3、A2** 控制；A5、A1 只記錄，不影響決策。
-- 每顆依自己的黑底／白線讀值正規化，使用濾波和遲滯，不只比單一門檻。
-- 以連續強度估計偏移，PD 修正左右輪；PWM 上限 100，彎道降速、加速有斜率限制。
-- 全亮、分裂、低對比和跳邊屬於「需要時間確認的觀測」，不直接指定固定輪速。
-- 短干擾期間沿先前確認的方向降速；持續不確定達 120 ms 停車並鎖定，需重新按鈕啟動。
-- 路口、文字、升降台、終點**不能只用相同的亮線圖樣辨識**。本版沒有虛構正式路線動作。
+## 目前主檔
 
-[更新後的 00000～11111 對照及時間策略](docs/CONTROL_POLICY.zh-TW.md) ·
-[資料欄位](docs/TELEMETRY.md) · [測試證據](docs/VERIFICATION.md)
+[car.xml](car.xml)是CAGEBOT可編輯主程式；[car.ino](car.ino)由同XML透過本機保存的原廠產生器匯出。修改來源為tools/rewrite_car.py，不要用build.py或config.json覆寫；後兩者只屬firmware/下保留的temporal候選。
 
-## 檔案與修改方式
+直道採100／150／190／230階段，小修正保留階段。一般彎外174、內15或87；尖角搜尋外150、內反轉114；收線100。正常F由A4/A3/A2決定，A5/A1另輔助尖角選側。
 
-| 檔案 | 用途 |
-|---|---|
-| `build.py` | 控制策略來源，僅使用可匯入 CAGEBOT 的積木 |
-| `blockly_codegen.py` | 同一份 XML → Arduino，未知積木會拒絕匯出 |
-| `config.json` | 暫定端點、速度與時間參數；預設未校正、未啟用驅動 |
-| `firmware/practice_controller/` | 新跑圖 XML＋Arduino；預設不會啟動 |
-| `firmware/stationary_capture/` | 馬達關閉的資料採集 XML＋Arduino |
-| `legacy/` | 修改前程式，方便回退；不代表正式賽已驗證 |
-| `tools/` | 接收、標記、校正建議、分析工具 |
-| `tests/` | 控制回歸、CAGEBOT 匯入驗證與資料處理測試 |
+彎道寬白時以前進差速通過，白線回到側邊就繼續一般循跡；該事件真正失線才搜尋。LOSS_STOP_ENABLED與CORNER_WIDE_STOP_ENABLED目前都是0，部分失線／彎中寬白逾時改低速補線。升降台依寬白候選消失後立即回中央線、且沒有轉向提示時停車，等待23.35秒；普通圖樣仍可能與十字混淆。
 
-Python 3.10+，產生檔案不需第三方 Python 套件：
+最近交付通過原廠Blockly接點完整性檢查，已同步XML與Arduino；未由本任務編譯、燒錄或實車驗收，仍未取得最新策略通過60／90度彎的回報。來源狀態與車上韌體狀態分開記錄。
 
-```powershell
-python build.py
-python build.py --profile capture --out firmware/stationary_capture
-python -m unittest discover -s tests -v
-```
+## 文件與歷史
 
-修改行為請改 `build.py`，修改參數請改設定 JSON，再同步產生、提交 XML 與 `.ino`。
-若直接在 CAGEBOT 修改積木，請先保存 XML，再使用 `--from-xml` 匯出相同來源的 Arduino：
+修改策略前閱讀[官方規則整理](docs/TIRT_RULES_2026.zh-TW.md)、[硬體紀錄](hardware.md)與[感測圖樣對照](docs/SENSOR_TRUTH_TABLE.zh-TW.md)。感測器物理黑白名稱和F位元不能直接等同；舊說明存在極性用語差異。
 
-```powershell
-python build.py --from-xml saved.xml --out build-output/edited
-```
+升降等待23.35秒低於官方27秒±5%，也沒有下降停止回授，不能宣稱已符合機構完全停止要求。升降位置、終點與整圈仍是候選辨識，無路段定位。
 
-這不是任意 C++ 轉積木工具；禁止只改 `.ino` 後宣稱 XML 已同步。
-
-Arduino CLI 編譯目標為已確認的 ATmega328P 舊 bootloader Nano，USB bootloader 為 57600：
-
-```powershell
-arduino-cli compile --fqbn arduino:avr:nano:cpu=atmega328old firmware/practice_controller
-arduino-cli compile --fqbn arduino:avr:nano:cpu=atmega328old firmware/stationary_capture
-```
-
-新程式不需 NeoPixel 等外加函式庫。`legacy` 的原始匯出可能需要 CAGEBOT Motoshare。
-工具不會自動燒錄。先確認板子、COM 埠與輪子架空。
-
-## 隊友同步
-
-`git pull --ff-only` 後先閱讀設定及 manifest，再燒錄，請勿將車上版本與最新來源混為一談。
-每次測試記下 Git commit、設定 JSON、車上韌體、賽道位置、電池與感測器高度。
-`captures/` 預設不進 Git；分享資料前另行確認內容，保留原始 BIN、CSV、接收收據及測試註記。
-
-MIT，沿用原專案 contributors 授權。原廠編輯器、JavaScript、驅動與教案不隨本庫散布。
-連續加權位置與逐顆校正的原理可參考
-[Pololu QTR 方法文件](https://www.pololu.com/docs/0J19/3)；本車不是 Pololu 硬體，仍需自己的量測。
+逐次調整文件保留；目前值以[現況文件](docs/CURRENT_STATE_2026-10-25.zh-TW.md)及來源為準。[整理前累積README](docs/history/README-before-snapshot-2026-10-25.md)是歷史封存，不作當前設定。legacy/與three_sensor/保留基礎來源；[採集工具](docs/LIVE_CAPTURE.zh-TW.md)不是修改策略的前置要求，Bluetooth重連工作維持擱置。

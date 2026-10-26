@@ -1,0 +1,65 @@
+{
+  "backup": "E:\\Projects\\XiangyiRobotDreamFactory\\self-driving_car\\examples\\car_v4_pre_three_sensor_20261024.xml",
+  "backupSha256": "11f89913c1034821dd37e775a2dce42873e840f77e71c214ef2f50167a8d47bb",
+  "xml": "E:\\Projects\\XiangyiRobotDreamFactory\\self-driving_car\\car.xml",
+  "xmlSha256": "199eaf67c8267ffc2e49d6c9a6b0b814173e57d9649d669e882ff36d6ecd6901",
+  "decisionSensors": [
+    "A4",
+    "A3",
+    "A2"
+  ],
+  "outerDecisionValue": 1023,
+  "rawTelemetrySensors": [
+    "A1",
+    "A2",
+    "A3",
+    "A4",
+    "A5"
+  ],
+  "restoredSpeeds": {
+    "SPEED_STRAIGHT": 100,
+    "SPEED_TURN_INNER_MEDIUM": 5,
+    "SPEED_TURN_PIVOT": 95
+  },
+  "turnKp": 75,
+  "threshold": 70,
+  "blocks": 469,
+  "hardwareUpload": "PASS",
+  "officialCagebotImport": "PASS",
+  "avrCompile": {
+    "fqbn": "arduino:avr:nano:cpu=atmega328old",
+    "flashBytes": 9040,
+    "ramBytes": 436,
+    "library": "Installed CAGEBOT Motoshare"
+  },
+  "nativeVerification": {
+    "outerInvarianceCases": 3125,
+    "centerPatterns": 8,
+    "thresholdBoundaryCases": true,
+    "lossStopIteration": 41
+  },
+  "files": {
+    "car.xml": "199eaf67c8267ffc2e49d6c9a6b0b814173e57d9649d669e882ff36d6ecd6901",
+    "three_sensor/three_sensor.ino": "db9fabdaadb2717c3cb64094551a0b48b02b69efe4ba27c0844381c07b96dc1d",
+    "three_sensor/README.md": "82d1948445ea782c443a6cdae0608712696193d345c1541a2e025f483081b5ad",
+    "README.zh-TW.txt": "664ef0f335029b9353c2273330fef64034ced5dd7bc4dc60f8033e150f2fb02e"
+  },
+  "onCarVerification": "NOT RUN",
+  "hardwareVerification": {
+    "verifiedAt": "2026-10-24T09:36:00.100552+00:00",
+    "port": "COM7",
+    "bootloaderBaud": 57600,
+    "target": "ATmega328P Nano old bootloader",
+    "application": "three-center-sensor PWM100 official CAGEBOT export",
+    "programmedBytesVerified": 9040,
+    "independentFlashReadbackMatchesHex": true,
+    "bootloaderUnchanged": true,
+    "eepromUnchanged": true,
+    "beforeFlashSha256": "4da2ef8d586fe7b9ff8bfb9e08db81ae56c264d6b77799149a769c7d9611b564",
+    "afterFlashSha256": "7f81bd9ac0fd33ef4dcfad739e42a3d9b484f4074a7a5562d5dc62a1a904c023",
+    "eepromSha256": "5f4ecdb7b71c3e403983fe405cddcdc2f2576b655fdb3e80d94a6f7c32e58bc2",
+    "xmlSha256": "199eaf67c8267ffc2e49d6c9a6b0b814173e57d9649d669e882ff36d6ecd6901",
+    "hexSha256": "6e29cf66937be16c7026d3d5ba39d50e9e8a6375f07bf2d3ac350fbde73e68c5",
+    "physicalDriveTest": "NOT RUN; waiting for physical start button"
+  }
+}
