@@ -1,7 +1,8 @@
 # Project working rules
 
-## Current source snapshot (2026-10-25)
+## Current source snapshot (control2026-10-25; handoff2026-10-26)
 
+- Latest handoff: docs/PROJECT_SUMMARY_2026-10-26.zh-TW.md; snapshot/2026-10-26-reviewed-state stores latest audit data. Three confirmed bugs remain unfixed: stale candidate reuse, capture fallback uses old turn direction, capture eligibility before direction override. Archival task changes no control files or parameters.
 - Read README.md, car.md and docs/CURRENT_STATE_2026-10-25.zh-TW.md before changes. Current control source is434af1d, on docs/legacy-sensor-truth-table, PR6. snapshot/2026-10-25-wide-visible-line is an archived development snapshot, not a new stable Release. Latest formal Release remains v0.4.0/e19e214; preserve its tag/assets. Older tuning docs and docs/history are historical and may contain superseded values.
 - Root car.xml/car.ino are active. Change tools/rewrite_car.py and regenerate XML, then tools/export_car.mjs with saved vendor generators. Export waits for Blockly events and rejects detached parent connections. Never compare a Boolean block with numeric0; use integer flag or compatible Boolean input. build.py/config.json/firmware own a separate retained temporal candidate.
 - Normal F and sumW use A4/A3/A2. User explicitly authorized raw A5/A1 corner-direction assistance:20ms confirmation,120ms memory. F bit coding is low ADC<70, not a verified physical black/white label; no perfect line/text/marker distinction claim.
