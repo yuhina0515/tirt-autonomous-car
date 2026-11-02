@@ -1,5 +1,7 @@
 # TIRT 自駕車專案
 
+**官方完整賽道目標**：[架構與驗收前置](docs/OFFICIAL_COURSE_ARCHITECTURE_2026-11-03.zh-TW.md)。已拆分模型與執行器，39項測試通過；完整3D賽道與裁判尚未完成，官方試驗0次，尚未達成五次連續通過。
+
 **最新模擬環境**：[執行與回放](simulation/README.md)／[本輪測試修正報告](docs/SIMULATION_ENV_2026-11-03.zh-TW.md)。84次壓力情境、33項測試；原生版已修正800 ms已確認回線被逾時搶停的邊界。最新Nano編譯8772 bytes Flash／203 bytes全域RAM，尚未燒錄。
 
 **最新：2026-11-03原生Arduino移植完成**。新程式合計422行，Nano Old Bootloader目標編譯Flash8662 bytes／全域RAM203 bytes；原參考版17982／801 bytes。速度與控制行為保持，29項測試通過，未燒錄或實車驗收。[完整移植與對照報告](docs/NATIVE_MIGRATION_2026-11-03.zh-TW.md)。

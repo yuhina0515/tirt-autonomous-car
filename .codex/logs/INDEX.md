@@ -1,5 +1,7 @@
 # Local handoff logs
 
+- [Official full-course preflight](2026-11-03-official-course-preflight.md): architecture split,39 tests; official world/referee incomplete,0 runs, five-run goal unmet.
+
 - [2026-11-03 Simulation environment](2026-11-03-simulation-environment.md):84 stress runs, offline playback, search confirmation deadline fix,33 tests; no field acceptance.
 
 - [2026-11-03 Native Arduino migration](2026-11-03-native-migration.md): new generator-independent source, behavior parity, Nano builds8662/203 bytes,29 tests; rollback XML retained, no upload.
