@@ -1,6 +1,19 @@
 # Project working rules
 
-## Current source snapshot (control2026-10-25; handoff2026-10-26)
+## Current candidate (2026-11-02)
+
+- Read docs/SIMPLIFICATION_2026-11-02.zh-TW.md, README.md and car.md first. Root car.xml/car.ino now contain an unvalidated simplified candidate based on434af1d. Prior10/25-26 reports are historical.
+- Visible side lines follow forward; only F0 starts search. The six early side-line pivot entries and150ms unsupported-search fault are removed. The800ms search deadline remains;150ms only limits pre-capture outer direction correction.
+- Ordinary F14 has no900ms stop deadline. Lift and finish share one wide-to-F4 exit observer with no turn evidence. Finish moved from within wide to its centered exit: wide at least250ms, minimum15s run, lift complete. No centered line after finish means no marker finish stop. Lift30ms/wait23350ms/exit45/exit timeout1500ms remain.
+- One loss_fallback procedure replaces inline copies. Latest captureSide wins during capture, including0; candidate state is consumed at entry/completion/fallback. Direction is selected before capture eligibility; no override after capture starts. Gap-to-F14 preserves direction and recovery.
+- Keep speed values, center/outer sensor roles, disabled stop switches, split/probe handling and180s overall deadline. Long F14 can now traverse until the overall deadline. No unique marker recognition, competition readiness, physical color/F mapping or hardware upload claim.
+- Modify tools/rewrite_car.py then regenerate XML and export with tools/export_car.mjs and saved vendor generators. Never hand-edit only INO. build.py/config.json/firmware remain the separate retained temporal candidate.
+- Vendor import parent-connection checks and Arduino export passed. Respect user's existing no-additional-tests request: no added tests, simulation, compile, upload or driving for this candidate. Never substitute export for native acceptance.
+- Keep task-scoped commits/push and update existing PR; do not merge, force-push or change stable tags. Keep captures, vendor files and local runtime outside Git. Bluetooth work remains parked.
+
+## Historical source snapshot (control2026-10-25; handoff2026-10-26)
+
+The following records the predecessor and does not override the current candidate above.
 
 - Latest handoff: docs/PROJECT_SUMMARY_2026-10-26.zh-TW.md; snapshot/2026-10-26-reviewed-state stores latest audit data. Three confirmed bugs remain unfixed: stale candidate reuse, capture fallback uses old turn direction, capture eligibility before direction override. Archival task changes no control files or parameters.
 - Read README.md, car.md and docs/CURRENT_STATE_2026-10-25.zh-TW.md before changes. Current control source is434af1d, on docs/legacy-sensor-truth-table, PR6. snapshot/2026-10-25-wide-visible-line is an archived development snapshot, not a new stable Release. Latest formal Release remains v0.4.0/e19e214; preserve its tag/assets. Older tuning docs and docs/history are historical and may contain superseded values.

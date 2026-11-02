@@ -1,34 +1,21 @@
 # TIRT 自駕車專案
 
-**最新交接（2026-10-26）**：[專案儲存與總結](docs/PROJECT_SUMMARY_2026-10-26.zh-TW.md)。六部門與Opus審查已完成，三個確認問題尚未修復；控制來源仍為434af1d。
+目前為 **2026-11-02 控制流程精簡候選**，尚未編譯、燒錄或通過實車驗收。[本次變更、停止條件及限制](docs/SIMPLIFICATION_2026-11-02.zh-TW.md)。
 
-現況程式為 **434af1d**，開發分支 `docs/legacy-sensor-truth-table`。2026-10-25已整理來源快照；這是尚未完成實車驗收的開發版。最新正式Release仍為 **v0.4.0／e19e214**，沒有用本次快照取代它。
+- 有側線就前進循跡；只有F0且有合格方向才搜尋，刪除六條側線提前反轉入口及150 ms未獲支持鎖停。
+- 刪除一般寬白900 ms鎖停。升降與終點共用寬白出口判斷，F14期間不直接判標記停車。全程180秒等故障停止仍有效。
+- 終點改在寬白後直接回中央F4才停；終點後若沒有中央線，不會依此判定完成。
+- 修正舊候選重用、收線備援錯側及方向／回線資格順序，重複備援積木合併為loss_fallback函式。
+- 速度保留：直道100／150／190／230、一般彎174／15或87、搜尋150／反轉114、收線100。PWM不是實測車速。
 
-- [現況、完整速度與正式版對比](docs/CURRENT_STATE_2026-10-25.zh-TW.md)
-- [現行速度表](docs/SPEED_SETTINGS.zh-TW.md)、[程式與維護說明](car.md)
-- [快照參數與雜湊](docs/snapshots/2026-10-25-434af1d.json)
-- [v0.4.0發布說明](docs/RELEASE_v0.4.0.zh-TW.md)、[GitHub正式Release](https://github.com/yuhina0515/tirt-autonomous-car/releases/tag/v0.4.0)
+## 主程式與維護
 
-## 審查結果
+[car.xml](car.xml)為CAGEBOT可編輯主檔，[car.ino](car.ino)由同XML透過本機原廠產生器匯出。修改tools/rewrite_car.py，再用tools/export_car.mjs同步輸出；[維護說明](car.md)。build.py／config.json／firmware屬另一套保留temporal候選，不得覆寫主檔。
 
-[六部門失敗原因審查（2026-10-25）](docs/audits/2026-10-25-corner-failure-squad.zh-TW.md)：確認2個狀態交接實作缺陷，另列策略／感測／版本證據風險。本輪只診斷，控制程式未修改，缺陷尚未修復。
+正常F由A4/A3/A2形成，A5/A1輔助判向。F14代表中間三顆ADC均低於70，不能只憑物理顏色推定。中間三顆的觀測不能唯一區分白字、彎道與關卡。
 
-[Opus5.5 medium獨立審查原文](docs/audits/2026-10-25-opus-5-5-medium.zh-TW.md)與[主審核對](docs/audits/2026-10-25-opus-5-5-medium-verification.zh-TW.md)：同意舊候選重用問題，新增收線備援使用舊入彎方向的缺陷；保留對上一輪審查優先序的不同意見。僅審查，尚未修復。
+## 歷史與驗證
 
-## 目前主檔
+[v0.4.0發布說明](docs/RELEASE_v0.4.0.zh-TW.md)、[10月25日版本對比](docs/CURRENT_STATE_2026-10-25.zh-TW.md)、[10月26日交接](docs/PROJECT_SUMMARY_2026-10-26.zh-TW.md)與既有快照保留為歷史。本次未發布Release或合併PR。先前審查確認的三項實作缺陷本次已修來源，車上版本仍未知。
 
-[car.xml](car.xml)是CAGEBOT可編輯主程式；[car.ino](car.ino)由同XML透過本機保存的原廠產生器匯出。修改來源為tools/rewrite_car.py，不要用build.py或config.json覆寫；後兩者只屬firmware/下保留的temporal候選。
-
-直道採100／150／190／230階段，小修正保留階段。一般彎外174、內15或87；尖角搜尋外150、內反轉114；收線100。正常F由A4/A3/A2決定，A5/A1另輔助尖角選側。
-
-彎道寬白時以前進差速通過，白線回到側邊就繼續一般循跡；該事件真正失線才搜尋。LOSS_STOP_ENABLED與CORNER_WIDE_STOP_ENABLED目前都是0，部分失線／彎中寬白逾時改低速補線。升降台依寬白候選消失後立即回中央線、且沒有轉向提示時停車，等待23.35秒；普通圖樣仍可能與十字混淆。
-
-最近交付通過原廠Blockly接點完整性檢查，已同步XML與Arduino；未由本任務編譯、燒錄或實車驗收，仍未取得最新策略通過60／90度彎的回報。來源狀態與車上韌體狀態分開記錄。
-
-## 文件與歷史
-
-修改策略前閱讀[官方規則整理](docs/TIRT_RULES_2026.zh-TW.md)、[硬體紀錄](hardware.md)與[感測圖樣對照](docs/SENSOR_TRUTH_TABLE.zh-TW.md)。感測器物理黑白名稱和F位元不能直接等同；舊說明存在極性用語差異。
-
-升降等待23.35秒低於官方27秒±5%，也沒有下降停止回授，不能宣稱已符合機構完全停止要求。升降位置、終點與整圈仍是候選辨識，無路段定位。
-
-逐次調整文件保留；目前值以[現況文件](docs/CURRENT_STATE_2026-10-25.zh-TW.md)及來源為準。[整理前累積README](docs/history/README-before-snapshot-2026-10-25.md)是歷史封存，不作當前設定。legacy/與three_sensor/保留基礎來源；[採集工具](docs/LIVE_CAPTURE.zh-TW.md)不是修改策略的前置要求，Bluetooth重連工作維持擱置。
+最近完成原廠Blockly匯入父接點檢查與Arduino同步匯出；未新增測試、模擬、編譯、燒錄或實車驗收，不能宣稱60／90度彎或整圈已通過。升降等待23.35秒及缺少機構停止回授的限制仍在，不能宣稱合規。
