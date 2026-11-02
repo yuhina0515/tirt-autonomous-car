@@ -1,7 +1,7 @@
 {
   "status": "blocked",
   "qualification_target": "official_complete_course",
-  "course_sha256": "3140c33fdd523038a749a709196e76ec0e4ded2356f486ed29e58bcf542fb4f1",
+  "course_sha256": "0a18feea8dc160fa35dda46572474dacd9ec751a997586e92ab169457b2d115b",
   "blocking_issues": [
     "missing_verified_metric_geometry",
     "missing_verified_directed_route_and_branch_exits",

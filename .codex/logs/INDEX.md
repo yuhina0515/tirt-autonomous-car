@@ -1,5 +1,7 @@
 # Local handoff logs
 
+- [Official event page recheck](2026-11-03-official-page-recheck.md): live event date11/7, same PDF bytes, omitted dimension labels and vehicle eligibility bounds recorded; full-course runs0.
+
 - [Official full-course preflight](2026-11-03-official-course-preflight.md): architecture split,39 tests; official world/referee incomplete,0 runs, five-run goal unmet.
 
 - [2026-11-03 Simulation environment](2026-11-03-simulation-environment.md):84 stress runs, offline playback, search confirmation deadline fix,33 tests; no field acceptance.
