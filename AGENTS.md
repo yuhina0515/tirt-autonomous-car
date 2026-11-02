@@ -2,13 +2,18 @@
 
 ## Current candidate (2026-11-02)
 
+- Latest follow-up: docs/PHYSICS_SIMULATION_2026-11-02.zh-TW.md. User explicitly authorized offline scenario/physics simulation in chat, superseding the earlier no-additional-tests restriction for this scope. No hardware upload or motor operation is authorized/performed by this simulation task.
+- cross_gap now prioritizes valid narrow-line capture over the120ms lost-line deadline, confirms continuously15ms, and guards motor output after faults. Speeds remain100/150/190/230. Compared with46bad64 in132 synthetic cases, reached92→94, faults7→5; four reached cases per version still crossed assumed road bounds. These are uncalibrated model outcomes, not real-car probabilities or legal laps.
+- tools/sim_native.py compiles the actual vendor-exported INO into a Windows/MSVC DLL with mocked Arduino I/O and observer-only first-fault line/F capture. tools/physics_sim.py couples it to an assumed planar plant; tests/test_physics_sim.py has10 checks. Do not equate host compilation with AVR compilation or calibrated dynamics.
+- rewrite_car.py defaults to the unchanged speed profile. Experimental gentle profile requires a separate --output; it failed a different-seed comparison before the gap fix and is not a recommended preset. Do not replace measured evidence with its exploratory result. Runtime/vendor/raw traces remain outside Git; compact summary and figure are under docs/simulations.
+
 - Read docs/SIMPLIFICATION_2026-11-02.zh-TW.md, README.md and car.md first. Root car.xml/car.ino now contain an unvalidated simplified candidate based on434af1d. Prior10/25-26 reports are historical.
 - Visible side lines follow forward; only F0 starts search. The six early side-line pivot entries and150ms unsupported-search fault are removed. The800ms search deadline remains;150ms only limits pre-capture outer direction correction.
 - Ordinary F14 has no900ms stop deadline. Lift and finish share one wide-to-F4 exit observer with no turn evidence. Finish moved from within wide to its centered exit: wide at least250ms, minimum15s run, lift complete. No centered line after finish means no marker finish stop. Lift30ms/wait23350ms/exit45/exit timeout1500ms remain.
 - One loss_fallback procedure replaces inline copies. Latest captureSide wins during capture, including0; candidate state is consumed at entry/completion/fallback. Direction is selected before capture eligibility; no override after capture starts. Gap-to-F14 preserves direction and recovery.
 - Keep speed values, center/outer sensor roles, disabled stop switches, split/probe handling and180s overall deadline. Long F14 can now traverse until the overall deadline. No unique marker recognition, competition readiness, physical color/F mapping or hardware upload claim.
 - Modify tools/rewrite_car.py then regenerate XML and export with tools/export_car.mjs and saved vendor generators. Never hand-edit only INO. build.py/config.json/firmware remain the separate retained temporal candidate.
-- Vendor import parent-connection checks and Arduino export passed. Respect user's existing no-additional-tests request: no added tests, simulation, compile, upload or driving for this candidate. Never substitute export for native acceptance.
+- Vendor import parent-connection checks and Arduino export passed. The initial simplification had no extra tests; the later user-authorized offline simulation added host tests only. No Arduino target compilation, upload or driving. Never substitute export or host simulation for hardware acceptance.
 - Keep task-scoped commits/push and update existing PR; do not merge, force-push or change stable tags. Keep captures, vendor files and local runtime outside Git. Bluetooth work remains parked.
 
 ## Historical source snapshot (control2026-10-25; handoff2026-10-26)

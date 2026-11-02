@@ -1,5 +1,7 @@
 # Local handoff logs
 
+- [2026-11-02 Physics simulation and gap priority](2026-11-02-physics-simulation.md): actual-sketch closed loop, physical assumptions and rejected speed trials, gap capture fix;25 host tests, no upload/real-car acceptance.
+
 - [2026-11-02 Controller simplification](2026-11-02-controller-simplification.md): shared wide-exit marker and fallback, F0-only search, three source defects fixed; vendor export only, no hardware acceptance.
 
 - [2026-10-25 Corner failure squad audit](2026-10-25-squad-corner-failure.md): six departments, two implementation defects, policy risks, no controller edits.

@@ -434,14 +434,14 @@ void loss_fallback() {
 }
 
 /**
- * Gap base45. Qualified retained right direction uses45/15,
- * left15/45, for at most120ms without fresh evidence; renewal does
- * not refresh direction age. Unknown/expired direction uses45/45.
- * Normal120ms deadline remains; LOSS_STOP_ENABLED0 uses forward
- * fallback instead of F0 fault. Side-line return starts differential
- * capture20/45 or30/45 immediately. Continuous narrow line15ms
- * finishes; invalid observations reset confirmation, not
- * the event deadline. Wide line returns to marker handling.
+ * Gap base45. Recent direction uses45/15 or15/45 for at
+ * most120ms, otherwise45/45. Valid narrow line takes priority
+ * over the lost-line deadline: capture immediately and finish
+ * after15ms continuous confirmation. Returning at the120ms
+ * boundary must not cause a valid-line fault. Invalid observations
+ * reset confirmation without refreshing the event start.
+ * F14 transfers direction into wide recovery. One guarded
+ * output prevents a fault stop from being overwritten.
  */
 void cross_gap() {
   gapElapsed = turnNow - gapAt;
@@ -456,126 +456,87 @@ void cross_gap() {
     gapDirectionAt = turnNow;
   }
   gapDirectionAge = turnNow - gapDirectionAt;
-  if (gapElapsed >= GAP_TIMEOUT_MS) {
-    if (LOSS_STOP_ENABLED == 0 && sensorF == 0 || CORNER_WIDE_STOP_ENABLED == 0 && sensorF == 14) {
-      loss_fallback();
-    } else {
-      turnFault = 1;
-      gapActive = 0;
-      stop2();
+  if (sensorF == 2 || sensorF == 4 || sensorF == 6 || sensorF == 8 || sensorF == 12) {
+    if (gapConfirm == 0) {
+      gapConfirm = 1;
+      gapCaptureAt = turnNow;
     }
-  } else {
-    if (sensorF == 2 || sensorF == 4 || sensorF == 6 || sensorF == 8 || sensorF == 12) {
-      if (gapConfirm == 0) {
-        gapConfirm = 1;
-        gapCaptureAt = turnNow;
-      }
-      gapCaptureElapsed = turnNow - gapCaptureAt;
-    } else {
-      gapConfirm = 0;
-    }
-    if (gapConfirm == 1 && gapCaptureElapsed >= GAP_REACQUIRE_MS || sensorF == 14) {
-      if (sensorF == 14) {
-        cornerWideRecovery = 1;
-        wideDirection = gapDirection;
-        wideDirectionAt = gapDirectionAt;
-      }
+    gapCaptureElapsed = turnNow - gapCaptureAt;
+    if (gapCaptureElapsed >= GAP_REACQUIRE_MS) {
       gapActive = 0;
       turnDirection = 0;
       turnCandidate = 0;
       turnCandidateAt = 0;
       turnCandidateElapsed = 0;
       whiteCount = 0;
-      if (sensorF == 8) {
-        digitalWrite(7,LOW);
-        analogWrite(5,20);
-        digitalWrite(4,HIGH);
-        analogWrite(6,GAP_PWM);
-      } else if (sensorF == 12) {
-        digitalWrite(7,LOW);
-        analogWrite(5,30);
-        digitalWrite(4,HIGH);
-        analogWrite(6,GAP_PWM);
-      } else if (sensorF == 2) {
-        digitalWrite(7,LOW);
-        analogWrite(5,GAP_PWM);
-        digitalWrite(4,HIGH);
-        analogWrite(6,20);
-      } else if (sensorF == 6) {
-        digitalWrite(7,LOW);
-        analogWrite(5,GAP_PWM);
-        digitalWrite(4,HIGH);
-        analogWrite(6,30);
-      } else {
-        if (sensorF == 0) {
-          if (gapDirection == -1 && gapDirectionAge <= GAP_DIRECTION_MS) {
-            digitalWrite(7,LOW);
-            analogWrite(5,15);
-            digitalWrite(4,HIGH);
-            analogWrite(6,GAP_PWM);
-          } else if (gapDirection == 1 && gapDirectionAge <= GAP_DIRECTION_MS) {
-            digitalWrite(7,LOW);
-            analogWrite(5,GAP_PWM);
-            digitalWrite(4,HIGH);
-            analogWrite(6,15);
-          } else {
-            digitalWrite(7,LOW);
-            analogWrite(5,GAP_PWM);
-            digitalWrite(4,HIGH);
-            analogWrite(6,GAP_PWM);
-          }
+    }
+  } else {
+    gapConfirm = 0;
+    if (sensorF == 14) {
+      cornerWideRecovery = 1;
+      wideDirection = gapDirection;
+      wideDirectionAt = gapDirectionAt;
+      gapActive = 0;
+      turnDirection = 0;
+      turnCandidate = 0;
+      turnCandidateAt = 0;
+      turnCandidateElapsed = 0;
+    } else {
+      if (gapElapsed >= GAP_TIMEOUT_MS) {
+        if (LOSS_STOP_ENABLED == 0 && sensorF == 0 || CORNER_WIDE_STOP_ENABLED == 0 && sensorF == 14) {
+          loss_fallback();
         } else {
-          digitalWrite(7,LOW);
-          analogWrite(5,GAP_PWM);
-          digitalWrite(4,HIGH);
-          analogWrite(6,GAP_PWM);
+          turnFault = 1;
+          gapActive = 0;
+          stop2();
         }
       }
+    }
+  }
+  if (turnFault == 0) {
+    if (sensorF == 8) {
+      digitalWrite(7,LOW);
+      analogWrite(5,20);
+      digitalWrite(4,HIGH);
+      analogWrite(6,GAP_PWM);
+    } else if (sensorF == 12) {
+      digitalWrite(7,LOW);
+      analogWrite(5,30);
+      digitalWrite(4,HIGH);
+      analogWrite(6,GAP_PWM);
+    } else if (sensorF == 2) {
+      digitalWrite(7,LOW);
+      analogWrite(5,GAP_PWM);
+      digitalWrite(4,HIGH);
+      analogWrite(6,20);
+    } else if (sensorF == 6) {
+      digitalWrite(7,LOW);
+      analogWrite(5,GAP_PWM);
+      digitalWrite(4,HIGH);
+      analogWrite(6,30);
     } else {
-      if (sensorF == 8) {
-        digitalWrite(7,LOW);
-        analogWrite(5,20);
-        digitalWrite(4,HIGH);
-        analogWrite(6,GAP_PWM);
-      } else if (sensorF == 12) {
-        digitalWrite(7,LOW);
-        analogWrite(5,30);
-        digitalWrite(4,HIGH);
-        analogWrite(6,GAP_PWM);
-      } else if (sensorF == 2) {
-        digitalWrite(7,LOW);
-        analogWrite(5,GAP_PWM);
-        digitalWrite(4,HIGH);
-        analogWrite(6,20);
-      } else if (sensorF == 6) {
-        digitalWrite(7,LOW);
-        analogWrite(5,GAP_PWM);
-        digitalWrite(4,HIGH);
-        analogWrite(6,30);
-      } else {
-        if (sensorF == 0) {
-          if (gapDirection == -1 && gapDirectionAge <= GAP_DIRECTION_MS) {
-            digitalWrite(7,LOW);
-            analogWrite(5,15);
-            digitalWrite(4,HIGH);
-            analogWrite(6,GAP_PWM);
-          } else if (gapDirection == 1 && gapDirectionAge <= GAP_DIRECTION_MS) {
-            digitalWrite(7,LOW);
-            analogWrite(5,GAP_PWM);
-            digitalWrite(4,HIGH);
-            analogWrite(6,15);
-          } else {
-            digitalWrite(7,LOW);
-            analogWrite(5,GAP_PWM);
-            digitalWrite(4,HIGH);
-            analogWrite(6,GAP_PWM);
-          }
+      if (sensorF == 0) {
+        if (gapDirection == -1 && gapDirectionAge <= GAP_DIRECTION_MS) {
+          digitalWrite(7,LOW);
+          analogWrite(5,15);
+          digitalWrite(4,HIGH);
+          analogWrite(6,GAP_PWM);
+        } else if (gapDirection == 1 && gapDirectionAge <= GAP_DIRECTION_MS) {
+          digitalWrite(7,LOW);
+          analogWrite(5,GAP_PWM);
+          digitalWrite(4,HIGH);
+          analogWrite(6,15);
         } else {
           digitalWrite(7,LOW);
           analogWrite(5,GAP_PWM);
           digitalWrite(4,HIGH);
           analogWrite(6,GAP_PWM);
         }
+      } else {
+        digitalWrite(7,LOW);
+        analogWrite(5,GAP_PWM);
+        digitalWrite(4,HIGH);
+        analogWrite(6,GAP_PWM);
       }
     }
   }

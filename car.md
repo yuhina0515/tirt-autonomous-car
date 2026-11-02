@@ -2,6 +2,8 @@
 
 目前為[2026-11-02精簡候選](docs/SIMPLIFICATION_2026-11-02.zh-TW.md)。舊434af1d及10月26日交接作歷史比較。
 
+後續已加入[物理情境模擬與缺口修正](docs/PHYSICS_SIMULATION_2026-11-02.zh-TW.md)：cross_gap先接納有效窄線再確認15 ms，120 ms缺口期限只處理尚未回線圖樣；故障輸出不被後續命令覆寫。原速度設定保留，緩升速試驗須以--speed-profile gentle及獨立--output重建，不作預設推薦。
+
 ## 來源與輸出
 
 根目錄car.xml／car.ino為主檔。修改tools/rewrite_car.py，從legacy/three_sensor_baseline重建XML，再以tools/export_car.mjs與本機保存的原廠產生器匯出Arduino。匯入後等待事件完成並逐父接點檢查；不得只改INO，也不得用數字比較接Boolean。build.py／config.json／firmware屬保留候選。
@@ -17,4 +19,4 @@
 
 ## 驗證界線
 
-原廠Blockly父接點核對與Arduino匯出通過；未新增測試、模擬、Arduino編譯、燒錄或行車驗收。來源不代表車上韌體。終點後無中央窄線時，新出口判斷不會停車；持續F14可前進至180秒上限。關卡仍非唯一辨識，PWM0不是主動煞車。
+原廠Blockly父接點核對與Arduino匯出通過，10項模型／桌面原程式重播檢查通過。使用者已另行授權離線模擬；仍未做Arduino編譯、燒錄或行車驗收。來源不代表車上韌體。終點後無中央窄線時，新出口判斷不會停車；持續F14可前進至180秒上限。關卡仍非唯一辨識，PWM0不是主動煞車。

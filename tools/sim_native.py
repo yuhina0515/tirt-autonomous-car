@@ -1,0 +1,127 @@
+"""Run the actual vendor-exported sketch in a desktop DLL, without hardware I/O.
+
+Windows/MSVC host compilation is not Arduino compilation. Vendor LED and Serial
+are no-ops; real millis, ADC and GPIO boundaries are replaced explicitly.
+"""
+import ctypes
+import hashlib
+import os
+from pathlib import Path
+import re
+import shutil
+import subprocess
+
+ROOT = Path(__file__).resolve().parents[1]
+STATE = ['sensorF', 'turnFault', 'lapDone', 'liftState', 'turnActive',
+         'gapActive', 'cornerWideRecovery', 'turnDirection', 'turnCaptureSide',
+         'outerProbeActive', 'splitActive', 'straightPwm', 'firstFaultLine', 'firstFaultF']
+
+
+def build(source, directory):
+    directory = Path(directory).resolve()
+    directory.mkdir(parents=True, exist_ok=True)
+    text = Path(source).read_text(encoding='utf-8')
+    digest = hashlib.sha256(Path(source).read_bytes()).hexdigest()
+    # Observer-only instrumentation: preserve the first fault's original source
+    # line and F before later ADC samples obscure the triggering observation.
+    lines=text.splitlines()
+    for i,line in enumerate(lines):
+        if line.strip()=='turnFault = 1;':
+            lines[i]=line.replace('turnFault = 1;',
+                'if(!firstFaultLine){firstFaultLine=%d;firstFaultF=sensorF;} turnFault = 1;' % (i+1))
+    (directory / 'sketch.inc').write_text('\n'.join(lines)+'\n', encoding='utf-8')
+    (directory / 'moto_NeoPixel.h').write_text('''#pragma once
+#define NEO_GRB 0
+#define NEO_KHZ800 0
+struct moto_NeoPixel {
+ moto_NeoPixel(int,int,int){} void begin(){} void show(){}
+ int Color(int,int,int){return 0;} void setPixelColor(int,int){}
+};
+''', encoding='utf-8')
+    variables = set(re.findall(r'^(?:int|unsigned long)\s+(\w+)\s*;', text, re.M))
+    prototypes = '\n'.join(re.findall(r'^void\s+\w+\([^\n]*\)(?=\s*\{)', text, re.M))
+    prototypes = prototypes.replace('\n', ';\n') + ';'
+    parameter_cases = '\n'.join(
+        'if(!strcmp(name,"%s")){%s=value;return 1;}' % (n, n)
+        for n in sorted(variables))
+    state_cases = '\n'.join('case %d:return %s;' % (i, n if n in variables or n.startswith('firstFault') else '0')
+                            for i, n in enumerate(STATE))
+    bridge = r'''
+#include <string>
+#include <cstdlib>
+#include <cstring>
+#include <cstdint>
+class String:public std::string {
+public: using std::string::string;
+ String(int n):std::string(std::to_string(n)){}
+ String(const std::string &s):std::string(s){}
+ String operator+(const String &s)const{return String(std::string(*this)+std::string(s));}
+};
+const int LOW=0,HIGH=1,INPUT=0,OUTPUT=1,A1=15,A2=16,A3=17,A4=18,A5=19;
+static uint32_t nowMs=0;
+static int firstFaultLine=0,firstFaultF=0;
+static int adc[20]={},pwm[20]={},digital[20]={};
+unsigned long millis(){return nowMs;}
+void delay(unsigned long ms){nowMs+=ms;}
+void pinMode(int,int){}
+int digitalRead(int){return 0;}
+int analogRead(int pin){return adc[pin];}
+void digitalWrite(int pin,int value){digital[pin]=value;}
+void analogWrite(int pin,int value){pwm[pin]=value;}
+struct SerialStub{void begin(int){} template<class T>void print(T){} template<class T>void println(T){};} Serial;
+@PROTOTYPES@
+#include "sketch.inc"
+extern "C" __declspec(dllexport) void reset_sim(){
+ nowMs=0;firstFaultLine=firstFaultF=0;memset(pwm,0,sizeof(pwm));memset(digital,0,sizeof(digital));
+ for(int i=0;i<20;++i)adc[i]=500;
+ setup();nowMs=0;
+}
+extern "C" __declspec(dllexport) void step_sim(uint32_t ms,int a5,int a4,int a3,int a2,int a1){
+ nowMs=ms;adc[A5]=a5;adc[A4]=a4;adc[A3]=a3;adc[A2]=a2;adc[A1]=a1;loop();
+}
+extern "C" __declspec(dllexport) int get_state(int field){switch(field){@STATE@}return 0;}
+extern "C" __declspec(dllexport) int left_command(){return digital[7]==LOW?pwm[5]:-pwm[5];}
+extern "C" __declspec(dllexport) int right_command(){return digital[4]==HIGH?pwm[6]:-pwm[6];}
+extern "C" __declspec(dllexport) int set_parameter(const char*name,int value){@PARAMETERS@return 0;}
+'''.replace('@PROTOTYPES@', prototypes).replace('@STATE@', state_cases).replace('@PARAMETERS@', parameter_cases)
+    (directory / 'bridge.cpp').write_text(bridge, encoding='utf-8')
+    env = os.environ.copy()
+    if not shutil.which('cl'):
+        candidates = sorted(Path('C:/Program Files/Microsoft Visual Studio').glob('*/Community/VC/Auxiliary/Build/vcvars64.bat'))
+        if not candidates:
+            raise RuntimeError('MSVC cl or Visual Studio Community vcvars64.bat is required')
+        result = subprocess.run('cmd /d /s /c ""%s" >nul && set"' % candidates[-1],
+                                capture_output=True, text=True, check=True)
+        for line in result.stdout.splitlines():
+            if '=' in line and not line.startswith('='):
+                k, v = line.split('=', 1)
+                env[k.upper()] = v
+    dll = directory / 'controller.dll'
+    compiler = shutil.which('cl', path=env.get('PATH'))
+    result = subprocess.run([compiler, '/nologo', '/LD', '/EHsc', '/O2', '/std:c++17',
+                             '/I' + str(directory), 'bridge.cpp', '/link', '/OUT:' + str(dll)],
+                            cwd=str(directory), env=env, capture_output=True, text=True)
+    (directory / 'compile.log').write_text(result.stdout + result.stderr, encoding='utf-8')
+    if result.returncode:
+        raise RuntimeError(result.stdout + result.stderr)
+    return dll, digest
+
+
+class Controller:
+    def __init__(self, dll):
+        self.lib = ctypes.CDLL(str(dll))
+        self.lib.step_sim.argtypes = [ctypes.c_uint32] + [ctypes.c_int] * 5
+        self.lib.set_parameter.argtypes = [ctypes.c_char_p, ctypes.c_int]
+
+    def reset(self, parameters=None):
+        self.lib.reset_sim()
+        for name, value in (parameters or {}).items():
+            if not self.lib.set_parameter(name.encode(), value):
+                raise ValueError('Unknown sketch parameter: ' + name)
+
+    def step(self, ms, adc):
+        self.lib.step_sim(ms, *adc)
+        return (self.lib.left_command(), self.lib.right_command())
+
+    def state(self):
+        return {name: self.lib.get_state(i) for i, name in enumerate(STATE)}

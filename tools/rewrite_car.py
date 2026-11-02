@@ -4,6 +4,7 @@ This is a structural rewrite, not the temporal controller's build.py pipeline.
 Export the resulting XML with the actual CAGEBOT Arduino generator.
 """
 from copy import deepcopy
+import argparse
 from pathlib import Path
 import sys
 import xml.etree.ElementTree as ET
@@ -48,7 +49,7 @@ def prune_chain(parent, name, remove):
             holder = ET.SubElement(block, tag('next'))
 
 
-def add_sharp_turns(root, main, decision):
+def add_sharp_turns(root, main, decision, speed_profile='current'):
     """Follow a departing edge into a bounded pivot until the center line returns."""
     exporter = Exporter()
     settings = {
@@ -206,6 +207,11 @@ def add_sharp_turns(root, main, decision):
         'liftLineAt': ('unsigned long', 0),
         'liftLineElapsed': ('unsigned long', 0),
     }
+    if speed_profile == 'gentle':
+        for name, value in {'STRAIGHT_STAGE2_PWM': 120, 'STRAIGHT_STAGE3_PWM': 150,
+                            'STRAIGHT_STAGE2_MS': 400, 'STRAIGHT_STAGE3_MS': 900,
+                            'STRAIGHT_STAGE4_MS': 1500}.items():
+            settings[name] = (settings[name][0], value)
     variables = root.find('b:variables', N)
     for name in settings:
         ET.SubElement(variables, tag('variable'), id='var_' + name).text = name
@@ -345,26 +351,27 @@ def add_sharp_turns(root, main, decision):
                   (anyof('sensorF', [2, 6]), [setv('gapDirection', 1), setv('gapDirectionAt', 'turnNow')]),
                   (anyof('sensorF', [8, 12]), [setv('gapDirection', -1), setv('gapDirectionAt', 'turnNow')])]),
            setv('gapDirectionAge', sub('turnNow', 'gapDirectionAt')),
-           cond(ge('gapElapsed', 'GAP_TIMEOUT_MS'),
-                loss_failure([setv('turnFault', 1), setv('gapActive', 0), call('stop')]), [
-               cond(anyof('sensorF', [2, 4, 6, 8, 12]),
-                    [cond(eq('gapConfirm', 0), [
+           cond(anyof('sensorF', [2, 4, 6, 8, 12]), [
+                    cond(eq('gapConfirm', 0), [
                         setv('gapConfirm', 1), setv('gapCaptureAt', 'turnNow')]),
-                     setv('gapCaptureElapsed', sub('turnNow', 'gapCaptureAt'))],
-                    [setv('gapConfirm', 0)]),
-               cond(either(both(eq('gapConfirm', 1), ge('gapCaptureElapsed', 'GAP_REACQUIRE_MS')),
-                           eq('sensorF', 14)),
-                     [cond(eq('sensorF', 14), [setv('cornerWideRecovery', 1),
-                          setv('wideDirection', 'gapDirection'), setv('wideDirectionAt', 'gapDirectionAt')]),
-                      setv('gapActive', 0), setv('turnDirection', 0), *consume_candidate,
-                     setv('whiteCount', 0)] + gap_capture, gap_capture)])]
+                    setv('gapCaptureElapsed', sub('turnNow', 'gapCaptureAt')),
+                    cond(ge('gapCaptureElapsed', 'GAP_REACQUIRE_MS'), [
+                        setv('gapActive', 0), setv('turnDirection', 0), *consume_candidate,
+                        setv('whiteCount', 0)])], [
+                setv('gapConfirm', 0),
+                cond(eq('sensorF', 14), [setv('cornerWideRecovery', 1),
+                     setv('wideDirection', 'gapDirection'), setv('wideDirectionAt', 'gapDirectionAt'),
+                     setv('gapActive', 0), setv('turnDirection', 0), *consume_candidate], [
+                    cond(ge('gapElapsed', 'GAP_TIMEOUT_MS'),
+                         loss_failure([setv('turnFault', 1), setv('gapActive', 0), call('stop')]))])]),
+           cond(eq('turnFault', 0), gap_capture)]
     function = exporter.block('procedures_defnoreturn')
     function.set('x', '900')
     function.set('y', '650')
     exporter.field(function, 'NAME', 'cross_gap')
     exporter.field(function, 'TYPE', 'void')
     exporter.statement(function, 'STACK', gap)
-    note(function, 'Gap base45. Qualified retained right direction uses45/15, left15/45, for at most120ms without fresh evidence; renewal does not refresh direction age. Unknown/expired direction uses45/45. Normal120ms deadline remains; LOSS_STOP_ENABLED0 uses forward fallback instead of F0 fault. Side-line return starts differential capture20/45 or30/45 immediately. Continuous narrow line15ms finishes; invalid observations reset confirmation, not the event deadline. Wide line returns to marker handling.')
+    note(function, 'Gap base45. Recent direction uses45/15 or15/45 for at most120ms, otherwise45/45. Valid narrow line takes priority over the lost-line deadline: capture immediately and finish after15ms continuous confirmation. Returning at the120ms boundary must not cause a valid-line fault. Invalid observations reset confirmation without refreshing the event start. F14 transfers direction into wide recovery. One guarded output prevents a fault stop from being overwritten.')
     root.append(function)
 
     wide_drive = [setv('wideDirectionAge', sub('turnNow', 'wideDirectionAt')),
@@ -760,7 +767,7 @@ def streamline_loop_io(root, main):
     parent.append(head)
 
 
-def rewrite():
+def rewrite(speed_profile='current', output=None):
     root = ET.fromstring((ROOT / 'legacy/three_sensor_baseline/three_sensor_baseline.xml').read_text(encoding='utf-8'))
     main = root.find("b:block[@type='arduino_setup']", N)
     unused = {'SPEED_BACKWARD', 'SPEED_TURN_INNER_FINE', 'SPEED_TURN_PIVOT',
@@ -774,7 +781,7 @@ def rewrite():
     # Straight speed is independent of the curve base and sharp-turn outputs.
     for block in main.findall(".//b:block[@type='variables_declare']", N):
         name = block.find("b:field[@name='VAR']", N).text
-        parameters = {'SPEED_STRAIGHT': 230, 'TURN_KP': 174,
+        parameters = {'SPEED_STRAIGHT': 180 if speed_profile == 'gentle' else 230, 'TURN_KP': 174,
                       'SPEED_TURN_INNER_MEDIUM': 15}
         if name in parameters:
             block.find(".//b:field[@name='NUM']", N).text = str(parameters[name])
@@ -848,17 +855,29 @@ def rewrite():
         ('n0210', 'Original 115200-baud raw ADC/F telemetry; no new capture protocol.'),
     ):
         note(main.find(".//b:block[@id='%s']" % block_id, N), text)
-    add_sharp_turns(root, main, decision)
+    add_sharp_turns(root, main, decision, speed_profile)
     replace_normal_follow(main)
     streamline_loop_io(root, main)
     ids = {v.text: v.get('id') for v in root.find('b:variables', N)}
     for field in root.findall('.//b:field', N):
         if field.get('name') == 'VAR':
             field.set('id', ids[field.text])
+    if speed_profile == 'gentle':
+        for comment in root.findall('.//b:comment', N):
+            comment.text = comment.text.replace('100/150/190/230', '100/120/150/180')
+        note(main, 'EXPERIMENTAL gentle speed profile:100/120/150/180 at0/400/900/1500ms centered travel. Same curve/search settings. Assumed-plant simulation only, not measured hardware calibration.')
     ET.indent(root, space='  ')
-    (ROOT / 'car.xml').write_text(ET.tostring(root, encoding='unicode') + '\n', encoding='utf-8')
-    print('Rewrote car.xml from the preserved legacy XML; export Arduino next.')
+    destination = Path(output) if output else ROOT / 'car.xml'
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    destination.write_text(ET.tostring(root, encoding='unicode') + '\n', encoding='utf-8')
+    print('Rewrote %s with %s speed profile; export Arduino next.' % (destination, speed_profile))
 
 
 if __name__ == '__main__':
-    rewrite()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--speed-profile', choices=['current', 'gentle'], default='current')
+    parser.add_argument('--output', type=Path, help='Write a separate candidate XML; default root car.xml')
+    args = parser.parse_args()
+    if args.speed_profile != 'current' and (not args.output or args.output.resolve() == (ROOT/'car.xml').resolve()):
+        parser.error('Experimental profiles require --output to keep the active root XML unchanged')
+    rewrite(args.speed_profile, args.output)
