@@ -221,7 +221,7 @@ def main():
     parser.add_argument('--seed',type=int,default=20261102)
     parser.add_argument('--profiles',nargs='+',choices=list(PROFILES),default=list(PROFILES))
     parser.add_argument('--models',nargs='+',choices=['stable','simplified'],default=['stable','simplified'])
-    parser.add_argument('--candidate',type=Path,help='Additional vendor-exported INO; no runtime parameter overrides')
+    parser.add_argument('--candidate',type=Path,help='Additional exported or native-car INO; no runtime parameter overrides')
     parser.add_argument('--reference-source',type=Path,help='Use this INO instead of pinned46bad64 for the simplified reference')
     parser.add_argument('--plant-json',type=Path,help='JSON object of measured Plant field overrides; stored with results')
     args=parser.parse_args()
@@ -240,7 +240,8 @@ def main():
         else:
             result=subprocess.run(['git','show',ref+':car.ino'],cwd=ROOT,capture_output=True,check=True)
             source.write_bytes(result.stdout)
-        dll,digest=build(source,output/'native'/name)
+        build_input=args.reference_source if name=='simplified' and args.reference_source else source
+        dll,digest=build(build_input,output/'native'/name)
         models[name]=(Controller(dll),digest)
     if args.candidate:
         dll,digest=build(args.candidate,output/'native/generated_candidate')
@@ -261,7 +262,7 @@ def main():
             subset=[r for r in results if r['model']==model and r['profile']==profile]
             print(model,profile,{n:sum(r['outcome']==n for r in subset) for n in ['reached','fault','false_marker','escaped','timeout']},flush=True)
     payload=dict(model='assumed planar differential-drive sensitivity model; not calibrated',
-                 source='actual vendor-exported sketch in MSVC host DLL; no hardware I/O',
+                 source='actual sketch/adapter and core in MSVC host DLL; no hardware I/O',
                  seed=args.seed,samples=args.samples,plant_overrides=overrides,
                  sampling_note='One shared nominal set plus seed-specific random sets; not empirical probabilities.',
                  results=results)

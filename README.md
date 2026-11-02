@@ -1,8 +1,10 @@
 # TIRT 自駕車專案
 
-**最新工作：2026-11-02物理情境模擬與缺口交接修正**：[模型、規則依據、結果與限制](docs/PHYSICS_SIMULATION_2026-11-02.zh-TW.md)。實際主程式已修正「有效線返回仍先被120 ms缺口期限鎖停」；原速度保留。離線模型比較132組，到達出口92→94、故障7→5，仍有失敗，不能當作實車成功率。10項模型／實際程式重播檢查通過，未編譯Arduino目標、燒錄或實車驗收。
+**最新：2026-11-03原生Arduino移植完成**。新程式合計422行，Nano Old Bootloader目標編譯Flash8662 bytes／全域RAM203 bytes；原參考版17982／801 bytes。速度與控制行為保持，29項測試通過，未燒錄或實車驗收。[完整移植與對照報告](docs/NATIVE_MIGRATION_2026-11-03.zh-TW.md)。
 
-目前為 **2026-11-02 控制流程精簡候選**，尚未編譯、燒錄或通過實車驗收。[本次變更、停止條件及限制](docs/SIMPLIFICATION_2026-11-02.zh-TW.md)。
+**前次工作：2026-11-02物理情境模擬與缺口交接修正**：[模型、規則依據、結果與限制](docs/PHYSICS_SIMULATION_2026-11-02.zh-TW.md)。實際主程式已修正「有效線返回仍先被120 ms缺口期限鎖停」；原速度保留。離線模型比較132組，到達出口92→94、故障7→5，仍有失敗，不能當作實車成功率。10項模型／實際程式重播檢查通過，未編譯Arduino目標、燒錄或實車驗收。
+
+根目錄參考版為 **2026-11-02 控制流程精簡候選**；後續已完成Arduino目標編譯，但尚未燒錄或通過實車驗收。[本次變更、停止條件及限制](docs/SIMPLIFICATION_2026-11-02.zh-TW.md)。
 
 - 有側線就前進循跡；只有F0且有合格方向才搜尋，刪除六條側線提前反轉入口及150 ms未獲支持鎖停。
 - 刪除一般寬白900 ms鎖停。升降與終點共用寬白出口判斷，F14期間不直接判標記停車。全程180秒等故障停止仍有效。
@@ -12,7 +14,9 @@
 
 ## 主程式與維護
 
-[car.xml](car.xml)為CAGEBOT可編輯主檔，[car.ino](car.ino)由同XML透過本機原廠產生器匯出。修改tools/rewrite_car.py，再用tools/export_car.mjs同步輸出；[維護說明](car.md)。build.py／config.json／firmware屬另一套保留temporal候選，不得覆寫主檔。
+主要維護入口已改為[原生Arduino程式](firmware/native_car/native_car.ino)與同資料夾controller.h；[開啟與編譯步驟](firmware/native_car/README.md)。不依靠CAGEBOT產生器或moto函式庫，狀態燈使用公開Adafruit NeoPixel1.15.3。
+
+根目錄car.xml／car.ino保留f3501be參考版及可編輯積木，不由原生版反向產生。tools/rewrite_car.py及export_car.mjs僅維護此參考版。build.py／config.json／firmware下其餘保留候選不變。
 
 正常F由A4/A3/A2形成，A5/A1輔助判向。F14代表中間三顆ADC均低於70，不能只憑物理顏色推定。中間三顆的觀測不能唯一區分白字、彎道與關卡。
 
@@ -20,4 +24,4 @@
 
 [v0.4.0發布說明](docs/RELEASE_v0.4.0.zh-TW.md)、[10月25日版本對比](docs/CURRENT_STATE_2026-10-25.zh-TW.md)、[10月26日交接](docs/PROJECT_SUMMARY_2026-10-26.zh-TW.md)與既有快照保留為歷史。本次未發布Release或合併PR。先前審查確認的三項實作缺陷本次已修來源，車上版本仍未知。
 
-最近完成原廠Blockly匯入父接點檢查與Arduino同步匯出。使用者後續授權離線情境／物理模擬，已新增桌面MSVC實際程式重播與模型測試；不等同Arduino編譯、燒錄或實車驗收，不能宣稱60／90度彎或整圈已通過。升降等待23.35秒及缺少機構停止回授的限制仍在，不能宣稱合規。
+前次完成原廠Blockly匯入父接點檢查、Arduino同步匯出及離線物理情境模擬；本次另完成原生移植、Arduino目標編譯及逐步比對，仍不能宣稱60／90度彎或整圈已通過。升降等待23.35秒及缺少機構停止回授的限制仍在，不能宣稱合規。

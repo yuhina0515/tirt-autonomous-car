@@ -1,0 +1,49 @@
+{
+  "date": "2026-11-03",
+  "target": "arduino:avr:nano:cpu=atmega328old",
+  "arduino_cli": "1.5.1",
+  "avr_platform": "1.8.8",
+  "avr_gcc": "7.3.0-atmel3.6.1-arduino7",
+  "neopixel_version": "1.15.3",
+  "neopixel_commit": "67f2ed09e9dd755ab1f606ec5940c50af52afae3",
+  "defaults": {
+    "TIRT_LED_ENABLED": 1,
+    "TIRT_DEBUG_SERIAL": 0
+  },
+  "source_hashes": {
+    "firmware/native_car/native_car.ino": "4231cf707d51512d88040c23f3ef69c0fba2e1b7c3be2d9529367e2d3fc6ce35",
+    "firmware/native_car/controller.h": "0774a50553be108aa4f69b5a2a1e8d86e8532585c69414117b4363da6d4abc64",
+    "car.ino": "5d8a4466938b1884b9639838d27a9be1b415862f5eaf68da51024cbd878320d9",
+    "car.xml": "bf3979fbde9776ed571990222a053051680405ab6234da8aff1d9f941bd1d459"
+  },
+  "native_bundle_sha256": "57c856389b5a1a168079da527805a061fc0e900dfe4bfb55fc41379f2a9baf9a",
+  "builds": {
+    "exported_vendor_led": {
+      "flash": 17982,
+      "global_ram": 801
+    },
+    "exported_same_public_led": {
+      "flash": 17072,
+      "global_ram": 689
+    },
+    "native_default": {
+      "flash": 8662,
+      "global_ram": 203
+    },
+    "native_debug": {
+      "flash": 10146,
+      "global_ram": 386
+    }
+  },
+  "limits": {
+    "flash": 30720,
+    "sram": 2048
+  },
+  "application_hex_sha256": "fb5a67e32e9e3b4ef4447447c28a96da12c189d54beae2ed440397ec3fca9fba",
+  "upload_performed": false,
+  "notes": [
+    "Static global RAM does not include peak stack/heap.",
+    "Board and bootloader on the actual car are not identified by target compilation.",
+    "Vendor code and binaries are not included in Git."
+  ]
+}

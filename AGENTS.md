@@ -1,6 +1,19 @@
 # Project working rules
 
-## Current candidate (2026-11-02)
+## Current native control source (2026-11-03)
+
+- User explicitly authorized moving to handwritten Arduino C++ while retaining hardware and rollback XML. This supersedes the old rule requiring all control edits to originate in the Blockly generator.
+- Main source: firmware/native_car/native_car.ino plus controller.h. Read its README and docs/NATIVE_MIGRATION_2026-11-03.zh-TW.md first. Core is independent of Arduino/vendor I/O; adapter uses public Adafruit_NeoPixel1.15.3. Do not hand-sync native changes into XML or promise reverse conversion.
+- Root car.xml/car.ino are preserved f3501be reference/rollback files. tools/rewrite_car.py/export_car.mjs only maintain that retained reference; build.py/config.json and the temporal candidates remain separate. Never regenerate over native_car.
+- Preserve current speeds, sensor roles, switch settings and phase semantics until a scoped behavior change is requested. Refactor parity is checked through actual exported-sketch vs native-adapter command/state replay, including raw ADC thresholds and millis rollover.
+- Nano old-bootloader target compilation passed using AVR Boards1.8.8/CLI1.5.1. Default native Flash8662/global RAM203 vs original17982/801; same-LED-library baseline17072/689. Defaults LED on/serial debug off; these are static build measurements, not peak RAM or measured loop speed.
+- Compile helper tools/Compile-Native.ps1 never uploads. No hardware upload/operation or real-car acceptance occurred. Preserve existing physical/sensing/marker/lift limitations; model success is not field acceptance.
+- tools/sim_native.py supports both exported sketches and the native adapter/core. Native hash bundles INO and header; parameter overrides are not supported for native compile-time settings. Windows parity tests and pure C++ core CI complement the uncalibrated physics comparison. Keep dependencies, binaries, raw traces and vendor files ignored.
+- Keep task-scoped commits/push and update existing PR6; never merge, force-push, replace stable tags, or modify unrelated work. Bluetooth remains parked.
+
+## Historical exported candidate (2026-11-02)
+
+The following describes the preserved exported reference and does not override native-source maintenance above.
 
 - Latest follow-up: docs/PHYSICS_SIMULATION_2026-11-02.zh-TW.md. User explicitly authorized offline scenario/physics simulation in chat, superseding the earlier no-additional-tests restriction for this scope. No hardware upload or motor operation is authorized/performed by this simulation task.
 - cross_gap now prioritizes valid narrow-line capture over the120ms lost-line deadline, confirms continuously15ms, and guards motor output after faults. Speeds remain100/150/190/230. Compared with46bad64 in132 synthetic cases, reached92→94, faults7→5; four reached cases per version still crossed assumed road bounds. These are uncalibrated model outcomes, not real-car probabilities or legal laps.

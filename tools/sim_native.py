@@ -21,6 +21,8 @@ def build(source, directory):
     directory = Path(directory).resolve()
     directory.mkdir(parents=True, exist_ok=True)
     text = Path(source).read_text(encoding='utf-8')
+    if 'TIRT_NATIVE_ADAPTER' in text:
+        return build_handwritten(source, directory)
     digest = hashlib.sha256(Path(source).read_bytes()).hexdigest()
     # Observer-only instrumentation: preserve the first fault's original source
     # line and F before later ADC samples obscure the triggering observation.
@@ -85,6 +87,10 @@ extern "C" __declspec(dllexport) int right_command(){return digital[4]==HIGH?pwm
 extern "C" __declspec(dllexport) int set_parameter(const char*name,int value){@PARAMETERS@return 0;}
 '''.replace('@PROTOTYPES@', prototypes).replace('@STATE@', state_cases).replace('@PARAMETERS@', parameter_cases)
     (directory / 'bridge.cpp').write_text(bridge, encoding='utf-8')
+    return compile_bridge(directory), digest
+
+
+def compile_bridge(directory):
     env = os.environ.copy()
     if not shutil.which('cl'):
         candidates = sorted(Path('C:/Program Files/Microsoft Visual Studio').glob('*/Community/VC/Auxiliary/Build/vcvars64.bat'))
@@ -104,7 +110,72 @@ extern "C" __declspec(dllexport) int set_parameter(const char*name,int value){@P
     (directory / 'compile.log').write_text(result.stdout + result.stderr, encoding='utf-8')
     if result.returncode:
         raise RuntimeError(result.stdout + result.stderr)
-    return dll, digest
+    return dll
+
+
+def build_handwritten(source, directory):
+    """Compile the real native adapter and its core, with host-only hardware mocks."""
+    source = Path(source).resolve()
+    core = source.with_name('controller.h')
+    digest = hashlib.sha256(source.read_bytes()+b'\0controller.h\0'+core.read_bytes()).hexdigest()
+    shutil.copyfile(core, directory/'controller.h')
+    shutil.copyfile(source, directory/'sketch.inc')
+    (directory/'Arduino.h').write_text(r'''#pragma once
+#include <cstdint>
+const int LOW=0,HIGH=1,INPUT=0,OUTPUT=1,A1=15,A2=16,A3=17,A4=18,A5=19;
+#define F(s) s
+extern uint32_t nowMs;
+extern int adc[20],pwm[20],digital[20];
+inline uint32_t millis(){return nowMs;}
+inline void delay(uint32_t ms){nowMs+=ms;}
+inline void pinMode(int,int){}
+inline int digitalRead(int){return 0;}
+inline int analogRead(int pin){return adc[pin];}
+inline void digitalWrite(int pin,int value){digital[pin]=value;}
+inline void analogWrite(int pin,int value){pwm[pin]=value;}
+struct SerialStub { void begin(int){} template<class T>void print(T){} template<class T>void println(T){} };
+extern SerialStub Serial;
+''',encoding='utf-8')
+    (directory/'Adafruit_NeoPixel.h').write_text('''#pragma once
+#define NEO_GRB 0
+#define NEO_KHZ800 0
+struct Adafruit_NeoPixel {
+ Adafruit_NeoPixel(int,int,int){} void begin(){} void show(){}
+ int Color(int,int,int){return 0;} void setPixelColor(int,int){}
+};
+''',encoding='utf-8')
+    mapping = ['s.f','s.fault!=tirt::Fault::None','s.lapDone','int(s.lift)',
+               's.motion==tirt::Motion::Search','s.motion==tirt::Motion::Gap',
+               's.recovery','s.direction','s.captureSide','s.probe','s.splitActive',
+               's.straightPwm','0','faultF']
+    cases=''.join('case %d:return %s;'%(i,value) for i,value in enumerate(mapping))
+    (directory/'bridge.cpp').write_text(r'''
+#include "Arduino.h"
+#include <cstring>
+uint32_t nowMs=0;
+int adc[20]={},pwm[20]={},digital[20]={},faultF=0;
+bool observedFault=false;
+SerialStub Serial;
+#include "controller.h"
+void statusLed(bool);
+void writeWheels(tirt::Wheels);
+#include "sketch.inc"
+extern "C" __declspec(dllexport) void reset_sim(){
+ nowMs=0;faultF=0;observedFault=false;memset(pwm,0,sizeof(pwm));memset(digital,0,sizeof(digital));
+ for(int i=0;i<20;++i)adc[i]=500;
+ setup();nowMs=0;
+}
+extern "C" __declspec(dllexport) void step_sim(uint32_t ms,int a5,int a4,int a3,int a2,int a1){
+ nowMs=ms;adc[A5]=a5;adc[A4]=a4;adc[A3]=a3;adc[A2]=a2;adc[A1]=a1;loop();
+ if(!observedFault && controller.state().fault!=tirt::Fault::None){observedFault=true;faultF=controller.state().f;}
+}
+extern "C" __declspec(dllexport) int get_state(int field){const auto &s=controller.state();switch(field){@CASES@}return 0;}
+extern "C" __declspec(dllexport) int left_command(){return digital[7]==LOW?pwm[5]:-pwm[5];}
+extern "C" __declspec(dllexport) int right_command(){return digital[4]==HIGH?pwm[6]:-pwm[6];}
+extern "C" __declspec(dllexport) int set_parameter(const char*,int){return 0;}
+extern "C" __declspec(dllexport) int fault_reason(){return int(controller.state().fault);}
+'''.replace('@CASES@',cases),encoding='utf-8')
+    return compile_bridge(directory), digest
 
 
 class Controller:

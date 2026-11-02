@@ -1,4 +1,16 @@
-# car.xml 程式與維護說明
+# 程式與維護入口
+
+目前以[firmware/native_car/native_car.ino](firmware/native_car/native_car.ino)及同資料夾controller.h作原生Arduino控制主來源。直接維護C++，不用CAGEBOT產生器，不能承諾反向轉回積木。[編譯步驟](firmware/native_car/README.md)／[2026-11-03移植數據與界線](docs/NATIVE_MIGRATION_2026-11-03.zh-TW.md)。
+
+- 核心：Follow／Search／Gap互斥狀態，另有升降與故障列舉；輸入時間與原始ADC，輸出有正負號的左右PWM。
+- 介接：保留現有腳位、按鈕與LED，以公開Adafruit_NeoPixel替代moto函式庫。預設除錯關閉，無String。
+- 直道100／150／190／230及既有轉彎、收線、標記與停止策略不變；29項測試及Nano Old Bootloader目標編譯通過，尚未上傳或實車驗收。
+- 修改原生版不用重新產生XML。根目錄car.xml／car.ino凍結為f3501be回復參考，既有產生器僅適用參考版。不要用產生器覆寫firmware/native_car。
+
+## 保留參考版說明
+
+以下記錄2026-11-02匯出程式與其維護流程，並非原生版的產生方式。
+
 
 目前為[2026-11-02精簡候選](docs/SIMPLIFICATION_2026-11-02.zh-TW.md)。舊434af1d及10月26日交接作歷史比較。
 

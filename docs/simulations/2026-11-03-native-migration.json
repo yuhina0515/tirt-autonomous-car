@@ -1,0 +1,1494 @@
+{
+  "date": "2026-11-03",
+  "baseline_commit": "f3501be",
+  "native_source_hashes": {
+    "firmware/native_car/native_car.ino": "4231cf707d51512d88040c23f3ef69c0fba2e1b7c3be2d9529367e2d3fc6ce35",
+    "firmware/native_car/controller.h": "0774a50553be108aa4f69b5a2a1e8d86e8532585c69414117b4363da6d4abc64",
+    "car.ino": "5d8a4466938b1884b9639838d27a9be1b415862f5eaf68da51024cbd878320d9",
+    "car.xml": "bf3979fbde9776ed571990222a053051680405ab6234da8aff1d9f941bd1d459"
+  },
+  "native_bundle_sha256": "57c856389b5a1a168079da527805a061fc0e900dfe4bfb55fc41379f2a9baf9a",
+  "raw_results_sha256": "8c91d8aca59bdcf0bd79fc29f2a0b5e8fe5eb63a618f39664c29766ba2eb44ee",
+  "seed": 20261103,
+  "cases_per_version": 132,
+  "case_metrics_and_final_states_equal": true,
+  "nominal_trace_rows_equal": 5541,
+  "excluded_observer": "firstFaultLine; native faults have typed reasons, not source lines",
+  "warning": "Uncalibrated assumed planar plant; same outcomes do not imply real-car acceptance. Shared nominal set.",
+  "outcomes": {
+    "reached": 94,
+    "fault": 5,
+    "false_marker": 0,
+    "escaped": 14,
+    "timeout": 19
+  },
+  "reached_with_assumed_road_excursion": 4,
+  "plants": {
+    "0": {
+      "track_m": 0.115,
+      "sensor_ahead_m": 0.06,
+      "sensor_spacing_m": 0.014,
+      "sensor_radius_m": 0.002,
+      "line_width_m": 0.02,
+      "road_width_m": 0.2,
+      "max_wheel_mps": 0.65,
+      "dead_pwm": 40,
+      "motor_tau_s": 0.08,
+      "coast_tau_s": 0.24,
+      "max_accel_mps2": 2.5,
+      "left_gain": 1.0,
+      "right_gain": 0.97,
+      "battery_factor": 1.0,
+      "friction_mu": 0.55,
+      "sample_ms": 5,
+      "latency_ms": 5,
+      "adc_noise": 4,
+      "line_adc": 35,
+      "background_adc": 500,
+      "grade_deg": 0
+    },
+    "1": {
+      "track_m": 0.09857759748208293,
+      "sensor_ahead_m": 0.04729563841475355,
+      "sensor_spacing_m": 0.012359184595484254,
+      "sensor_radius_m": 0.002,
+      "line_width_m": 0.02,
+      "road_width_m": 0.2,
+      "max_wheel_mps": 0.8450960422078511,
+      "dead_pwm": 52.6406753461348,
+      "motor_tau_s": 0.04546867961344499,
+      "coast_tau_s": 0.1784025442736814,
+      "max_accel_mps2": 3.7190236973956767,
+      "left_gain": 1.0405763857190593,
+      "right_gain": 0.9228879856740189,
+      "battery_factor": 0.8905592050557449,
+      "friction_mu": 0.3946392838841708,
+      "sample_ms": 10,
+      "latency_ms": 5,
+      "adc_noise": 4,
+      "line_adc": 35,
+      "background_adc": 500,
+      "grade_deg": 0
+    },
+    "2": {
+      "track_m": 0.10750221232201938,
+      "sensor_ahead_m": 0.06046938697529422,
+      "sensor_spacing_m": 0.016872776496252906,
+      "sensor_radius_m": 0.002,
+      "line_width_m": 0.02,
+      "road_width_m": 0.2,
+      "max_wheel_mps": 0.6040739044154688,
+      "dead_pwm": 28.201891852225835,
+      "motor_tau_s": 0.0928330632428501,
+      "coast_tau_s": 0.1268403676673754,
+      "max_accel_mps2": 2.4345395390226967,
+      "left_gain": 1.0045540816823835,
+      "right_gain": 0.9453447909851599,
+      "battery_factor": 0.8796396335431772,
+      "friction_mu": 0.32012268858034243,
+      "sample_ms": 5,
+      "latency_ms": 5,
+      "adc_noise": 4,
+      "line_adc": 35,
+      "background_adc": 500,
+      "grade_deg": 0
+    },
+    "3": {
+      "track_m": 0.12840946876526957,
+      "sensor_ahead_m": 0.04880888723919097,
+      "sensor_spacing_m": 0.012983269534203333,
+      "sensor_radius_m": 0.002,
+      "line_width_m": 0.02,
+      "road_width_m": 0.2,
+      "max_wheel_mps": 0.518061074397475,
+      "dead_pwm": 43.094105156872864,
+      "motor_tau_s": 0.07391545132583001,
+      "coast_tau_s": 0.22007079335939406,
+      "max_accel_mps2": 4.0885986290356495,
+      "left_gain": 1.0503076292255458,
+      "right_gain": 0.9035140320300941,
+      "battery_factor": 0.9296100123747724,
+      "friction_mu": 0.7021581185300525,
+      "sample_ms": 10,
+      "latency_ms": 20,
+      "adc_noise": 4,
+      "line_adc": 35,
+      "background_adc": 500,
+      "grade_deg": 0
+    },
+    "4": {
+      "track_m": 0.1016383024253499,
+      "sensor_ahead_m": 0.07598653921324638,
+      "sensor_spacing_m": 0.016855596451028795,
+      "sensor_radius_m": 0.002,
+      "line_width_m": 0.02,
+      "road_width_m": 0.2,
+      "max_wheel_mps": 0.460458476033595,
+      "dead_pwm": 40.200131865707064,
+      "motor_tau_s": 0.11042170122589978,
+      "coast_tau_s": 0.14508788063027736,
+      "max_accel_mps2": 3.0732111879568533,
+      "left_gain": 1.0208231022211371,
+      "right_gain": 1.08679372019666,
+      "battery_factor": 0.825111554826273,
+      "friction_mu": 0.6267824028800006,
+      "sample_ms": 2,
+      "latency_ms": 0,
+      "adc_noise": 4,
+      "line_adc": 35,
+      "background_adc": 500,
+      "grade_deg": 0
+    },
+    "5": {
+      "track_m": 0.10362877433798272,
+      "sensor_ahead_m": 0.08195030337634034,
+      "sensor_spacing_m": 0.01398595374352117,
+      "sensor_radius_m": 0.002,
+      "line_width_m": 0.02,
+      "road_width_m": 0.2,
+      "max_wheel_mps": 0.8374960557360487,
+      "dead_pwm": 30.009257430528177,
+      "motor_tau_s": 0.12771858929874155,
+      "coast_tau_s": 0.3219489692269427,
+      "max_accel_mps2": 3.394177072663817,
+      "left_gain": 1.0470546980533644,
+      "right_gain": 1.0132955355347923,
+      "battery_factor": 0.9831862471208527,
+      "friction_mu": 0.6569413106672433,
+      "sample_ms": 10,
+      "latency_ms": 10,
+      "adc_noise": 4,
+      "line_adc": 35,
+      "background_adc": 500,
+      "grade_deg": 0
+    },
+    "6": {
+      "track_m": 0.11159225696207042,
+      "sensor_ahead_m": 0.05105583370897276,
+      "sensor_spacing_m": 0.011490877798552237,
+      "sensor_radius_m": 0.002,
+      "line_width_m": 0.02,
+      "road_width_m": 0.2,
+      "max_wheel_mps": 0.7028734415169077,
+      "dead_pwm": 41.46876599044311,
+      "motor_tau_s": 0.04952281869419992,
+      "coast_tau_s": 0.14805143856668196,
+      "max_accel_mps2": 3.672044803255353,
+      "left_gain": 1.018607578129593,
+      "right_gain": 1.065109181989266,
+      "battery_factor": 0.9369293748917987,
+      "friction_mu": 0.32900416755233536,
+      "sample_ms": 5,
+      "latency_ms": 10,
+      "adc_noise": 4,
+      "line_adc": 35,
+      "background_adc": 500,
+      "grade_deg": 0
+    },
+    "7": {
+      "track_m": 0.1096981392917126,
+      "sensor_ahead_m": 0.06561523432052653,
+      "sensor_spacing_m": 0.015352202301706747,
+      "sensor_radius_m": 0.002,
+      "line_width_m": 0.02,
+      "road_width_m": 0.2,
+      "max_wheel_mps": 0.6496756254147596,
+      "dead_pwm": 50.08850018144712,
+      "motor_tau_s": 0.1365585719748797,
+      "coast_tau_s": 0.14739087315845473,
+      "max_accel_mps2": 3.0642703609532083,
+      "left_gain": 0.9268359809709463,
+      "right_gain": 0.900004204138503,
+      "battery_factor": 0.9379407223331689,
+      "friction_mu": 0.4756658015102929,
+      "sample_ms": 5,
+      "latency_ms": 5,
+      "adc_noise": 4,
+      "line_adc": 35,
+      "background_adc": 500,
+      "grade_deg": 0
+    },
+    "8": {
+      "track_m": 0.13159238641599083,
+      "sensor_ahead_m": 0.05233361333785443,
+      "sensor_spacing_m": 0.012209016721273164,
+      "sensor_radius_m": 0.002,
+      "line_width_m": 0.02,
+      "road_width_m": 0.2,
+      "max_wheel_mps": 0.7695002634293358,
+      "dead_pwm": 36.300535932007385,
+      "motor_tau_s": 0.12880095707890196,
+      "coast_tau_s": 0.27640591743671905,
+      "max_accel_mps2": 1.5058498622890082,
+      "left_gain": 0.9392070271094506,
+      "right_gain": 1.0924910462540949,
+      "battery_factor": 0.9877632009617239,
+      "friction_mu": 0.6793072117980018,
+      "sample_ms": 10,
+      "latency_ms": 0,
+      "adc_noise": 4,
+      "line_adc": 35,
+      "background_adc": 500,
+      "grade_deg": 0
+    },
+    "9": {
+      "track_m": 0.126648514118059,
+      "sensor_ahead_m": 0.05029275729763177,
+      "sensor_spacing_m": 0.01795882603927214,
+      "sensor_radius_m": 0.002,
+      "line_width_m": 0.02,
+      "road_width_m": 0.2,
+      "max_wheel_mps": 0.7074091673291453,
+      "dead_pwm": 36.181816454714806,
+      "motor_tau_s": 0.059612470166871476,
+      "coast_tau_s": 0.34285625381737983,
+      "max_accel_mps2": 2.6695792748556966,
+      "left_gain": 1.0618457106701578,
+      "right_gain": 0.976776765106507,
+      "battery_factor": 0.9224183441605263,
+      "friction_mu": 0.5977064837164274,
+      "sample_ms": 10,
+      "latency_ms": 20,
+      "adc_noise": 4,
+      "line_adc": 35,
+      "background_adc": 500,
+      "grade_deg": 0
+    },
+    "10": {
+      "track_m": 0.12106032533536012,
+      "sensor_ahead_m": 0.04745420321844614,
+      "sensor_spacing_m": 0.014913168033943838,
+      "sensor_radius_m": 0.002,
+      "line_width_m": 0.02,
+      "road_width_m": 0.2,
+      "max_wheel_mps": 0.42938686372282703,
+      "dead_pwm": 48.645472796474365,
+      "motor_tau_s": 0.1353394091207734,
+      "coast_tau_s": 0.34629380449359715,
+      "max_accel_mps2": 4.138633662419588,
+      "left_gain": 0.9995968224415972,
+      "right_gain": 0.9585580684600846,
+      "battery_factor": 0.8315263664787722,
+      "friction_mu": 0.5432951460771847,
+      "sample_ms": 10,
+      "latency_ms": 0,
+      "adc_noise": 4,
+      "line_adc": 35,
+      "background_adc": 500,
+      "grade_deg": 0
+    },
+    "11": {
+      "track_m": 0.1273981676379848,
+      "sensor_ahead_m": 0.06841813054031398,
+      "sensor_spacing_m": 0.016305609349216238,
+      "sensor_radius_m": 0.002,
+      "line_width_m": 0.02,
+      "road_width_m": 0.2,
+      "max_wheel_mps": 0.7811258566360872,
+      "dead_pwm": 42.49269070276874,
+      "motor_tau_s": 0.06498964506197727,
+      "coast_tau_s": 0.2217530700214128,
+      "max_accel_mps2": 2.3935249021250926,
+      "left_gain": 1.0657827986483144,
+      "right_gain": 1.0079749063533556,
+      "battery_factor": 0.993780171473325,
+      "friction_mu": 0.7887583701105487,
+      "sample_ms": 2,
+      "latency_ms": 0,
+      "adc_noise": 4,
+      "line_adc": 35,
+      "background_adc": 500,
+      "grade_deg": 0
+    }
+  },
+  "cases": [
+    {
+      "scenario": "straight",
+      "seed": 0,
+      "outcome": "reached",
+      "seconds": 4.454,
+      "max_error_m": 0.0071,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "turn60_left",
+      "seed": 0,
+      "outcome": "reached",
+      "seconds": 5.174,
+      "max_error_m": 0.0256,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "turn60_right",
+      "seed": 0,
+      "outcome": "reached",
+      "seconds": 4.954,
+      "max_error_m": 0.0213,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "turn90_left",
+      "seed": 0,
+      "outcome": "reached",
+      "seconds": 5.464,
+      "max_error_m": 0.0238,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "turn90_right",
+      "seed": 0,
+      "outcome": "reached",
+      "seconds": 5.045,
+      "max_error_m": 0.0196,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "v60_left",
+      "seed": 0,
+      "outcome": "reached",
+      "seconds": 5.176,
+      "max_error_m": 0.01,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "v60_right",
+      "seed": 0,
+      "outcome": "reached",
+      "seconds": 5.046,
+      "max_error_m": 0.0105,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "wide_turn60_left",
+      "seed": 0,
+      "outcome": "reached",
+      "seconds": 5.108,
+      "max_error_m": 0.0106,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "wide_turn60_right",
+      "seed": 0,
+      "outcome": "fault",
+      "seconds": 4.744,
+      "max_error_m": 0.0186,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.009
+    },
+    {
+      "scenario": "wide_v60_left",
+      "seed": 0,
+      "outcome": "reached",
+      "seconds": 5.444,
+      "max_error_m": 0.0175,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "wide_v60_right",
+      "seed": 0,
+      "outcome": "fault",
+      "seconds": 4.744,
+      "max_error_m": 0.0186,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.009
+    },
+    {
+      "scenario": "straight",
+      "seed": 1,
+      "outcome": "reached",
+      "seconds": 5.174,
+      "max_error_m": 0.013,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "turn60_left",
+      "seed": 1,
+      "outcome": "reached",
+      "seconds": 5.81,
+      "max_error_m": 0.0152,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "turn60_right",
+      "seed": 1,
+      "outcome": "reached",
+      "seconds": 5.648,
+      "max_error_m": 0.013,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "turn90_left",
+      "seed": 1,
+      "outcome": "reached",
+      "seconds": 5.874,
+      "max_error_m": 0.013,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "turn90_right",
+      "seed": 1,
+      "outcome": "reached",
+      "seconds": 5.705,
+      "max_error_m": 0.013,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "v60_left",
+      "seed": 1,
+      "outcome": "reached",
+      "seconds": 5.839,
+      "max_error_m": 0.013,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "v60_right",
+      "seed": 1,
+      "outcome": "reached",
+      "seconds": 5.833,
+      "max_error_m": 0.013,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "wide_turn60_left",
+      "seed": 1,
+      "outcome": "reached",
+      "seconds": 6.28,
+      "max_error_m": 0.013,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "wide_turn60_right",
+      "seed": 1,
+      "outcome": "timeout",
+      "seconds": 30.0,
+      "max_error_m": 0.0563,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "wide_v60_left",
+      "seed": 1,
+      "outcome": "reached",
+      "seconds": 6.497,
+      "max_error_m": 0.0159,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "wide_v60_right",
+      "seed": 1,
+      "outcome": "timeout",
+      "seconds": 30.0,
+      "max_error_m": 0.0563,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "straight",
+      "seed": 2,
+      "outcome": "reached",
+      "seconds": 10.88,
+      "max_error_m": 0.0059,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "turn60_left",
+      "seed": 2,
+      "outcome": "reached",
+      "seconds": 10.801,
+      "max_error_m": 0.0147,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "turn60_right",
+      "seed": 2,
+      "outcome": "reached",
+      "seconds": 9.9,
+      "max_error_m": 0.0126,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "turn90_left",
+      "seed": 2,
+      "outcome": "reached",
+      "seconds": 9.943,
+      "max_error_m": 0.0196,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "turn90_right",
+      "seed": 2,
+      "outcome": "reached",
+      "seconds": 10.85,
+      "max_error_m": 0.0196,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "v60_left",
+      "seed": 2,
+      "outcome": "fault",
+      "seconds": 6.231,
+      "max_error_m": 0.0059,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0145
+    },
+    {
+      "scenario": "v60_right",
+      "seed": 2,
+      "outcome": "reached",
+      "seconds": 9.511,
+      "max_error_m": 0.0171,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "wide_turn60_left",
+      "seed": 2,
+      "outcome": "escaped",
+      "seconds": 12.994,
+      "max_error_m": 0.25,
+      "off_assumed_road_ms": 4954,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "wide_turn60_right",
+      "seed": 2,
+      "outcome": "escaped",
+      "seconds": 14.924,
+      "max_error_m": 0.25,
+      "off_assumed_road_ms": 6816,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "wide_v60_left",
+      "seed": 2,
+      "outcome": "escaped",
+      "seconds": 12.628,
+      "max_error_m": 0.25,
+      "off_assumed_road_ms": 4588,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "wide_v60_right",
+      "seed": 2,
+      "outcome": "escaped",
+      "seconds": 12.628,
+      "max_error_m": 0.25,
+      "off_assumed_road_ms": 4529,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "straight",
+      "seed": 3,
+      "outcome": "reached",
+      "seconds": 7.359,
+      "max_error_m": 0.0076,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "turn60_left",
+      "seed": 3,
+      "outcome": "reached",
+      "seconds": 7.906,
+      "max_error_m": 0.0062,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "turn60_right",
+      "seed": 3,
+      "outcome": "reached",
+      "seconds": 7.761,
+      "max_error_m": 0.0062,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "turn90_left",
+      "seed": 3,
+      "outcome": "reached",
+      "seconds": 8.052,
+      "max_error_m": 0.0085,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "turn90_right",
+      "seed": 3,
+      "outcome": "reached",
+      "seconds": 7.913,
+      "max_error_m": 0.0076,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "v60_left",
+      "seed": 3,
+      "outcome": "reached",
+      "seconds": 8.0,
+      "max_error_m": 0.0097,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "v60_right",
+      "seed": 3,
+      "outcome": "reached",
+      "seconds": 8.034,
+      "max_error_m": 0.0083,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "wide_turn60_left",
+      "seed": 3,
+      "outcome": "timeout",
+      "seconds": 30.0,
+      "max_error_m": 0.0776,
+      "off_assumed_road_ms": 24639,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "wide_turn60_right",
+      "seed": 3,
+      "outcome": "reached",
+      "seconds": 8.549,
+      "max_error_m": 0.0195,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "wide_v60_left",
+      "seed": 3,
+      "outcome": "timeout",
+      "seconds": 30.0,
+      "max_error_m": 0.0776,
+      "off_assumed_road_ms": 24674,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "wide_v60_right",
+      "seed": 3,
+      "outcome": "reached",
+      "seconds": 9.058,
+      "max_error_m": 0.0301,
+      "off_assumed_road_ms": 182,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "straight",
+      "seed": 4,
+      "outcome": "reached",
+      "seconds": 9.67,
+      "max_error_m": 0.0053,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "turn60_left",
+      "seed": 4,
+      "outcome": "reached",
+      "seconds": 9.567,
+      "max_error_m": 0.0216,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "turn60_right",
+      "seed": 4,
+      "outcome": "reached",
+      "seconds": 9.885,
+      "max_error_m": 0.0223,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "turn90_left",
+      "seed": 4,
+      "outcome": "reached",
+      "seconds": 10.248,
+      "max_error_m": 0.0294,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "turn90_right",
+      "seed": 4,
+      "outcome": "reached",
+      "seconds": 10.238,
+      "max_error_m": 0.0313,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "v60_left",
+      "seed": 4,
+      "outcome": "reached",
+      "seconds": 10.001,
+      "max_error_m": 0.0258,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "v60_right",
+      "seed": 4,
+      "outcome": "timeout",
+      "seconds": 30.0,
+      "max_error_m": 0.1047,
+      "off_assumed_road_ms": 16680,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "wide_turn60_left",
+      "seed": 4,
+      "outcome": "timeout",
+      "seconds": 30.0,
+      "max_error_m": 0.1111,
+      "off_assumed_road_ms": 14407,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "wide_turn60_right",
+      "seed": 4,
+      "outcome": "reached",
+      "seconds": 10.571,
+      "max_error_m": 0.0097,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "wide_v60_left",
+      "seed": 4,
+      "outcome": "timeout",
+      "seconds": 30.0,
+      "max_error_m": 0.1111,
+      "off_assumed_road_ms": 14407,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "wide_v60_right",
+      "seed": 4,
+      "outcome": "reached",
+      "seconds": 10.705,
+      "max_error_m": 0.0068,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "straight",
+      "seed": 5,
+      "outcome": "reached",
+      "seconds": 5.623,
+      "max_error_m": 0.0063,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "turn60_left",
+      "seed": 5,
+      "outcome": "reached",
+      "seconds": 5.894,
+      "max_error_m": 0.0198,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "turn60_right",
+      "seed": 5,
+      "outcome": "reached",
+      "seconds": 5.531,
+      "max_error_m": 0.0196,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "turn90_left",
+      "seed": 5,
+      "outcome": "reached",
+      "seconds": 6.114,
+      "max_error_m": 0.0179,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "turn90_right",
+      "seed": 5,
+      "outcome": "reached",
+      "seconds": 5.888,
+      "max_error_m": 0.027,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "v60_left",
+      "seed": 5,
+      "outcome": "escaped",
+      "seconds": 21.471,
+      "max_error_m": 0.25,
+      "off_assumed_road_ms": 3247,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "v60_right",
+      "seed": 5,
+      "outcome": "reached",
+      "seconds": 6.015,
+      "max_error_m": 0.0196,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "wide_turn60_left",
+      "seed": 5,
+      "outcome": "escaped",
+      "seconds": 7.793,
+      "max_error_m": 0.25,
+      "off_assumed_road_ms": 3303,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "wide_turn60_right",
+      "seed": 5,
+      "outcome": "escaped",
+      "seconds": 9.644,
+      "max_error_m": 0.25,
+      "off_assumed_road_ms": 4902,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "wide_v60_left",
+      "seed": 5,
+      "outcome": "escaped",
+      "seconds": 7.656,
+      "max_error_m": 0.25,
+      "off_assumed_road_ms": 3166,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "wide_v60_right",
+      "seed": 5,
+      "outcome": "escaped",
+      "seconds": 7.656,
+      "max_error_m": 0.25,
+      "off_assumed_road_ms": 3027,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "straight",
+      "seed": 6,
+      "outcome": "reached",
+      "seconds": 5.022,
+      "max_error_m": 0.0068,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "turn60_left",
+      "seed": 6,
+      "outcome": "reached",
+      "seconds": 5.253,
+      "max_error_m": 0.0066,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "turn60_right",
+      "seed": 6,
+      "outcome": "reached",
+      "seconds": 5.243,
+      "max_error_m": 0.0066,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "turn90_left",
+      "seed": 6,
+      "outcome": "reached",
+      "seconds": 5.433,
+      "max_error_m": 0.0093,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "turn90_right",
+      "seed": 6,
+      "outcome": "reached",
+      "seconds": 5.336,
+      "max_error_m": 0.0088,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "v60_left",
+      "seed": 6,
+      "outcome": "reached",
+      "seconds": 5.4,
+      "max_error_m": 0.0093,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "v60_right",
+      "seed": 6,
+      "outcome": "reached",
+      "seconds": 5.443,
+      "max_error_m": 0.0091,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "wide_turn60_left",
+      "seed": 6,
+      "outcome": "timeout",
+      "seconds": 30.0,
+      "max_error_m": 0.2052,
+      "off_assumed_road_ms": 11689,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "wide_turn60_right",
+      "seed": 6,
+      "outcome": "reached",
+      "seconds": 10.424,
+      "max_error_m": 0.0067,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "wide_v60_left",
+      "seed": 6,
+      "outcome": "timeout",
+      "seconds": 30.0,
+      "max_error_m": 0.2052,
+      "off_assumed_road_ms": 11689,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "wide_v60_right",
+      "seed": 6,
+      "outcome": "reached",
+      "seconds": 10.679,
+      "max_error_m": 0.0164,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "straight",
+      "seed": 7,
+      "outcome": "reached",
+      "seconds": 6.86,
+      "max_error_m": 0.0063,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "turn60_left",
+      "seed": 7,
+      "outcome": "reached",
+      "seconds": 7.423,
+      "max_error_m": 0.0105,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "turn60_right",
+      "seed": 7,
+      "outcome": "reached",
+      "seconds": 7.604,
+      "max_error_m": 0.0054,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "turn90_left",
+      "seed": 7,
+      "outcome": "reached",
+      "seconds": 7.303,
+      "max_error_m": 0.0139,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "turn90_right",
+      "seed": 7,
+      "outcome": "reached",
+      "seconds": 7.342,
+      "max_error_m": 0.0081,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "v60_left",
+      "seed": 7,
+      "outcome": "reached",
+      "seconds": 7.475,
+      "max_error_m": 0.0135,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "v60_right",
+      "seed": 7,
+      "outcome": "reached",
+      "seconds": 7.215,
+      "max_error_m": 0.009,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "wide_turn60_left",
+      "seed": 7,
+      "outcome": "timeout",
+      "seconds": 30.0,
+      "max_error_m": 0.0054,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "wide_turn60_right",
+      "seed": 7,
+      "outcome": "timeout",
+      "seconds": 30.0,
+      "max_error_m": 0.0054,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "wide_v60_left",
+      "seed": 7,
+      "outcome": "timeout",
+      "seconds": 30.0,
+      "max_error_m": 0.0054,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "wide_v60_right",
+      "seed": 7,
+      "outcome": "timeout",
+      "seconds": 30.0,
+      "max_error_m": 0.0054,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "straight",
+      "seed": 8,
+      "outcome": "reached",
+      "seconds": 6.542,
+      "max_error_m": 0.0138,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "turn60_left",
+      "seed": 8,
+      "outcome": "reached",
+      "seconds": 7.197,
+      "max_error_m": 0.0138,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "turn60_right",
+      "seed": 8,
+      "outcome": "reached",
+      "seconds": 7.027,
+      "max_error_m": 0.0138,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "turn90_left",
+      "seed": 8,
+      "outcome": "reached",
+      "seconds": 7.525,
+      "max_error_m": 0.0191,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "turn90_right",
+      "seed": 8,
+      "outcome": "reached",
+      "seconds": 7.219,
+      "max_error_m": 0.0138,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "v60_left",
+      "seed": 8,
+      "outcome": "reached",
+      "seconds": 7.738,
+      "max_error_m": 0.0344,
+      "off_assumed_road_ms": 182,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "v60_right",
+      "seed": 8,
+      "outcome": "reached",
+      "seconds": 19.101,
+      "max_error_m": 0.0349,
+      "off_assumed_road_ms": 586,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "wide_turn60_left",
+      "seed": 8,
+      "outcome": "reached",
+      "seconds": 7.918,
+      "max_error_m": 0.0442,
+      "off_assumed_road_ms": 346,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "wide_turn60_right",
+      "seed": 8,
+      "outcome": "reached",
+      "seconds": 6.801,
+      "max_error_m": 0.017,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "wide_v60_left",
+      "seed": 8,
+      "outcome": "escaped",
+      "seconds": 28.824,
+      "max_error_m": 0.25,
+      "off_assumed_road_ms": 7633,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "wide_v60_right",
+      "seed": 8,
+      "outcome": "fault",
+      "seconds": 11.931,
+      "max_error_m": 0.0481,
+      "off_assumed_road_ms": 541,
+      "coast_after_stop_m": 0.0098
+    },
+    {
+      "scenario": "straight",
+      "seed": 9,
+      "outcome": "reached",
+      "seconds": 10.241,
+      "max_error_m": 0.0111,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "turn60_left",
+      "seed": 9,
+      "outcome": "reached",
+      "seconds": 9.063,
+      "max_error_m": 0.0144,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "turn60_right",
+      "seed": 9,
+      "outcome": "reached",
+      "seconds": 9.964,
+      "max_error_m": 0.0124,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "turn90_left",
+      "seed": 9,
+      "outcome": "reached",
+      "seconds": 10.545,
+      "max_error_m": 0.0111,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "turn90_right",
+      "seed": 9,
+      "outcome": "reached",
+      "seconds": 10.584,
+      "max_error_m": 0.0129,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "v60_left",
+      "seed": 9,
+      "outcome": "reached",
+      "seconds": 10.366,
+      "max_error_m": 0.0111,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "v60_right",
+      "seed": 9,
+      "outcome": "reached",
+      "seconds": 10.125,
+      "max_error_m": 0.0131,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "wide_turn60_left",
+      "seed": 9,
+      "outcome": "escaped",
+      "seconds": 15.699,
+      "max_error_m": 0.25,
+      "off_assumed_road_ms": 7706,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "wide_turn60_right",
+      "seed": 9,
+      "outcome": "escaped",
+      "seconds": 16.997,
+      "max_error_m": 0.25,
+      "off_assumed_road_ms": 9093,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "wide_v60_left",
+      "seed": 9,
+      "outcome": "escaped",
+      "seconds": 14.77,
+      "max_error_m": 0.25,
+      "off_assumed_road_ms": 6786,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "wide_v60_right",
+      "seed": 9,
+      "outcome": "escaped",
+      "seconds": 14.77,
+      "max_error_m": 0.25,
+      "off_assumed_road_ms": 6866,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "straight",
+      "seed": 10,
+      "outcome": "reached",
+      "seconds": 8.047,
+      "max_error_m": 0.0068,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "turn60_left",
+      "seed": 10,
+      "outcome": "reached",
+      "seconds": 8.637,
+      "max_error_m": 0.01,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "turn60_right",
+      "seed": 10,
+      "outcome": "reached",
+      "seconds": 8.505,
+      "max_error_m": 0.0093,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "turn90_left",
+      "seed": 10,
+      "outcome": "fault",
+      "seconds": 6.766,
+      "max_error_m": 0.0062,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.007
+    },
+    {
+      "scenario": "turn90_right",
+      "seed": 10,
+      "outcome": "reached",
+      "seconds": 8.669,
+      "max_error_m": 0.0068,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "v60_left",
+      "seed": 10,
+      "outcome": "reached",
+      "seconds": 8.929,
+      "max_error_m": 0.0062,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "v60_right",
+      "seed": 10,
+      "outcome": "reached",
+      "seconds": 8.88,
+      "max_error_m": 0.0098,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "wide_turn60_left",
+      "seed": 10,
+      "outcome": "timeout",
+      "seconds": 30.0,
+      "max_error_m": 0.024,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "wide_turn60_right",
+      "seed": 10,
+      "outcome": "timeout",
+      "seconds": 30.0,
+      "max_error_m": 0.021,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "wide_v60_left",
+      "seed": 10,
+      "outcome": "timeout",
+      "seconds": 30.0,
+      "max_error_m": 0.0262,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "wide_v60_right",
+      "seed": 10,
+      "outcome": "timeout",
+      "seconds": 30.0,
+      "max_error_m": 0.0262,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "straight",
+      "seed": 11,
+      "outcome": "reached",
+      "seconds": 6.66,
+      "max_error_m": 0.0063,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "turn60_left",
+      "seed": 11,
+      "outcome": "reached",
+      "seconds": 5.833,
+      "max_error_m": 0.0107,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "turn60_right",
+      "seed": 11,
+      "outcome": "reached",
+      "seconds": 5.705,
+      "max_error_m": 0.0104,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "turn90_left",
+      "seed": 11,
+      "outcome": "reached",
+      "seconds": 6.868,
+      "max_error_m": 0.0181,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "turn90_right",
+      "seed": 11,
+      "outcome": "reached",
+      "seconds": 6.915,
+      "max_error_m": 0.0179,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "v60_left",
+      "seed": 11,
+      "outcome": "reached",
+      "seconds": 6.531,
+      "max_error_m": 0.0153,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "v60_right",
+      "seed": 11,
+      "outcome": "reached",
+      "seconds": 6.233,
+      "max_error_m": 0.0125,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "wide_turn60_left",
+      "seed": 11,
+      "outcome": "reached",
+      "seconds": 6.716,
+      "max_error_m": 0.0099,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "wide_turn60_right",
+      "seed": 11,
+      "outcome": "timeout",
+      "seconds": 30.0,
+      "max_error_m": 0.1202,
+      "off_assumed_road_ms": 7549,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "wide_v60_left",
+      "seed": 11,
+      "outcome": "reached",
+      "seconds": 6.779,
+      "max_error_m": 0.0159,
+      "off_assumed_road_ms": 0,
+      "coast_after_stop_m": 0.0
+    },
+    {
+      "scenario": "wide_v60_right",
+      "seed": 11,
+      "outcome": "timeout",
+      "seconds": 30.0,
+      "max_error_m": 0.1368,
+      "off_assumed_road_ms": 7549,
+      "coast_after_stop_m": 0.0
+    }
+  ]
+}

@@ -23,3 +23,7 @@ jobs:
         run: |
           g++ -m32 -std=c++17 -I tests -DCAPTURE_TEST '-DSKETCH_FILE="../firmware/stationary_capture/stationary_capture.ino"' tests/native.cpp -o test-output/capture
           test-output/capture
+      - name: Execute independent Arduino control core
+        run: |
+          g++ -m32 -std=c++11 -Wall -Wextra -pedantic tests/native_car.cpp -o test-output/native-car
+          test-output/native-car
