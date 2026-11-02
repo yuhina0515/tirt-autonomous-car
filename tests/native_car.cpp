@@ -32,5 +32,11 @@ int main() {
     c.reset(); sample(c,0xffffff00U,4); w=sample(c,0x20U,4);
     assert(c.state().fault == tirt::Fault::None && w.left == 150);
     c.reset(); sample(c,5,4); sample(c,180005,4); assert(c.state().fault == tirt::Fault::RunDeadline);
+    c.reset(); sample(c,0,8); sample(c,20,8); sample(c,25,0); sample(c,810,4); w=sample(c,825,4);
+    assert(c.state().fault == tirt::Fault::None && c.state().motion == tirt::Motion::Follow && w.left == 100);
+    c.reset(); sample(c,0,8); sample(c,20,8); sample(c,25,0); sample(c,815,4); sample(c,825,4);
+    assert(c.state().fault == tirt::Fault::SearchDeadline);
+    c.reset(); sample(c,0,8); sample(c,20,8); sample(c,25,0); sample(c,815,4); sample(c,835,4);
+    assert(c.state().fault == tirt::Fault::SearchDeadline);
     printf("PASS native core; state_bytes=%zu controller_bytes=%zu\n",sizeof(tirt::State),sizeof(tirt::Controller));
 }

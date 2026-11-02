@@ -81,7 +81,7 @@ def scenario(name):
     return [(0, 0), (1.2, 0), (1.2 + math.cos(rad)*0.9, math.sin(rad)*0.9)], rad, .045 if 'wide' in name else 0
 
 
-def read_adc(x, y, heading, p, path, patch, rng):
+def read_adc(x, y, heading, p, path, patch, rng, features=None):
     result = []
     for i in range(5):  # A5,A4,A3,A2,A1: left to right
         lateral = (2-i)*p.sensor_spacing_m
@@ -97,6 +97,9 @@ def read_adc(x, y, heading, p, path, patch, rng):
             on = d <= p.line_width_m/2
             if patch and math.hypot(sx+ox-1.2, sy+oy) < patch:
                 on = True
+            for feature in features or []:
+                if feature['x0'] <= sx+ox <= feature['x1'] and feature['y0'] <= sy+oy <= feature['y1']:
+                    on = feature['on']
             hits += on
         adc = p.background_adc + (p.line_adc-p.background_adc)*hits/len(samples)
         result.append(round(max(0, min(1023, adc+rng.gauss(0,p.adc_noise)))))
@@ -114,7 +117,7 @@ def wheel(v, pwm, gain, p, dt):
     return v + accel*dt
 
 
-def run(controller, p, name, parameters, seed, trace_path=None):
+def run(controller, p, name, parameters, seed, trace_path=None, features=None):
     controller.reset(parameters)
     path, final_heading, patch = scenario(name)
     total = sum(math.dist(a,b) for a,b in zip(path,path[1:]))
@@ -134,7 +137,7 @@ def run(controller, p, name, parameters, seed, trace_path=None):
     dt = .001
     for ms in range(0, 30001):
         if ms % p.sample_ms == 0:
-            adc = read_adc(x,y,heading,p,path,patch,rng)
+            adc = read_adc(x,y,heading,p,path,patch,rng,features)
             queue.append((ms + p.latency_ms, adc))
         while queue and queue[0][0] <= ms:
             _, adc = queue.pop(0)

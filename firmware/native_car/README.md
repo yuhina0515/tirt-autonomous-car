@@ -1,5 +1,7 @@
 # Native Arduino car
 
+最新模擬測試與800 ms回線邊界修正見../../docs/SIMULATION_ENV_2026-11-03.zh-TW.md；舊移植大小紀錄不代表最新建置。
+
 這是後續主要維護的原生Arduino程式，核心與硬體讀寫分離，不使用CAGEBOT產生器或moto函式庫。它沿用現有Cageboard、馬達、A1～A5及WS2812，不需要更換硬體。
 
 ## 開啟與編譯

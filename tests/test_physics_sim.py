@@ -12,6 +12,12 @@ from sim_native import Controller, build
 
 
 class PlantChecks(unittest.TestCase):
+    def test_spatial_interference_changes_adc(self):
+        p=Plant(adc_noise=0);path=[(0,0),(2,0)]
+        erase=[dict(x0=.3,x1=.5,y0=-.1,y1=.1,on=False)]
+        paint=[dict(x0=.3,x1=.5,y0=-.1,y1=.1,on=True)]
+        self.assertEqual(read_adc(.3,0,0,p,path,0,random.Random(1),erase),[500]*5)
+        self.assertEqual(read_adc(.3,0,0,p,path,0,random.Random(1),paint),[35]*5)
     def test_dead_zone_and_battery(self):
         p=Plant()
         self.assertEqual(wheel(0,20,1,p,.001),0)

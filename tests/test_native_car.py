@@ -79,5 +79,23 @@ class NativeParity(unittest.TestCase):
                     now+=rng.choice([1,2,5,10,20]);samples.append((now,adc(mask,outer)))
             with self.subTest(episode=episode):self.compare(samples)
 
+    def test_confirmed_capture_wins_at_search_deadline(self):
+        self.native.reset()
+        for ms,mask in [(0,8),(20,8),(25,0),(810,4),(825,4)]:
+            command=self.native.step(ms,adc(mask))
+        self.assertEqual(self.native.state()['turnFault'],0)
+        self.assertEqual(self.native.state()['turnActive'],0)
+        self.assertEqual(command,(100,100))
+
+    def test_unconfirmed_capture_does_not_extend_search_deadline(self):
+        self.native.reset()
+        for ms,mask in [(0,8),(20,8),(25,0),(815,4),(825,4)]:self.native.step(ms,adc(mask))
+        self.assertEqual(self.native.state()['turnFault'],1)
+
+    def test_late_confirmation_does_not_complete_after_deadline(self):
+        self.native.reset()
+        for ms,mask in [(0,8),(20,8),(25,0),(815,4),(835,4)]:self.native.step(ms,adc(mask))
+        self.assertEqual(self.native.state()['turnFault'],1)
+
 
 if __name__=='__main__':unittest.main()

@@ -1,5 +1,7 @@
 # Project working rules
 
+Latest follow-up: simulation/README.md and docs/SIMULATION_ENV_2026-11-03.zh-TW.md. User authorized simulation testing/fixes. Native search now accepts capture only if confirmation matured within the original800ms deadline; late/insufficient confirmation still faults. This is an intentional boundary difference from rollback.33 tests and AVR build8772/203 passed. Old migration figures are historical. tools/run_simulation.py builds baseline00e0db0/current and emits offline replay; all plant/artwork values remain synthetic.
+
 ## Current native control source (2026-11-03)
 
 - User explicitly authorized moving to handwritten Arduino C++ while retaining hardware and rollback XML. This supersedes the old rule requiring all control edits to originate in the Blockly generator.

@@ -142,6 +142,15 @@ private:
         const bool visible = centeredShape() || ((s.departed || s.captureStarted) &&
             ((s.f == 2 && (s.captureStarted || s.direction == 1)) ||
              (s.f == 8 && (s.captureStarted || s.direction == -1))));
+        // Accept an already-confirmed capture at the deadline; a newly visible
+        // or insufficiently confirmed line still cannot extend the search.
+        if (elapsed >= Settings::searchMs && centeredShape() && s.captureConfirm &&
+            age(s.captureAt, s.turnAt) <= Settings::searchMs - Settings::captureMs &&
+            age(now, s.captureAt) >= Settings::captureMs) {
+            s.captureSide = side(); s.motion = Motion::Follow; s.direction = 0;
+            consume(); s.captureConfirm = false; capture(Settings::capture, 20, 50);
+            return;
+        }
         if (elapsed >= Settings::searchMs) {
             if (fallbackAllowed()) fallback(now);
             else { s.motion = Motion::Follow; fail(Fault::SearchDeadline); }
