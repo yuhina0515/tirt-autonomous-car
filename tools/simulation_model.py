@@ -102,4 +102,3 @@ def wheel(v, pwm, gain, p, dt):
     limit = min(p.max_accel_mps2*p.battery_factor, p.friction_mu*9.81)
     accel = max(-limit, min(limit, accel)) - 9.81*math.sin(math.radians(p.grade_deg))
     return v + accel*dt
-
