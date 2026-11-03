@@ -1,0 +1,534 @@
+{
+  "date": "2026-11-03",
+  "qualification_target": "official_complete_course",
+  "official_qualification_passed": false,
+  "official_verified_runs": 0,
+  "official_consecutive_completions": 0,
+  "warning": "Full official-diagram traversal hypothesis; metric geometry, direction, layers and vehicle calibration are unverified.",
+  "local_tests_passed": 57,
+  "default_build": {
+    "target": "arduino:avr:nano:cpu=atmega328old",
+    "flash_bytes": 8776,
+    "global_ram_bytes": 203,
+    "uploaded": false
+  },
+  "geometry": {
+    "route_length_assumed_m": 67.18709843489314,
+    "route_vertices": 211,
+    "ordered_gates": 209,
+    "sampled_ceiling_conflicts_m": [],
+    "clearance_sample_step_m": 0.025,
+    "seesaw_initial_entry_gap_m": 0.0,
+    "seesaw_final_exit_gap_m": 0.0,
+    "lift_settled_exit_gap_m": 0.0,
+    "official_geometry_verified": false
+  },
+  "batches": {
+    "baseline": {
+      "directory": "C:\\Users\\Yuhina\\Documents\\Codex\\2026-10-24\\tirt\\team-repo\\build-output\\full-course\\baseline-final",
+      "source_sha256": "6f44a93cc2aae8297429bd5155d4f9303b42c1a715429d59bd970b1159d9f39a",
+      "course_sha256": "6bad3c73beaebb58d6b12c9a3d2973072f0f23d3a5bf7da2419b39381a551566",
+      "manifest_sha256": "e9bfd7da5091a4bd5f02f68c2db1ae3ac46aeefc3273b435130794f8ba990a45",
+      "runtime_model_sha256": {
+        "tools/course_world.py": "c1c94b55dc349a6adb291a9111ba52eed9d69325fce75b42baafa16dc5196659",
+        "tools/course_referee.py": "8e7e86222083e9587fd4d62910408724f86b1219d86b79bf157033c1f78c464f",
+        "tools/run_course.py": "aef02bff743c3dc531a5ee73527e42c66356232199df60093085af19dbed27e3",
+        "tools/simulation_model.py": "d95db9f4785d6aee59078565022ca5de933968bf4f1de63428ec2c77f805f416",
+        "tools/course_qualification.py": "b594bce9a911b2e2110fe0262987529b6f4c47b8199c4d05c8f82f4c9b405cc7",
+        "tools/sim_native.py": "dcc29cc455b8ad9327ec958ee18b424c0080a7e2805c14f323784500c955cc5f"
+      },
+      "plant_overrides": {
+        "max_accel_mps2": 6.0
+      },
+      "predeclared_seeds": [
+        2026110701,
+        2026110702,
+        2026110703,
+        2026110704,
+        2026110705
+      ],
+      "outcomes": {
+        "controller_fault": 3,
+        "stalled_outside_mechanism": 1,
+        "wheel_left_road": 1
+      },
+      "attempts": [
+        {
+          "seed": 2026110701,
+          "outcome": "controller_fault",
+          "simulation_seconds": 71.99,
+          "gates_crossed": 75,
+          "gates_required": 209,
+          "trace_sha256": "3dd9f38d14d63e7db48f592ca61b7f05222298a4533e141c8cf79228c9553f1f",
+          "source_hash": "6f44a93cc2aae8297429bd5155d4f9303b42c1a715429d59bd970b1159d9f39a",
+          "course_hash": "6bad3c73beaebb58d6b12c9a3d2973072f0f23d3a5bf7da2419b39381a551566",
+          "manifest_sha256": "e9bfd7da5091a4bd5f02f68c2db1ae3ac46aeefc3273b435130794f8ba990a45",
+          "lift_duration_s": 26.441844470521826
+        },
+        {
+          "seed": 2026110702,
+          "outcome": "controller_fault",
+          "simulation_seconds": 78.64,
+          "gates_crossed": 75,
+          "gates_required": 209,
+          "trace_sha256": "b2ebf423797d983768e46ea147d01c80087f3e9afc705f0278e8b8d6307ee706",
+          "source_hash": "6f44a93cc2aae8297429bd5155d4f9303b42c1a715429d59bd970b1159d9f39a",
+          "course_hash": "6bad3c73beaebb58d6b12c9a3d2973072f0f23d3a5bf7da2419b39381a551566",
+          "manifest_sha256": "e9bfd7da5091a4bd5f02f68c2db1ae3ac46aeefc3273b435130794f8ba990a45",
+          "lift_duration_s": 26.270504360801233
+        },
+        {
+          "seed": 2026110703,
+          "outcome": "controller_fault",
+          "simulation_seconds": 75.425,
+          "gates_crossed": 75,
+          "gates_required": 209,
+          "trace_sha256": "2dda544cdaa72c016734d8fa0b5b15592f03f05a42d0bc89a627ece130400e0d",
+          "source_hash": "6f44a93cc2aae8297429bd5155d4f9303b42c1a715429d59bd970b1159d9f39a",
+          "course_hash": "6bad3c73beaebb58d6b12c9a3d2973072f0f23d3a5bf7da2419b39381a551566",
+          "manifest_sha256": "e9bfd7da5091a4bd5f02f68c2db1ae3ac46aeefc3273b435130794f8ba990a45",
+          "lift_duration_s": 25.859131873505532
+        },
+        {
+          "seed": 2026110704,
+          "outcome": "stalled_outside_mechanism",
+          "simulation_seconds": 47.775,
+          "gates_crossed": 32,
+          "gates_required": 209,
+          "trace_sha256": "f17061f7373aa38d55a521dcdb09a44b30af681e8894313beab70da91efdfb97",
+          "source_hash": "6f44a93cc2aae8297429bd5155d4f9303b42c1a715429d59bd970b1159d9f39a",
+          "course_hash": "6bad3c73beaebb58d6b12c9a3d2973072f0f23d3a5bf7da2419b39381a551566",
+          "manifest_sha256": "e9bfd7da5091a4bd5f02f68c2db1ae3ac46aeefc3273b435130794f8ba990a45",
+          "lift_duration_s": 26.803006859316042
+        },
+        {
+          "seed": 2026110705,
+          "outcome": "wheel_left_road",
+          "simulation_seconds": 36.305,
+          "gates_crossed": 32,
+          "gates_required": 209,
+          "trace_sha256": "712fd9b2406a4343419960e4a917de0f2c8cb32010bf5fdb62f1d22dcf7c6fff",
+          "source_hash": "6f44a93cc2aae8297429bd5155d4f9303b42c1a715429d59bd970b1159d9f39a",
+          "course_hash": "6bad3c73beaebb58d6b12c9a3d2973072f0f23d3a5bf7da2419b39381a551566",
+          "manifest_sha256": "e9bfd7da5091a4bd5f02f68c2db1ae3ac46aeefc3273b435130794f8ba990a45",
+          "lift_duration_s": 26.501614109410344
+        }
+      ],
+      "strict_audit": {
+        "hash_verified_traces": 5,
+        "native_trace_replays_verified": 5,
+        "physical_sensor_origins_verified": 5,
+        "stricter_current_auditor": true,
+        "auditor_sha256": {
+          "course_world.py": "8f6d9bf0360c7196809cd0dd4bd5732c062facfc8dcd4d26f6f5e7dfc96e2b74",
+          "course_referee.py": "38cd93d731a2181204aa2613d4505982012eddcaa63f8e1383c8791dce1b2203",
+          "simulation_model.py": "d95db9f4785d6aee59078565022ca5de933968bf4f1de63428ec2c77f805f416",
+          "course_qualification.py": "b594bce9a911b2e2110fe0262987529b6f4c47b8199c4d05c8f82f4c9b405cc7",
+          "sim_native.py": "dcc29cc455b8ad9327ec958ee18b424c0080a7e2805c14f323784500c955cc5f",
+          "audit_course_run.py": "07ff14a16c01df4c18d84d5b5b8839ff42cf52d231b628b23053b11452cc750e"
+        },
+        "model_batch": {
+          "passed": false,
+          "required_runs": 5,
+          "attempts": [
+            {
+              "passed": false,
+              "reasons": [
+                "ordered_gate_checks",
+                "direction_and_layer",
+                "seesaw_crossing",
+                "lift_stop_and_settled_exit",
+                "finish_crossing",
+                "no_fault_or_intervention"
+              ]
+            },
+            {
+              "passed": false,
+              "reasons": [
+                "ordered_gate_checks",
+                "direction_and_layer",
+                "seesaw_crossing",
+                "lift_stop_and_settled_exit",
+                "finish_crossing",
+                "no_fault_or_intervention"
+              ]
+            },
+            {
+              "passed": false,
+              "reasons": [
+                "ordered_gate_checks",
+                "direction_and_layer",
+                "seesaw_crossing",
+                "lift_stop_and_settled_exit",
+                "finish_crossing",
+                "no_fault_or_intervention"
+              ]
+            },
+            {
+              "passed": false,
+              "reasons": [
+                "ordered_gate_checks",
+                "direction_and_layer",
+                "seesaw_crossing",
+                "lift_stop_and_settled_exit",
+                "finish_crossing",
+                "no_fault_or_intervention"
+              ]
+            },
+            {
+              "passed": false,
+              "reasons": [
+                "ordered_gate_checks",
+                "wheel_road_coverage_with_V_exception",
+                "direction_and_layer",
+                "seesaw_crossing",
+                "lift_stop_and_settled_exit",
+                "finish_crossing"
+              ]
+            }
+          ],
+          "longest_streak": 0,
+          "five_distinct_predeclared_seeds": true
+        },
+        "official_qualification_passed": false
+      }
+    },
+    "current": {
+      "directory": "C:\\Users\\Yuhina\\Documents\\Codex\\2026-10-24\\tirt\\team-repo\\build-output\\full-course\\current-final",
+      "source_sha256": "19e5498a45576ba2c9b1e5721a9f234f446facc5175edad4d76c8590c804223f",
+      "course_sha256": "6bad3c73beaebb58d6b12c9a3d2973072f0f23d3a5bf7da2419b39381a551566",
+      "manifest_sha256": "b1599f9d0945bc670ba66103366ad416409932fd9d34f854907df44acf77756b",
+      "runtime_model_sha256": {
+        "tools/course_world.py": "c1c94b55dc349a6adb291a9111ba52eed9d69325fce75b42baafa16dc5196659",
+        "tools/course_referee.py": "8e7e86222083e9587fd4d62910408724f86b1219d86b79bf157033c1f78c464f",
+        "tools/run_course.py": "aef02bff743c3dc531a5ee73527e42c66356232199df60093085af19dbed27e3",
+        "tools/simulation_model.py": "d95db9f4785d6aee59078565022ca5de933968bf4f1de63428ec2c77f805f416",
+        "tools/course_qualification.py": "b594bce9a911b2e2110fe0262987529b6f4c47b8199c4d05c8f82f4c9b405cc7",
+        "tools/sim_native.py": "dcc29cc455b8ad9327ec958ee18b424c0080a7e2805c14f323784500c955cc5f"
+      },
+      "plant_overrides": {
+        "max_accel_mps2": 6.0
+      },
+      "predeclared_seeds": [
+        2026110701,
+        2026110702,
+        2026110703,
+        2026110704,
+        2026110705
+      ],
+      "outcomes": {
+        "controller_fault": 3,
+        "stalled_outside_mechanism": 1,
+        "wheel_left_road": 1
+      },
+      "attempts": [
+        {
+          "seed": 2026110701,
+          "outcome": "controller_fault",
+          "simulation_seconds": 71.99,
+          "gates_crossed": 75,
+          "gates_required": 209,
+          "trace_sha256": "3dd9f38d14d63e7db48f592ca61b7f05222298a4533e141c8cf79228c9553f1f",
+          "source_hash": "19e5498a45576ba2c9b1e5721a9f234f446facc5175edad4d76c8590c804223f",
+          "course_hash": "6bad3c73beaebb58d6b12c9a3d2973072f0f23d3a5bf7da2419b39381a551566",
+          "manifest_sha256": "b1599f9d0945bc670ba66103366ad416409932fd9d34f854907df44acf77756b",
+          "lift_duration_s": 26.441844470521826
+        },
+        {
+          "seed": 2026110702,
+          "outcome": "controller_fault",
+          "simulation_seconds": 78.64,
+          "gates_crossed": 75,
+          "gates_required": 209,
+          "trace_sha256": "b2ebf423797d983768e46ea147d01c80087f3e9afc705f0278e8b8d6307ee706",
+          "source_hash": "19e5498a45576ba2c9b1e5721a9f234f446facc5175edad4d76c8590c804223f",
+          "course_hash": "6bad3c73beaebb58d6b12c9a3d2973072f0f23d3a5bf7da2419b39381a551566",
+          "manifest_sha256": "b1599f9d0945bc670ba66103366ad416409932fd9d34f854907df44acf77756b",
+          "lift_duration_s": 26.270504360801233
+        },
+        {
+          "seed": 2026110703,
+          "outcome": "controller_fault",
+          "simulation_seconds": 75.425,
+          "gates_crossed": 75,
+          "gates_required": 209,
+          "trace_sha256": "2dda544cdaa72c016734d8fa0b5b15592f03f05a42d0bc89a627ece130400e0d",
+          "source_hash": "19e5498a45576ba2c9b1e5721a9f234f446facc5175edad4d76c8590c804223f",
+          "course_hash": "6bad3c73beaebb58d6b12c9a3d2973072f0f23d3a5bf7da2419b39381a551566",
+          "manifest_sha256": "b1599f9d0945bc670ba66103366ad416409932fd9d34f854907df44acf77756b",
+          "lift_duration_s": 25.859131873505532
+        },
+        {
+          "seed": 2026110704,
+          "outcome": "stalled_outside_mechanism",
+          "simulation_seconds": 47.775,
+          "gates_crossed": 32,
+          "gates_required": 209,
+          "trace_sha256": "f17061f7373aa38d55a521dcdb09a44b30af681e8894313beab70da91efdfb97",
+          "source_hash": "19e5498a45576ba2c9b1e5721a9f234f446facc5175edad4d76c8590c804223f",
+          "course_hash": "6bad3c73beaebb58d6b12c9a3d2973072f0f23d3a5bf7da2419b39381a551566",
+          "manifest_sha256": "b1599f9d0945bc670ba66103366ad416409932fd9d34f854907df44acf77756b",
+          "lift_duration_s": 26.803006859316042
+        },
+        {
+          "seed": 2026110705,
+          "outcome": "wheel_left_road",
+          "simulation_seconds": 36.305,
+          "gates_crossed": 32,
+          "gates_required": 209,
+          "trace_sha256": "712fd9b2406a4343419960e4a917de0f2c8cb32010bf5fdb62f1d22dcf7c6fff",
+          "source_hash": "19e5498a45576ba2c9b1e5721a9f234f446facc5175edad4d76c8590c804223f",
+          "course_hash": "6bad3c73beaebb58d6b12c9a3d2973072f0f23d3a5bf7da2419b39381a551566",
+          "manifest_sha256": "b1599f9d0945bc670ba66103366ad416409932fd9d34f854907df44acf77756b",
+          "lift_duration_s": 26.501614109410344
+        }
+      ],
+      "strict_audit": {
+        "hash_verified_traces": 5,
+        "native_trace_replays_verified": 5,
+        "physical_sensor_origins_verified": 5,
+        "stricter_current_auditor": true,
+        "auditor_sha256": {
+          "course_world.py": "8f6d9bf0360c7196809cd0dd4bd5732c062facfc8dcd4d26f6f5e7dfc96e2b74",
+          "course_referee.py": "38cd93d731a2181204aa2613d4505982012eddcaa63f8e1383c8791dce1b2203",
+          "simulation_model.py": "d95db9f4785d6aee59078565022ca5de933968bf4f1de63428ec2c77f805f416",
+          "course_qualification.py": "b594bce9a911b2e2110fe0262987529b6f4c47b8199c4d05c8f82f4c9b405cc7",
+          "sim_native.py": "dcc29cc455b8ad9327ec958ee18b424c0080a7e2805c14f323784500c955cc5f",
+          "audit_course_run.py": "07ff14a16c01df4c18d84d5b5b8839ff42cf52d231b628b23053b11452cc750e"
+        },
+        "model_batch": {
+          "passed": false,
+          "required_runs": 5,
+          "attempts": [
+            {
+              "passed": false,
+              "reasons": [
+                "ordered_gate_checks",
+                "direction_and_layer",
+                "seesaw_crossing",
+                "lift_stop_and_settled_exit",
+                "finish_crossing",
+                "no_fault_or_intervention"
+              ]
+            },
+            {
+              "passed": false,
+              "reasons": [
+                "ordered_gate_checks",
+                "direction_and_layer",
+                "seesaw_crossing",
+                "lift_stop_and_settled_exit",
+                "finish_crossing",
+                "no_fault_or_intervention"
+              ]
+            },
+            {
+              "passed": false,
+              "reasons": [
+                "ordered_gate_checks",
+                "direction_and_layer",
+                "seesaw_crossing",
+                "lift_stop_and_settled_exit",
+                "finish_crossing",
+                "no_fault_or_intervention"
+              ]
+            },
+            {
+              "passed": false,
+              "reasons": [
+                "ordered_gate_checks",
+                "direction_and_layer",
+                "seesaw_crossing",
+                "lift_stop_and_settled_exit",
+                "finish_crossing",
+                "no_fault_or_intervention"
+              ]
+            },
+            {
+              "passed": false,
+              "reasons": [
+                "ordered_gate_checks",
+                "wheel_road_coverage_with_V_exception",
+                "direction_and_layer",
+                "seesaw_crossing",
+                "lift_stop_and_settled_exit",
+                "finish_crossing"
+              ]
+            }
+          ],
+          "longest_streak": 0,
+          "five_distinct_predeclared_seeds": true
+        },
+        "official_qualification_passed": false
+      }
+    },
+    "experiment_not_adopted": {
+      "directory": "C:\\Users\\Yuhina\\Documents\\Codex\\2026-10-24\\tirt\\team-repo\\build-output\\full-course\\experiment-05",
+      "source_sha256": "090815dd9fbec282ca871b16796c7695c7425e07aaa425bebfef83b28da5f2fa",
+      "course_sha256": "6bad3c73beaebb58d6b12c9a3d2973072f0f23d3a5bf7da2419b39381a551566",
+      "manifest_sha256": "d4bdeb9742b3401dc4792688c545239c6a97fc11d01524eb0b4ee4bea580263d",
+      "runtime_model_sha256": {
+        "tools/course_world.py": "716e4a7a1a3bc8ba5b81c304b20624c146d0da3e11dece00dcdb9cb5c15c59d3",
+        "tools/course_referee.py": "5feabfeee7b5a7e10861679cca29321ee41e6eaf5677c3329892e03bf5ee9fee",
+        "tools/run_course.py": "a5584995db0cc10e560fd67fa2bf11aaa7954d3acc54b7809d8603be1d50029e",
+        "tools/simulation_model.py": "d95db9f4785d6aee59078565022ca5de933968bf4f1de63428ec2c77f805f416"
+      },
+      "plant_overrides": {
+        "max_accel_mps2": 6.0
+      },
+      "predeclared_seeds": [
+        2026110701,
+        2026110702,
+        2026110703,
+        2026110704,
+        2026110705
+      ],
+      "outcomes": {
+        "wheel_left_road": 2,
+        "stalled_outside_mechanism": 2,
+        "controller_fault": 1
+      },
+      "attempts": [
+        {
+          "seed": 2026110701,
+          "outcome": "wheel_left_road",
+          "simulation_seconds": 145.845,
+          "gates_crossed": 75,
+          "gates_required": 209,
+          "trace_sha256": "ae9e1d9dca1490fa1c273ae8be3fbad38c9d04c881dc76b1022d4f4016dff98c",
+          "source_hash": "090815dd9fbec282ca871b16796c7695c7425e07aaa425bebfef83b28da5f2fa",
+          "course_hash": "6bad3c73beaebb58d6b12c9a3d2973072f0f23d3a5bf7da2419b39381a551566",
+          "manifest_sha256": "d4bdeb9742b3401dc4792688c545239c6a97fc11d01524eb0b4ee4bea580263d",
+          "lift_duration_s": 26.441844470521826
+        },
+        {
+          "seed": 2026110702,
+          "outcome": "stalled_outside_mechanism",
+          "simulation_seconds": 128.195,
+          "gates_crossed": 75,
+          "gates_required": 209,
+          "trace_sha256": "6d5c7c8da7c0f9a0445bd852e9578c9a9f9bc7cc7c80d3f3f6155455b91c001b",
+          "source_hash": "090815dd9fbec282ca871b16796c7695c7425e07aaa425bebfef83b28da5f2fa",
+          "course_hash": "6bad3c73beaebb58d6b12c9a3d2973072f0f23d3a5bf7da2419b39381a551566",
+          "manifest_sha256": "d4bdeb9742b3401dc4792688c545239c6a97fc11d01524eb0b4ee4bea580263d",
+          "lift_duration_s": 26.270504360801233
+        },
+        {
+          "seed": 2026110703,
+          "outcome": "controller_fault",
+          "simulation_seconds": 144.71,
+          "gates_crossed": 75,
+          "gates_required": 209,
+          "trace_sha256": "23bddbbee67dafb81c8adf52935d98a43214b719184bd95eac2e375192a86d8f",
+          "source_hash": "090815dd9fbec282ca871b16796c7695c7425e07aaa425bebfef83b28da5f2fa",
+          "course_hash": "6bad3c73beaebb58d6b12c9a3d2973072f0f23d3a5bf7da2419b39381a551566",
+          "manifest_sha256": "d4bdeb9742b3401dc4792688c545239c6a97fc11d01524eb0b4ee4bea580263d",
+          "lift_duration_s": 25.859131873505532
+        },
+        {
+          "seed": 2026110704,
+          "outcome": "stalled_outside_mechanism",
+          "simulation_seconds": 47.245,
+          "gates_crossed": 32,
+          "gates_required": 209,
+          "trace_sha256": "1352fda04aa7a862a460a885c595a7a6c93224eb8b154e74dfbd47bda302a57d",
+          "source_hash": "090815dd9fbec282ca871b16796c7695c7425e07aaa425bebfef83b28da5f2fa",
+          "course_hash": "6bad3c73beaebb58d6b12c9a3d2973072f0f23d3a5bf7da2419b39381a551566",
+          "manifest_sha256": "d4bdeb9742b3401dc4792688c545239c6a97fc11d01524eb0b4ee4bea580263d",
+          "lift_duration_s": 26.803006859316042
+        },
+        {
+          "seed": 2026110705,
+          "outcome": "wheel_left_road",
+          "simulation_seconds": 35.58,
+          "gates_crossed": 31,
+          "gates_required": 209,
+          "trace_sha256": "645ebc86641d3a029245f389fabfe9c247738c22191fa01390c078627486956e",
+          "source_hash": "090815dd9fbec282ca871b16796c7695c7425e07aaa425bebfef83b28da5f2fa",
+          "course_hash": "6bad3c73beaebb58d6b12c9a3d2973072f0f23d3a5bf7da2419b39381a551566",
+          "manifest_sha256": "d4bdeb9742b3401dc4792688c545239c6a97fc11d01524eb0b4ee4bea580263d",
+          "lift_duration_s": 26.501614109410344
+        }
+      ],
+      "strict_audit": {
+        "hash_verified_traces": 5,
+        "native_trace_replays_verified": 5,
+        "physical_sensor_origins_verified": 5,
+        "stricter_current_auditor": true,
+        "auditor_sha256": {
+          "course_world.py": "8f6d9bf0360c7196809cd0dd4bd5732c062facfc8dcd4d26f6f5e7dfc96e2b74",
+          "course_referee.py": "38cd93d731a2181204aa2613d4505982012eddcaa63f8e1383c8791dce1b2203",
+          "simulation_model.py": "d95db9f4785d6aee59078565022ca5de933968bf4f1de63428ec2c77f805f416",
+          "course_qualification.py": "b594bce9a911b2e2110fe0262987529b6f4c47b8199c4d05c8f82f4c9b405cc7",
+          "sim_native.py": "dcc29cc455b8ad9327ec958ee18b424c0080a7e2805c14f323784500c955cc5f",
+          "audit_course_run.py": "07ff14a16c01df4c18d84d5b5b8839ff42cf52d231b628b23053b11452cc750e"
+        },
+        "model_batch": {
+          "passed": false,
+          "required_runs": 5,
+          "attempts": [
+            {
+              "passed": false,
+              "reasons": [
+                "ordered_gate_checks",
+                "wheel_road_coverage_with_V_exception",
+                "direction_and_layer",
+                "seesaw_crossing",
+                "lift_stop_and_settled_exit",
+                "finish_crossing"
+              ]
+            },
+            {
+              "passed": false,
+              "reasons": [
+                "ordered_gate_checks",
+                "direction_and_layer",
+                "seesaw_crossing",
+                "lift_stop_and_settled_exit",
+                "finish_crossing",
+                "no_fault_or_intervention"
+              ]
+            },
+            {
+              "passed": false,
+              "reasons": [
+                "ordered_gate_checks",
+                "direction_and_layer",
+                "seesaw_crossing",
+                "lift_stop_and_settled_exit",
+                "finish_crossing",
+                "no_fault_or_intervention"
+              ]
+            },
+            {
+              "passed": false,
+              "reasons": [
+                "ordered_gate_checks",
+                "direction_and_layer",
+                "seesaw_crossing",
+                "lift_stop_and_settled_exit",
+                "finish_crossing",
+                "no_fault_or_intervention"
+              ]
+            },
+            {
+              "passed": false,
+              "reasons": [
+                "ordered_gate_checks",
+                "wheel_road_coverage_with_V_exception",
+                "direction_and_layer",
+                "seesaw_crossing",
+                "lift_stop_and_settled_exit",
+                "finish_crossing"
+              ]
+            }
+          ],
+          "longest_streak": 0,
+          "five_distinct_predeclared_seeds": true
+        },
+        "official_qualification_passed": false
+      }
+    }
+  },
+  "baseline_current_trace_hashes_identical": true
+}

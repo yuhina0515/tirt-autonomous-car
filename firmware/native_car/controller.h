@@ -157,6 +157,9 @@ private:
             return;
         }
         if (elapsed >= Settings::searchMinMs && visible) {
+            // Dropout is a continuous absence interval, not time since the first
+            // dropout of this turn. Keep the independent absolute search limit.
+            s.captureGapPending = false;
             s.captureStarted = true; s.captureSide = side();
             if (!s.captureConfirm) { s.captureConfirm = true; s.captureAt = now; }
         } else s.captureConfirm = false;

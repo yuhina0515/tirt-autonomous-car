@@ -10,7 +10,7 @@
   "rules_update_announcement": "https://www.tirtpointsrace.org/News/News/1038",
   "rules_update_announcement_date": "2026-10-31",
   "diagram_source": "docs/official_2026-10-25/rules-5.png",
-  "rules": {"maximum_lap_s": 360, "lift_reference_s": 27, "maximum_seesaw_deg": 30, "three_d_line_width_m": 0.02},
+  "rules": {"maximum_lap_s": 360, "lift_reference_s": 27, "lift_duration_range_s": [25.65,28.35], "maximum_seesaw_deg": 30, "three_d_line_width_m": 0.02},
   "confirmed": {
     "vehicle_envelope_limits": {"length_exclusive_m": 0.20, "width_exclusive_m": 0.16, "height_exclusive_m": 0.15, "mass_inclusive_kg": 1.5, "maximum_drive_wheels": 2, "source_page": 3, "note": "Eligibility limits, not measured vehicle or sensor geometry."},
     "three_d_dimension_drawing": {"source_page": 6, "road_width_label": 20, "other_vertical_labels": [19, 4], "diagram_unit": null, "note": "Visual review confirms numeric drawing labels. Units are not explicitly printed in the drawing; do not silently convert them to SI or use them as a full-course scale. Only the adjacent white-line width is explicitly stated as 2 cm."},

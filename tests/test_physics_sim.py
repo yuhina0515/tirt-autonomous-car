@@ -12,6 +12,10 @@ from sim_native import Controller, build
 
 
 class PlantChecks(unittest.TestCase):
+    def test_duplicate_junctions_and_degenerate_paths(self):
+        self.assertEqual(nearest(.5, .1, [(0,0),(0,0),(1,0)]), nearest(.5,.1,[(0,0),(1,0)]))
+        for path in ([], [(0,0)], [(0,0),(0,0)]):
+            with self.assertRaises(ValueError): nearest(0,0,path)
     def test_spatial_interference_changes_adc(self):
         p=Plant(adc_noise=0);path=[(0,0),(2,0)]
         erase=[dict(x0=.3,x1=.5,y0=-.1,y1=.1,on=False)]

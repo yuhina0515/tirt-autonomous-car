@@ -42,16 +42,22 @@ class Plant:
 
 
 def nearest(x, y, points):
+    if len(points) < 2:
+        raise ValueError('A path requires at least two vertices')
     best = (float('inf'), 0.0, 0.0)
     accumulated = 0.0
     for (ax, ay), (bx, by) in zip(points, points[1:]):
         dx, dy = bx - ax, by - ay
         length = math.hypot(dx, dy)
+        if length == 0:
+            continue
         t = max(0, min(1, ((x-ax)*dx + (y-ay)*dy) / length**2))
         d = math.hypot(x-ax-t*dx, y-ay-t*dy)
         if d < best[0]:
             best = d, accumulated + t*length, math.atan2(dy, dx)
         accumulated += length
+    if not math.isfinite(best[0]):
+        raise ValueError('A path requires a nonzero segment')
     return best
 
 

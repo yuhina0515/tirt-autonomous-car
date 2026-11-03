@@ -1,5 +1,7 @@
 # Native Arduino car
 
+最新[squad賽道／控制修正](../../docs/SQUAD_COURSE_2026-11-03.zh-TW.md)：回線後會清除舊掉線計時，保留800ms絕對期限。預設Nano編譯8776 Flash／203全域RAM、57項軟體測試通過；尚未五連跑或實車驗收。收線150／升降29秒的模擬實驗未採用，主設定維持。
+
 最新模擬測試與800 ms回線邊界修正見../../docs/SIMULATION_ENV_2026-11-03.zh-TW.md；舊移植大小紀錄不代表最新建置。
 
 這是後續主要維護的原生Arduino程式，核心與硬體讀寫分離，不使用CAGEBOT產生器或moto函式庫。它沿用現有Cageboard、馬達、A1～A5及WS2812，不需要更換硬體。

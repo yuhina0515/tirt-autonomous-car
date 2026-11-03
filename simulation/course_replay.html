@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="zh-Hant"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TIRT 完整圖面重建與閉迴路回放</title>
+<style>
+:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:#101923;color:#edf2f6;font:15px system-ui}header{padding:24px 32px;border-bottom:1px solid #34414e}h1{font-size:24px;margin:0 0 10px}.note{color:#f4c470;max-width:1050px;line-height:1.6}main{display:grid;grid-template-columns:minmax(420px,1fr) 360px;gap:24px;padding:24px 32px}canvas{width:100%;background:#fff;border-radius:8px}aside{background:#1c2834;padding:20px;border-radius:8px;align-self:start}select,button{font:inherit;padding:9px;border:1px solid #576574;border-radius:5px;background:#273745;color:#fff;margin:4px 0}select{width:100%}input[type=range]{width:100%;margin:16px 0}.stat{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0}.stat div{background:#101923;padding:12px;border-radius:5px}.stat small{color:#acbbc8;display:block;margin-bottom:6px}.stat strong{font-size:20px}pre{font:13px ui-monospace,monospace;white-space:pre-wrap;line-height:1.7}label{display:block;margin:12px 0;color:#c7d4de}footer{font-size:13px;color:#b1bfcc;padding:0 32px 24px}@media(max-width:900px){main{grid-template-columns:1fr}header,main{padding:16px}}
+</style>
+<header><h1>TIRT 賽道重建工作台</h1><div class="note">官方圖面來源已核對。路線方向、遮蔽連接、比例與高度仍是重建假設；本頁試驗不代表官方賽道或實車驗收通過。車子使用實際 Arduino 控制核心，只收到 ADC 與時間。</div></header>
+<main><section><canvas id="map" width="1240" height="1201"></canvas></section><aside>
+<select id="runs" aria-label="選擇試驗"></select><button id="play">播放／暫停</button> <button id="reset">回到起點</button>
+<input id="seek" aria-label="回放時間" type="range" min="0" value="0"><div id="time"></div>
+<label><input id="route" type="checkbox" checked> 顯示推定路線與分層</label><label><input id="source" type="checkbox" checked> 顯示官方原始圖面</label>
+<div class="stat"><div><small>本次結果</small><strong id="outcome"></strong></div><div><small>已通過路線門</small><strong id="gates"></strong></div><div><small>左右 PWM</small><strong id="pwm"></strong></div><div><small>物理高度</small><strong id="height"></strong></div></div>
+<pre id="details"></pre><canvas id="heightplot" width="320" height="130"></canvas>
+</aside></main><footer>黃線：實際物理軌跡。藍／紫線：推定路線與高度。幾何裁判依車體、驅動輪、分層門、機構狀態與終點越線判定，控制器的 lapDone 不作為完賽證據。</footer>
+<script>
+const payload=/*PAYLOAD*/{};
+const select=document.querySelector('#runs'),seek=document.querySelector('#seek'),canvas=document.querySelector('#map'),ctx=canvas.getContext('2d'),source=new Image();
+let playing=false,last=0;const spec=payload.spec,scale=spec.assumptions.metres_per_pixel,H=spec.source_map.height_px;
+const pixel=(x,y)=>[x/scale,H-y/scale];
+const names={wheel_left_road:'車輪出界',controller_fault:'控制器停止',stalled_outside_mechanism:'機構外停滯',unsupported_surface_or_ceiling:'支撐／淨空失效',finished:'完成',timeout:'逾時'};
+source.src=payload.map;source.onload=draw;
+payload.runs.forEach((r,i)=>select.add(new Option(`${r.result.seed} · ${names[r.result.outcome]||r.result.outcome}`,i)));
+function line(points,color,width){ctx.beginPath();points.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.strokeStyle=color;ctx.lineWidth=width;ctx.stroke()}
+function draw(){const d=payload.runs[+select.value];if(!d)return;seek.max=d.rows.length-1;const index=Math.min(+seek.value,d.rows.length-1),r=d.rows[index];ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);
+ if(document.querySelector('#source').checked)ctx.drawImage(source,0,0);
+ if(document.querySelector('#route').checked){ctx.globalAlpha=.7;line(spec.points_px,'#2356c4',3);for(const region of spec.raised_occurrences)line(spec.points_px.slice(region.start_vertex,region.end_vertex+1),'#b14dbd',5);ctx.globalAlpha=1;}
+ line(d.rows.slice(0,index+1).map(v=>pixel(v.x,v.y)),'#f0ad24',4);
+ const [x,y]=pixel(r.x,r.y);ctx.save();ctx.translate(x,y);ctx.rotate(-r.yaw);ctx.fillStyle=r.turnFault?'#dc3847':'#0b78c9';ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.fillRect(-spec.assumptions.body_length_m/2/scale,-spec.assumptions.body_width_m/2/scale,spec.assumptions.body_length_m/scale,spec.assumptions.body_width_m/scale);ctx.strokeRect(-spec.assumptions.body_length_m/2/scale,-spec.assumptions.body_width_m/2/scale,spec.assumptions.body_length_m/scale,spec.assumptions.body_width_m/scale);ctx.fillStyle='#fff';ctx.fillRect(10,-2,6,4);ctx.restore();
+ document.querySelector('#time').textContent=`${(r.ms/1000).toFixed(2)} / ${(d.rows.at(-1).ms/1000).toFixed(2)} 秒`;
+ document.querySelector('#outcome').textContent=names[d.result.outcome]||d.result.outcome;
+ document.querySelector('#gates').textContent=`${d.result.gates_crossed}/${d.result.gates_required}`;
+ document.querySelector('#pwm').textContent=`${r.left} / ${r.right}`;document.querySelector('#height').textContent=`${r.z.toFixed(3)} m`;
+ document.querySelector('#details').textContent=`F=${r.sensorF}  search=${r.turnActive}  gap=${r.gapActive}\nlift state=${r.liftState}  physical phase=${r.lift_phase}\nwheel speed=${r.vl.toFixed(3)} / ${r.vr.toFixed(3)} m/s\npitch=${(r.pitch*180/Math.PI).toFixed(1)}°\nseesaw=${(r.seesaw_theta*180/Math.PI).toFixed(1)}°\nfirst violation=${d.result.first_violation||'none'}\nADC [A5..A1]=${[r.a5,r.a4,r.a3,r.a2,r.a1].join(', ')}\n\n模型五連跑與官方驗收分開報告。`;
+ const h=document.querySelector('#heightplot').getContext('2d');h.clearRect(0,0,320,130);h.fillStyle='#101923';h.fillRect(0,0,320,130);h.strokeStyle='#84c7ed';h.beginPath();d.rows.forEach((v,i)=>{const X=10+i/(d.rows.length-1)*300,Y=115-v.z/0.6*95;i?h.lineTo(X,Y):h.moveTo(X,Y)});h.stroke();h.strokeStyle='#f0ad24';h.beginPath();h.moveTo(10+index/(d.rows.length-1)*300,5);h.lineTo(10+index/(d.rows.length-1)*300,120);h.stroke();h.fillStyle='#b1bfcc';h.fillText('高度／時間',12,15);
+}
+select.onchange=()=>{playing=false;seek.value=0;draw()};seek.oninput=draw;document.querySelector('#route').onchange=draw;document.querySelector('#source').onchange=draw;document.querySelector('#play').onclick=()=>playing=!playing;document.querySelector('#reset').onclick=()=>{seek.value=0;draw()};
+function frame(t){if(playing&&t-last>=20){seek.value=Math.min(+seek.max,+seek.value+1);last=t;draw();if(seek.value===seek.max)playing=false}requestAnimationFrame(frame)}draw();requestAnimationFrame(frame);
+</script></html>

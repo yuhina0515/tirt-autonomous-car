@@ -37,7 +37,8 @@ def judge_attempt(record, source_hash, course_hash):
     reasons=[]
     if record.get('source_hash')!=source_hash:reasons.append('controller_changed')
     if record.get('course_hash')!=course_hash:reasons.append('course_changed')
-    if not isinstance(record.get('trace_sha256'),str) or len(record['trace_sha256'])!=64:
+    if (not isinstance(record.get('trace_sha256'),str) or len(record['trace_sha256'])!=64
+            or any(c not in '0123456789abcdef' for c in record['trace_sha256'])):
         reasons.append('missing_trace')
     seconds=record.get('elapsed_s')
     if type(seconds) not in (int,float) or not math.isfinite(seconds) or not 0<seconds<=360:
@@ -66,14 +67,15 @@ def main():
     p.add_argument('--course',type=Path,default=ROOT/'simulation/official_course.json')
     p.add_argument('--output',type=Path,default=ROOT/'build-output/official-qualification.json')
     args=p.parse_args();spec=json.loads(args.course.read_text());issues=preflight(spec)
-    # The existing executor is intentionally restricted to a planar plant. Merely
-    # filling a JSON checklist cannot grant a nonexistent 3D simulator capability.
-    issues.append('official_3d_world_and_independent_referee_not_implemented')
+    # Executable inferred reconstruction has a separate constrained2.5D world and
+    # trace referee. It does not establish authoritative metric/layer geometry.
+    issues.append('official_metric_layer_model_and_vehicle_calibration_not_verified')
     report=dict(status='blocked',qualification_target='official_complete_course',
                 course_sha256=hashlib.sha256(args.course.read_bytes()).hexdigest(),
                 blocking_issues=issues,required_consecutive_completions=5,
                 executed_official_runs=0,consecutive_completions=0,
                 passed=False,attempts=[],
+                available_experimental_tools=['run_course.py','audit_course_run.py'],
                 note='No trials were run; this is a preflight report, not five failed or successful laps.')
     args.output.parent.mkdir(parents=True,exist_ok=True)
     args.output.write_text(json.dumps(report,indent=2),encoding='utf-8')

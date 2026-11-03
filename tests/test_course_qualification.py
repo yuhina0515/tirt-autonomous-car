@@ -32,3 +32,5 @@ class QualificationChecks(unittest.TestCase):
     def test_nan_duration_and_missing_trace_rejected(self):
         rows=[self.record(i) for i in range(5)];rows[0]['elapsed_s']=float('nan');rows[1].pop('trace_sha256')
         self.assertFalse(judge_batch(rows,'source','course',list(range(5)))['passed'])
+        rows=[self.record(i) for i in range(5)];rows[0]['trace_sha256']='z'*64
+        self.assertFalse(judge_batch(rows,'source','course',list(range(5)))['passed'])
