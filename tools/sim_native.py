@@ -15,6 +15,8 @@ ROOT = Path(__file__).resolve().parents[1]
 STATE = ['sensorF', 'turnFault', 'lapDone', 'liftState', 'turnActive',
          'gapActive', 'cornerWideRecovery', 'turnDirection', 'turnCaptureSide',
          'outerProbeActive', 'splitActive', 'straightPwm', 'firstFaultLine', 'firstFaultF']
+DIAGNOSTICS = ['linePosition','lineConfidence','wideEvents','missionPhase','uncertaintyMs','markerArmed',
+               'eventSerial','eventCode','missionCandidates','missionStep','missionAmbiguous']
 
 
 def build(source, directory):
@@ -149,6 +151,13 @@ struct Adafruit_NeoPixel {
                's.recovery','s.direction','s.captureSide','s.probe','s.splitActive',
                's.straightPwm','0','faultF']
     cases=''.join('case %d:return %s;'%(i,value) for i,value in enumerate(mapping))
+    diagnostics=''
+    if 'TIRT_CONTINUOUS_CANDIDATE' in core.read_text(encoding='utf-8'):
+        expressions=['s.position','s.confidence','s.events','s.missionPhase','s.uncertainMs','s.markerArmed']
+        if 'TIRT_MISSION_PREFIX' in core.read_text(encoding='utf-8'):
+            expressions+=['s.eventSerial','s.eventCode','s.missionCandidates','s.missionStep','s.missionAmbiguous']
+        diagnostic_cases=''.join('case %d:return %s;'%(i,v) for i,v in enumerate(expressions))
+        diagnostics='extern "C" __declspec(dllexport) int get_diagnostic(int field){const auto &s=controller.state();switch(field){'+diagnostic_cases+'}return 0;}\nextern "C" __declspec(dllexport) int diagnostic_count(){return '+str(len(expressions))+';}'
     (directory/'bridge.cpp').write_text(r'''
 #include "Arduino.h"
 #include <cstring>
@@ -174,7 +183,8 @@ extern "C" __declspec(dllexport) int left_command(){return digital[7]==LOW?pwm[5
 extern "C" __declspec(dllexport) int right_command(){return digital[4]==HIGH?pwm[6]:-pwm[6];}
 extern "C" __declspec(dllexport) int set_parameter(const char*,int){return 0;}
 extern "C" __declspec(dllexport) int fault_reason(){return int(controller.state().fault);}
-'''.replace('@CASES@',cases),encoding='utf-8')
+@DIAGNOSTICS@
+'''.replace('@CASES@',cases).replace('@DIAGNOSTICS@',diagnostics),encoding='utf-8')
     return compile_bridge(directory), digest
 
 
@@ -196,3 +206,8 @@ class Controller:
 
     def state(self):
         return {name: self.lib.get_state(i) for i, name in enumerate(STATE)}
+
+    def diagnostics(self):
+        if not hasattr(self.lib,'get_diagnostic'):return {}
+        count=self.lib.diagnostic_count() if hasattr(self.lib,'diagnostic_count') else 6
+        return {name:self.lib.get_diagnostic(i) for i,name in enumerate(DIAGNOSTICS[:count])}

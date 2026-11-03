@@ -1,5 +1,6 @@
 """Recompute course evidence from pose traces, never controller completion flags."""
 import csv
+import bisect
 import hashlib
 import math
 from collections import deque
@@ -10,6 +11,28 @@ from pathlib import Path
 from course_world import Course, Mechanisms, Pose, crossed_gate, geometry, advance,chassis_pitch,sense,forward_travel
 
 REQUIRED_COLUMNS={'ms','x','y','z','yaw','pitch','vl','vr','left','right','turnFault','intervention'}
+
+
+def directed_travel(course,previous,current,mechanisms,next_gate,tolerance_m=1e-6):
+    """Disambiguate route occurrence using the referee's ordered gate history.
+
+    Physical proximity alone cannot identify opposing overlapping occurrences.
+    Only the expected segment and its two immediate neighbors supply tangents;
+    height, distance, negative-progress and ordered-gate checks still apply.
+    This state belongs exclusively to the referee, never the controller.
+    """
+    dx,dy=current.x-previous.x,current.y-previous.y
+    if math.hypot(dx,dy)<=tolerance_m:return True
+    before=course.gates[next_gate-1] if next_gate else 0
+    after=course.gates[next_gate] if next_gate<len(course.gates) else course.length
+    expected=min(len(course.main_segments)-1,bisect.bisect_right(course.stations,(before+after)/2)-1)
+    x,y,z=(current.x+previous.x)/2,(current.y+previous.y)/2,(current.z+previous.z)/2
+    eligible=[p for p in course.projections(x,y,mechanisms) if p['s']>=0 and
+        abs(p['index']-expected)<=1 and p['d']<course.assumptions['body_width_m']/2 and abs(p['z']-z)<.03]
+    for p in eligible:
+        seg=course.main_segments[p['index']]
+        if (dx*(seg.b[0]-seg.a[0])+dy*(seg.b[1]-seg.a[1]))/seg.length>=-tolerance_m:return True
+    return False
 
 
 def audit_trace(path,course_spec,plant,lift_duration,expected_hash=None):
@@ -36,6 +59,7 @@ def audit_trace(path,course_spec,plant,lift_duration,expected_hash=None):
     mechanism_violation=False
     seen_seesaw_negative=False
     fault=None
+    first_violation_ms=None
     gate_events=[]
     times=[]
     still_since=None
@@ -52,7 +76,7 @@ def audit_trace(path,course_spec,plant,lift_duration,expected_hash=None):
             if ms!=0 or math.hypot(pose.x-initial[0],pose.y-initial[1])>.002 or abs(pose.z-initial[2])>.0001 or abs(pose.yaw-yaw)>.01 or max(abs(pose.vl),abs(pose.vr))>0:
                 raise ValueError('trace does not start at the declared stationary initial pose')
         if previous is not None:
-            direction_ok &= forward_travel(c,previous,pose,m)
+            direction_ok &= directed_travel(c,previous,pose,m,next_gate)
             # Independently evolve the mechanisms from observed physical contact.
             dt=(ms-previous_ms)/1000
             old_height=m.lift_height
@@ -124,6 +148,7 @@ def audit_trace(path,course_spec,plant,lift_duration,expected_hash=None):
             elif not body_ok: fault='body_lost_guide'
             elif not no_fault: fault='controller_fault_or_intervention'
             elif mechanism_violation: fault='lift_left_before_settled'
+            if fault is not None:first_violation_ms=ms
         previous,previous_ms,previous_contact=pose,ms,contact
         previous_command=(numeric['left'],numeric['right'])
         times.append(ms)
@@ -140,7 +165,7 @@ def audit_trace(path,course_spec,plant,lift_duration,expected_hash=None):
     elapsed=(finish_ms-start_ms)/1000 if finish_ms is not None and start_ms is not None else (times[-1]-times[0])/1000
     return dict(trace_sha256=digest,elapsed_s=elapsed,independent_checks=checks,
                 gates_crossed=next_gate,gates_required=len(c.gates),gate_events=gate_events,
-                first_violation=fault,finished=finish_ms is not None,
+                first_violation=fault,first_violation_ms=first_violation_ms,finished=finish_ms is not None,
                 mechanism_state=dict(lift_phase=m.lift_phase,lift_height_m=m.lift_height,seesaw_deg=math.degrees(m.theta)))
 
 
@@ -157,6 +182,8 @@ def verify_controller_trace(path,controller):
             for name,value in controller.state().items():
                 if int(row[name])!=value:
                     raise ValueError('trace controller state mismatch: '+name)
+            for name,value in controller.diagnostics().items():
+                if int(row[name])!=value:raise ValueError('trace diagnostic mismatch: '+name)
     return True
 
 
@@ -187,6 +214,9 @@ def verify_sensor_trace(path,controller,course_spec,plant,seed,lift_duration):
                 raise ValueError('commands disagree with regenerated sensor/core replay')
             for name,value in controller.state().items():
                 if int(row[name])!=value:raise ValueError('regenerated controller state mismatch: '+name)
+            if hasattr(controller,'diagnostics'):
+                for name,value in controller.diagnostics().items():
+                    if int(row[name])!=value:raise ValueError('regenerated diagnostic mismatch: '+name)
             previous,previous_ms=pose,ms
             previous_contact=c.contact(pose.x,pose.y,pose.z,m,max_step=.03)
     return True

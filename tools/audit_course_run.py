@@ -24,6 +24,10 @@ def main():
         raise ValueError('batch manifest hash mismatch')
     if sha(out/'course.json')!=manifest['course_sha256']:
         raise ValueError('frozen course hash mismatch')
+    if manifest.get('seed_plan_sha256') and sha(out/'seed-plan.json')!=manifest['seed_plan_sha256']:
+        raise ValueError('held-out seed plan hash mismatch')
+    if manifest.get('candidate_profile_sha256') and sha(out/'candidate-profile.json')!=manifest['candidate_profile_sha256']:
+        raise ValueError('candidate mission profile hash mismatch')
     for name,digest in manifest['model_files'].items():
         if sha(out/'model'/name)!=digest:
             raise ValueError('frozen model hash mismatch: '+name)
@@ -52,7 +56,9 @@ def main():
         raise ValueError('attempts do not match predeclared seed order')
     audited=[]
     for trial,row in zip(manifest['trials'],results['attempts']):
-        if row['seed']!=trial['seed'] or row['plant']!=trial['plant']:
+        if (row['seed']!=trial['seed'] or row['plant']!=trial['plant'] or
+            row['lift_duration_s']!=trial['lift_duration_s'] or row['source_hash']!=digest or
+            row['course_hash']!=manifest['course_sha256'] or row['manifest_sha256']!=results['manifest_sha256']):
             raise ValueError('trial differs from declared physics')
         name=row['trace_file']
         if Path(name).name!=name or name!='seed-'+str(trial['seed'])+'.csv':
@@ -64,6 +70,7 @@ def main():
         r.update(seed=trial['seed'],source_hash=digest,course_hash=manifest['course_sha256'])
         audited.append(r)
     batch=judge_batch(audited,digest,manifest['course_sha256'],manifest['expected_seeds'])
+    if manifest.get('diagnostic_limit_s'):batch.update(passed=False,diagnostic_only=True)
     report=dict(hash_verified_traces=len(audited),native_trace_replays_verified=len(audited),
                 physical_sensor_origins_verified=len(audited) if hasattr(course_referee,'verify_sensor_trace') else 0,
                 stricter_current_auditor=bool(args.current_referee),auditor_sha256=auditor_files,

@@ -10,6 +10,22 @@ py -3.11 tools/audit_course_run.py build-output/full-course/new-run
 
 上述高扭力設定是敏感度假設，不是實車資料。省略`--plant-json`使用原2.5m/s²假設，其爬坡可行性不足。執行後開啟新批次`index.html`；每批輸出不可覆寫，下一次需更換資料夾名稱。`--baseline add30a7`建立對照；`--experiment capture150_lift29`僅建立未採用的獨立實驗程式。既有批次`--replay-only`使用其凍結賽道重建回放。程式只離線編譯及模擬，沒有上傳或硬體操作。
 
+## 連續控制與路線辨識候選
+
+另有獨立`firmware/candidate_car`實驗版，維護中的主程式仍是`native_car`。結果與停止條件見[控制與物理修正報告](../docs/CONTROL_RECOVERY_2026-11-03.zh-TW.md)。未套用profile時不會將寬白當成升降台；訓練需先走到真正模型平台。以下輸出資料夾需使用新名稱：
+
+```powershell
+py -3.11 tools/run_course.py --source firmware/candidate_car/candidate_car.ino --plant-json simulation/plant_high_torque_hypothesis.json --diagnostic-limit-s 150 --output build-output/control-training-repro
+py -3.11 tools/learn_course_mission.py build-output/control-training-repro --source firmware/candidate_car/candidate_car.ino --output build-output/control-profile-repro.json
+py -3.11 tools/run_course.py --source firmware/candidate_car/candidate_car.ino --candidate-profile build-output/control-profile-repro.json --plant-json simulation/plant_high_torque_hypothesis.json --seed-plan simulation/recovery_validation_seeds.json --output build-output/control-heldout-repro
+py -3.11 tools/audit_course_run.py build-output/control-heldout-repro
+py -3.11 tools/traction_sensitivity.py --output build-output/traction-repro.json
+```
+
+profile綁定程式、賽道與感測物理模型。模型文字身分統一LF／CRLF；批次manifest仍驗證原始位元組。修改程式需重新訓練，或讓新版實際核心在每個訓練目標之前，通過重新生成ADC／命令／狀態／事件的完全一致重播。訓練標籤取自獨立審核的物理位置與依序過門，CSV的station註記不作標籤依據。保留種子不能加入訓練。
+
+`--probe-seed`只能搭配診斷時限，單次或縮短時限的批次一律不能算五連跑。候選版沒有車上終點停車判斷；裁判依實際終點越線停止模型試驗。沒有燒錄或實車驗收。
+
 ## 原短情境環境
 
 在完整團隊庫執行`py -3.11 tools/run_simulation.py`，再開啟build-output/simulation/index.html。需要Windows／MSVC（或Visual Studio Community）；模擬本身只用Python標準函式庫，不需要Arduino板、CAGEBOT、Node或網路。首次尚未安裝Python／MSVC時需自行準備。Arduino目標編譯另外使用既有Compile-Native.ps1與公開LED函式庫。

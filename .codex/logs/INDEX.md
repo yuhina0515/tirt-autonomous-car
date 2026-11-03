@@ -1,5 +1,7 @@
 # Local handoff logs
 
+- [Continuous control and physics recovery squad](2026-11-03-control-recovery-squad.md): candidate PD/observable mission, corrected contact/grip/seesaw/referee,76 tests; final held-out0/5 max194 with direction violations, default unchanged.
+
 - [Squad course reconstruction and physics](2026-11-03-squad-course.md): executable full-diagram hypothesis, independent physical/sensor evidence, capture-dropout fix,57 tests,15 failed comparison runs; official five-run goal unmet.
 
 - [Official event page recheck](2026-11-03-official-page-recheck.md): live event date11/7, same PDF bytes, omitted dimension labels and vehicle eligibility bounds recorded; full-course runs0.

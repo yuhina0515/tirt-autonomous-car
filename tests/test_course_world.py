@@ -12,7 +12,7 @@ import unittest
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'tools'))
 from course_world import Course,Mechanisms,Pose,advance,geometry,gravity_along,sense,crossed_gate,forward_travel
-from course_referee import audit_trace,verify_sensor_trace
+from course_referee import audit_trace,verify_sensor_trace,directed_travel
 from simulation_model import Plant
 
 
@@ -32,6 +32,45 @@ def fixture(points=None):
 
 
 class WorldChecks(unittest.TestCase):
+    def test_ordered_occurrence_resolves_opposing_overlapping_guides(self):
+        c=Course(json.loads((ROOT/'simulation/reconstructed_course.json').read_text()));m=Mechanisms(c,27)
+        # Frozen seed702 at100530->100535ms: nearest occurrence switches118->137
+        # by45micrometres despite forward progress on118 after gate117.
+        a=Pose(4.208123640383324,5.334948179545477,.19,-19.019103101856636)
+        b=Pose(4.2100196145709345,5.334625363783488,.19,-19.01730180570099)
+        self.assertTrue(directed_travel(c,a,b,m,118))
+        self.assertFalse(directed_travel(c,b,a,m,118))
+        self.assertFalse(directed_travel(c,a,b,m,136))
+
+    def test_adjacent_ramp_caps_do_not_occlude_their_own_guide(self):
+        c=Course(json.loads((ROOT/'simulation/reconstructed_course.json').read_text()));m=Mechanisms(c,27)
+        pose=Pose(2.0242075771164574,3.8696870155482554,.3322490660868781,-6.3441117038771,.2932694425849533)
+        self.assertEqual(sense(c,m,pose,Plant(adc_noise=0),random.Random(0))[2],35)
+        x,y=c.xy([700,488]);indices={p['index'] for p in c.local_surfaces(x,y,m)}
+        self.assertIn(32,indices);self.assertIn(41,indices)
+
+    def test_shared_traction_budget_under_braking_and_turning(self):
+        plant=Plant(max_accel_mps2=6)
+        p=Pose(0,0,0,0,vl=-1,vr=0);old=(p.vl+p.vr)/2
+        advance(p,(255,255),plant,dict(gx=0,gy=0),.001)
+        ax=((p.vl+p.vr)/2-old)/.001;ay=(p.vl+p.vr)/2*p.yaw/.001
+        self.assertLessEqual(math.hypot(ax,ay),plant.friction_mu*9.81+1e-9)
+        p=Pose(0,0,0,0,vl=-.18,vr=.20);old=(p.vl+p.vr)/2
+        advance(p,(255,255),plant,dict(gx=0,gy=0),.001)
+        self.assertLessEqual(math.hypot(((p.vl+p.vr)/2-old)/.001,(p.vl+p.vr)/2*p.yaw/.001),plant.friction_mu*9.81+1e-9)
+        for fraction in (0,1.01):
+            with self.assertRaises(ValueError):Plant(drive_normal_fraction=fraction)
+
+    def test_seesaw_angle_matches_surface_and_projected_board_length(self):
+        spec=fixture();spec['mechanisms']['seesaw']['limit_deg']=25
+        c=Course(spec);m=Mechanisms(c,27)
+        point,yaw=c.at(c.seesaw_s+.1)
+        support=c.contact(point[0],point[1],m.pivot_height+.1*math.tan(m.theta),m)
+        self.assertIsNotNone(support)
+        self.assertAlmostEqual(math.degrees(gravity_along(support,yaw)),25)
+        entry=c.seesaw_s-c.seesaw_config['half_length_m']*math.cos(m.theta)
+        self.assertAlmostEqual(m.pivot_height-c.seesaw_config['half_length_m']*math.sin(m.theta),c.height(entry))
+
     def test_physical_stall_outside_platform_is_not_accepted(self):
         spec=fixture();c=Course(spec);point,yaw=c.at(0)
         a=dict(ms=0,x=point[0],y=point[1],z=point[2],yaw=yaw,pitch=0,vl=0,vr=0,left=0,right=0,turnFault=0,intervention=0)

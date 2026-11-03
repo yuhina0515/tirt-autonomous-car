@@ -1,0 +1,1318 @@
+{
+  "date": "2026-11-03",
+  "status": "experimental_candidate_retained_default_unchanged",
+  "official_qualification_passed": false,
+  "official_verified_runs": 0,
+  "official_consecutive_completions": 0,
+  "model_heldout_completions": 0,
+  "model_heldout_consecutive_completions": 0,
+  "python_tests_passed": 76,
+  "native_cpp_assertions_passed": true,
+  "arduino_target": "arduino:avr:nano:cpu=atmega328old",
+  "candidate_profiled_build": {
+    "flash_bytes": 9066,
+    "global_ram_bytes": 226,
+    "source_sha256": "334e2a37a9bb84474ea1cdb6f8dccfbb8bc398cfcc6dd520106466bd5abd6895"
+  },
+  "candidate_unprofiled_build": {
+    "flash_bytes": 8142,
+    "global_ram_bytes": 188
+  },
+  "maintained_default": {
+    "changed_this_round": false,
+    "flash_bytes": 8776,
+    "global_ram_bytes": 203
+  },
+  "uploaded": false,
+  "groups": {
+    "baseline-heldout": {
+      "directory": "C:\\Users\\Yuhina\\Documents\\Codex\\2026-10-24\\tirt\\team-repo\\build-output\\control-recovery\\baseline-heldout",
+      "manifest_sha256": "e6bcc72e63f341ae544e840a4e61c0895a60bd522f64c63ffe7f93348ac880b9",
+      "source_sha256": "19e5498a45576ba2c9b1e5721a9f234f446facc5175edad4d76c8590c804223f",
+      "course_sha256": "6bad3c73beaebb58d6b12c9a3d2973072f0f23d3a5bf7da2419b39381a551566",
+      "candidate_profile_sha256": null,
+      "diagnostic_limit_s": null,
+      "model_files": {
+        "tools/course_world.py": "a4cd0e102d7ba7c6d948385ba2cb805a287ce0035b27c8462698b721f1fd58a4",
+        "tools/course_referee.py": "80ebde7152200e50de2128cea44f5c1e109d0f93bc5f04949a78c69e50794cba",
+        "tools/run_course.py": "c5aaab83991c9a4236e9e549051ced89e0e8063b3d946fd349a92ed9dc7f3667",
+        "tools/simulation_model.py": "f58cac31443705ae475524f0ea5ac697988d0c0b357b39773c3d33d58ad5fb61",
+        "tools/course_qualification.py": "b594bce9a911b2e2110fe0262987529b6f4c47b8199c4d05c8f82f4c9b405cc7",
+        "tools/sim_native.py": "66c70aee8d261fc81146573fc097c9c9a8c9a6705acb1e6740d68331b0531a3f",
+        "tools/learn_course_mission.py": "ca8796f9b89afa67c6add1d92d83ecc1978c5c071d2a6782f22df93a97aa1d81"
+      },
+      "plant_overrides": {
+        "max_accel_mps2": 6.0
+      },
+      "contract": {
+        "passed": false,
+        "required_runs": 5,
+        "attempts": [
+          {
+            "passed": false,
+            "reasons": [
+              "ordered_gate_checks",
+              "direction_and_layer",
+              "seesaw_crossing",
+              "lift_stop_and_settled_exit",
+              "finish_crossing",
+              "no_fault_or_intervention"
+            ]
+          },
+          {
+            "passed": false,
+            "reasons": [
+              "ordered_gate_checks",
+              "direction_and_layer",
+              "seesaw_crossing",
+              "lift_stop_and_settled_exit",
+              "finish_crossing",
+              "no_fault_or_intervention"
+            ]
+          },
+          {
+            "passed": false,
+            "reasons": [
+              "ordered_gate_checks",
+              "direction_and_layer",
+              "seesaw_crossing",
+              "lift_stop_and_settled_exit",
+              "finish_crossing",
+              "no_fault_or_intervention"
+            ]
+          },
+          {
+            "passed": false,
+            "reasons": [
+              "ordered_gate_checks",
+              "direction_and_layer",
+              "seesaw_crossing",
+              "lift_stop_and_settled_exit",
+              "finish_crossing",
+              "no_fault_or_intervention"
+            ]
+          },
+          {
+            "passed": false,
+            "reasons": [
+              "ordered_gate_checks",
+              "direction_and_layer",
+              "seesaw_crossing",
+              "lift_stop_and_settled_exit",
+              "finish_crossing",
+              "no_fault_or_intervention"
+            ]
+          }
+        ],
+        "longest_streak": 0,
+        "five_distinct_predeclared_seeds": true
+      },
+      "attempts": [
+        {
+          "seed": 2026110711,
+          "outcome": "stalled_outside_mechanism",
+          "simulation_seconds": 53.77,
+          "gates_crossed": 41,
+          "gates_required": 209,
+          "first_violation": "reverse_or_wrong_branch_travel",
+          "first_violation_ms": null,
+          "trace_sha256": "cbf909173dbd179c4b65f1187215686cca724eba585dff9b74ae2327b3e25d8b",
+          "independent_checks": {
+            "start_crossing": true,
+            "ordered_gate_checks": false,
+            "body_line_coverage": true,
+            "wheel_road_coverage_with_V_exception": true,
+            "direction_and_layer": false,
+            "shortcut_boundary": true,
+            "seesaw_crossing": false,
+            "lift_stop_and_settled_exit": false,
+            "finish_crossing": false,
+            "no_fault_or_intervention": false
+          }
+        },
+        {
+          "seed": 2026110712,
+          "outcome": "controller_fault",
+          "simulation_seconds": 88.63,
+          "gates_crossed": 84,
+          "gates_required": 209,
+          "first_violation": "reverse_or_wrong_branch_travel",
+          "first_violation_ms": null,
+          "trace_sha256": "c16a65d43fa3a032d13c3b4a605ada80ffba37ac2dfd876d35f94ddc5ab94f25",
+          "independent_checks": {
+            "start_crossing": true,
+            "ordered_gate_checks": false,
+            "body_line_coverage": true,
+            "wheel_road_coverage_with_V_exception": true,
+            "direction_and_layer": false,
+            "shortcut_boundary": true,
+            "seesaw_crossing": false,
+            "lift_stop_and_settled_exit": false,
+            "finish_crossing": false,
+            "no_fault_or_intervention": false
+          }
+        },
+        {
+          "seed": 2026110713,
+          "outcome": "controller_fault",
+          "simulation_seconds": 78.52,
+          "gates_crossed": 82,
+          "gates_required": 209,
+          "first_violation": "reverse_or_wrong_branch_travel",
+          "first_violation_ms": null,
+          "trace_sha256": "f34d13f873f91a22c2d5452885ed5b07b5c9973535c38fcb0706c7300e412012",
+          "independent_checks": {
+            "start_crossing": true,
+            "ordered_gate_checks": false,
+            "body_line_coverage": true,
+            "wheel_road_coverage_with_V_exception": true,
+            "direction_and_layer": false,
+            "shortcut_boundary": true,
+            "seesaw_crossing": false,
+            "lift_stop_and_settled_exit": false,
+            "finish_crossing": false,
+            "no_fault_or_intervention": false
+          }
+        },
+        {
+          "seed": 2026110714,
+          "outcome": "stalled_outside_mechanism",
+          "simulation_seconds": 46.865,
+          "gates_crossed": 32,
+          "gates_required": 209,
+          "first_violation": "reverse_or_wrong_branch_travel",
+          "first_violation_ms": null,
+          "trace_sha256": "3b7b952de4dce20d10ef936510c755ac3487a31a43868976281cc8e6771dace6",
+          "independent_checks": {
+            "start_crossing": true,
+            "ordered_gate_checks": false,
+            "body_line_coverage": true,
+            "wheel_road_coverage_with_V_exception": true,
+            "direction_and_layer": false,
+            "shortcut_boundary": true,
+            "seesaw_crossing": false,
+            "lift_stop_and_settled_exit": false,
+            "finish_crossing": false,
+            "no_fault_or_intervention": false
+          }
+        },
+        {
+          "seed": 2026110715,
+          "outcome": "controller_fault",
+          "simulation_seconds": 81.68,
+          "gates_crossed": 82,
+          "gates_required": 209,
+          "first_violation": "reverse_or_wrong_branch_travel",
+          "first_violation_ms": null,
+          "trace_sha256": "bd40b138230841f996201e211e029d642921ced83076ecc20e20072a93e3a94e",
+          "independent_checks": {
+            "start_crossing": true,
+            "ordered_gate_checks": false,
+            "body_line_coverage": true,
+            "wheel_road_coverage_with_V_exception": true,
+            "direction_and_layer": false,
+            "shortcut_boundary": true,
+            "seesaw_crossing": false,
+            "lift_stop_and_settled_exit": false,
+            "finish_crossing": false,
+            "no_fault_or_intervention": false
+          }
+        }
+      ]
+    },
+    "training-final": {
+      "directory": "C:\\Users\\Yuhina\\Documents\\Codex\\2026-10-24\\tirt\\team-repo\\build-output\\control-recovery\\training-final",
+      "manifest_sha256": "6ae566469ca858206836bc87f6b83ececca8d320094f4c4195416947b3228f71",
+      "source_sha256": "1705a62c73e45e8e4fab0a550035b6b6ba9be131ee187f44162ea430b2488fec",
+      "course_sha256": "6bad3c73beaebb58d6b12c9a3d2973072f0f23d3a5bf7da2419b39381a551566",
+      "candidate_profile_sha256": null,
+      "diagnostic_limit_s": 150.0,
+      "model_files": {
+        "tools/course_world.py": "a4cd0e102d7ba7c6d948385ba2cb805a287ce0035b27c8462698b721f1fd58a4",
+        "tools/course_referee.py": "d6b8a4ebe669ec3610e3bb2a3311b8da9a6080503800b326f09ba5655149f368",
+        "tools/run_course.py": "c5aaab83991c9a4236e9e549051ced89e0e8063b3d946fd349a92ed9dc7f3667",
+        "tools/simulation_model.py": "f58cac31443705ae475524f0ea5ac697988d0c0b357b39773c3d33d58ad5fb61",
+        "tools/course_qualification.py": "b594bce9a911b2e2110fe0262987529b6f4c47b8199c4d05c8f82f4c9b405cc7",
+        "tools/sim_native.py": "66c70aee8d261fc81146573fc097c9c9a8c9a6705acb1e6740d68331b0531a3f",
+        "tools/learn_course_mission.py": "87519bbb29feaac98b5781e166e3165e956a493eac9fe90d253a8831f2661efe"
+      },
+      "plant_overrides": {
+        "max_accel_mps2": 6.0
+      },
+      "contract": {
+        "passed": false,
+        "required_runs": 5,
+        "attempts": [
+          {
+            "passed": false,
+            "reasons": [
+              "ordered_gate_checks",
+              "wheel_road_coverage_with_V_exception",
+              "direction_and_layer",
+              "lift_stop_and_settled_exit",
+              "finish_crossing"
+            ]
+          },
+          {
+            "passed": false,
+            "reasons": [
+              "ordered_gate_checks",
+              "wheel_road_coverage_with_V_exception",
+              "direction_and_layer",
+              "lift_stop_and_settled_exit",
+              "finish_crossing"
+            ]
+          },
+          {
+            "passed": false,
+            "reasons": [
+              "ordered_gate_checks",
+              "wheel_road_coverage_with_V_exception",
+              "direction_and_layer",
+              "lift_stop_and_settled_exit",
+              "finish_crossing"
+            ]
+          },
+          {
+            "passed": false,
+            "reasons": [
+              "ordered_gate_checks",
+              "wheel_road_coverage_with_V_exception",
+              "direction_and_layer",
+              "lift_stop_and_settled_exit",
+              "finish_crossing"
+            ]
+          },
+          {
+            "passed": false,
+            "reasons": [
+              "ordered_gate_checks",
+              "wheel_road_coverage_with_V_exception",
+              "direction_and_layer",
+              "lift_stop_and_settled_exit",
+              "finish_crossing"
+            ]
+          }
+        ],
+        "longest_streak": 0,
+        "five_distinct_predeclared_seeds": true,
+        "diagnostic_only": true
+      },
+      "attempts": [
+        {
+          "seed": 2026110701,
+          "outcome": "wheel_left_road",
+          "simulation_seconds": 125.845,
+          "gates_crossed": 154,
+          "gates_required": 209,
+          "first_violation": "wheel_left_road",
+          "first_violation_ms": 125845.0,
+          "trace_sha256": "b25033a6331d30946b0718fd8b4a7735dc4479bfe064cc4c0224e8012a29a20a",
+          "independent_checks": {
+            "start_crossing": true,
+            "ordered_gate_checks": false,
+            "body_line_coverage": true,
+            "wheel_road_coverage_with_V_exception": false,
+            "direction_and_layer": false,
+            "shortcut_boundary": true,
+            "seesaw_crossing": true,
+            "lift_stop_and_settled_exit": false,
+            "finish_crossing": false,
+            "no_fault_or_intervention": true
+          }
+        },
+        {
+          "seed": 2026110702,
+          "outcome": "wheel_left_road",
+          "simulation_seconds": 125.395,
+          "gates_crossed": 154,
+          "gates_required": 209,
+          "first_violation": "wheel_left_road",
+          "first_violation_ms": 125395.0,
+          "trace_sha256": "e0fb456c4e038e809738354caf504cfc111eba2580adeff2c8abf5e5362a44a7",
+          "independent_checks": {
+            "start_crossing": true,
+            "ordered_gate_checks": false,
+            "body_line_coverage": true,
+            "wheel_road_coverage_with_V_exception": false,
+            "direction_and_layer": false,
+            "shortcut_boundary": true,
+            "seesaw_crossing": true,
+            "lift_stop_and_settled_exit": false,
+            "finish_crossing": false,
+            "no_fault_or_intervention": true
+          }
+        },
+        {
+          "seed": 2026110703,
+          "outcome": "wheel_left_road",
+          "simulation_seconds": 130.05,
+          "gates_crossed": 154,
+          "gates_required": 209,
+          "first_violation": "wheel_left_road",
+          "first_violation_ms": 130050.0,
+          "trace_sha256": "fe4d683b45e76cff5b4dc67c0b9b669bcce66d9e3395f268066fece48c31d8a1",
+          "independent_checks": {
+            "start_crossing": true,
+            "ordered_gate_checks": false,
+            "body_line_coverage": true,
+            "wheel_road_coverage_with_V_exception": false,
+            "direction_and_layer": false,
+            "shortcut_boundary": true,
+            "seesaw_crossing": true,
+            "lift_stop_and_settled_exit": false,
+            "finish_crossing": false,
+            "no_fault_or_intervention": true
+          }
+        },
+        {
+          "seed": 2026110704,
+          "outcome": "wheel_left_road",
+          "simulation_seconds": 129.77,
+          "gates_crossed": 154,
+          "gates_required": 209,
+          "first_violation": "wheel_left_road",
+          "first_violation_ms": 129770.0,
+          "trace_sha256": "b01beea99bc07d37c14b9059237f912bd2f947698d241ed16e0a763d6dd7fb9e",
+          "independent_checks": {
+            "start_crossing": true,
+            "ordered_gate_checks": false,
+            "body_line_coverage": true,
+            "wheel_road_coverage_with_V_exception": false,
+            "direction_and_layer": false,
+            "shortcut_boundary": true,
+            "seesaw_crossing": true,
+            "lift_stop_and_settled_exit": false,
+            "finish_crossing": false,
+            "no_fault_or_intervention": true
+          }
+        },
+        {
+          "seed": 2026110705,
+          "outcome": "wheel_left_road",
+          "simulation_seconds": 137.89,
+          "gates_crossed": 154,
+          "gates_required": 209,
+          "first_violation": "wheel_left_road",
+          "first_violation_ms": 137890.0,
+          "trace_sha256": "4dde82db71902d5896e3fb31fe3946f9345f234bc66fb9365beb11aef07a6633",
+          "independent_checks": {
+            "start_crossing": true,
+            "ordered_gate_checks": false,
+            "body_line_coverage": true,
+            "wheel_road_coverage_with_V_exception": false,
+            "direction_and_layer": false,
+            "shortcut_boundary": true,
+            "seesaw_crossing": true,
+            "lift_stop_and_settled_exit": false,
+            "finish_crossing": false,
+            "no_fault_or_intervention": true
+          }
+        }
+      ]
+    },
+    "heldout-final": {
+      "directory": "C:\\Users\\Yuhina\\Documents\\Codex\\2026-10-24\\tirt\\team-repo\\build-output\\control-recovery\\heldout-final",
+      "manifest_sha256": "9bf8d4f07dacf948b046e55523e6a1f189cf133ab2c949b4b9b5fe04c7dec289",
+      "source_sha256": "334e2a37a9bb84474ea1cdb6f8dccfbb8bc398cfcc6dd520106466bd5abd6895",
+      "course_sha256": "6bad3c73beaebb58d6b12c9a3d2973072f0f23d3a5bf7da2419b39381a551566",
+      "candidate_profile_sha256": "37a82c52037662c5763a68fc42b0b38627e425fade988813de47f63659ed1acd",
+      "diagnostic_limit_s": null,
+      "model_files": {
+        "tools/course_world.py": "a4cd0e102d7ba7c6d948385ba2cb805a287ce0035b27c8462698b721f1fd58a4",
+        "tools/course_referee.py": "d6b8a4ebe669ec3610e3bb2a3311b8da9a6080503800b326f09ba5655149f368",
+        "tools/run_course.py": "c5aaab83991c9a4236e9e549051ced89e0e8063b3d946fd349a92ed9dc7f3667",
+        "tools/simulation_model.py": "f58cac31443705ae475524f0ea5ac697988d0c0b357b39773c3d33d58ad5fb61",
+        "tools/course_qualification.py": "b594bce9a911b2e2110fe0262987529b6f4c47b8199c4d05c8f82f4c9b405cc7",
+        "tools/sim_native.py": "66c70aee8d261fc81146573fc097c9c9a8c9a6705acb1e6740d68331b0531a3f",
+        "tools/learn_course_mission.py": "1f20d22b262daf6b92dd8a5420f1592012cacfcb354f65c9e33269d528d47d90"
+      },
+      "plant_overrides": {
+        "max_accel_mps2": 6.0
+      },
+      "contract": {
+        "passed": false,
+        "required_runs": 5,
+        "attempts": [
+          {
+            "passed": false,
+            "reasons": [
+              "ordered_gate_checks",
+              "direction_and_layer",
+              "finish_crossing",
+              "no_fault_or_intervention"
+            ]
+          },
+          {
+            "passed": false,
+            "reasons": [
+              "ordered_gate_checks",
+              "direction_and_layer",
+              "finish_crossing",
+              "no_fault_or_intervention"
+            ]
+          },
+          {
+            "passed": false,
+            "reasons": [
+              "ordered_gate_checks",
+              "direction_and_layer",
+              "finish_crossing",
+              "no_fault_or_intervention"
+            ]
+          },
+          {
+            "passed": false,
+            "reasons": [
+              "ordered_gate_checks",
+              "wheel_road_coverage_with_V_exception",
+              "direction_and_layer",
+              "finish_crossing"
+            ]
+          },
+          {
+            "passed": false,
+            "reasons": [
+              "ordered_gate_checks",
+              "direction_and_layer",
+              "seesaw_crossing",
+              "lift_stop_and_settled_exit",
+              "finish_crossing"
+            ]
+          }
+        ],
+        "longest_streak": 0,
+        "five_distinct_predeclared_seeds": true
+      },
+      "attempts": [
+        {
+          "seed": 2026110711,
+          "outcome": "controller_fault",
+          "simulation_seconds": 189.63,
+          "gates_crossed": 192,
+          "gates_required": 209,
+          "first_violation": "reverse_or_wrong_branch_travel",
+          "first_violation_ms": 186660.0,
+          "trace_sha256": "2e3f0de1c3b12d44d4eb19d5058b6d7d2ace6d47f7083842a5bcea1afdc5f1a6",
+          "independent_checks": {
+            "start_crossing": true,
+            "ordered_gate_checks": false,
+            "body_line_coverage": true,
+            "wheel_road_coverage_with_V_exception": true,
+            "direction_and_layer": false,
+            "shortcut_boundary": true,
+            "seesaw_crossing": true,
+            "lift_stop_and_settled_exit": true,
+            "finish_crossing": false,
+            "no_fault_or_intervention": false
+          }
+        },
+        {
+          "seed": 2026110712,
+          "outcome": "controller_fault",
+          "simulation_seconds": 211.7,
+          "gates_crossed": 192,
+          "gates_required": 209,
+          "first_violation": "reverse_or_wrong_branch_travel",
+          "first_violation_ms": 208560.0,
+          "trace_sha256": "6b23110897a0bf65109f29847dc850cb04cb38d3b3f1036a1146a4d88c3af000",
+          "independent_checks": {
+            "start_crossing": true,
+            "ordered_gate_checks": false,
+            "body_line_coverage": true,
+            "wheel_road_coverage_with_V_exception": true,
+            "direction_and_layer": false,
+            "shortcut_boundary": true,
+            "seesaw_crossing": true,
+            "lift_stop_and_settled_exit": true,
+            "finish_crossing": false,
+            "no_fault_or_intervention": false
+          }
+        },
+        {
+          "seed": 2026110713,
+          "outcome": "controller_fault",
+          "simulation_seconds": 196.125,
+          "gates_crossed": 192,
+          "gates_required": 209,
+          "first_violation": "reverse_or_wrong_branch_travel",
+          "first_violation_ms": 193105.0,
+          "trace_sha256": "e650935ba4b6c2020ce6f1daf2fef77296a11867d2b10f633e4944b2d92eaac6",
+          "independent_checks": {
+            "start_crossing": true,
+            "ordered_gate_checks": false,
+            "body_line_coverage": true,
+            "wheel_road_coverage_with_V_exception": true,
+            "direction_and_layer": false,
+            "shortcut_boundary": true,
+            "seesaw_crossing": true,
+            "lift_stop_and_settled_exit": true,
+            "finish_crossing": false,
+            "no_fault_or_intervention": false
+          }
+        },
+        {
+          "seed": 2026110714,
+          "outcome": "wheel_left_road",
+          "simulation_seconds": 188.575,
+          "gates_crossed": 194,
+          "gates_required": 209,
+          "first_violation": "reverse_or_wrong_branch_travel",
+          "first_violation_ms": 188450.0,
+          "trace_sha256": "6bf6e11ea0c7094ed286378fb5cbc35892b1b75dab49361e82622bd0843bc917",
+          "independent_checks": {
+            "start_crossing": true,
+            "ordered_gate_checks": false,
+            "body_line_coverage": true,
+            "wheel_road_coverage_with_V_exception": false,
+            "direction_and_layer": false,
+            "shortcut_boundary": true,
+            "seesaw_crossing": true,
+            "lift_stop_and_settled_exit": true,
+            "finish_crossing": false,
+            "no_fault_or_intervention": true
+          }
+        },
+        {
+          "seed": 2026110715,
+          "outcome": "timeout",
+          "simulation_seconds": 360.0,
+          "gates_crossed": 115,
+          "gates_required": 209,
+          "first_violation": "reverse_or_wrong_branch_travel",
+          "first_violation_ms": 100090.0,
+          "trace_sha256": "20154a6f4ca4cde2b5b5035a806a6c2f65128e649e6d0a0136e110de873d429c",
+          "independent_checks": {
+            "start_crossing": true,
+            "ordered_gate_checks": false,
+            "body_line_coverage": true,
+            "wheel_road_coverage_with_V_exception": true,
+            "direction_and_layer": false,
+            "shortcut_boundary": true,
+            "seesaw_crossing": false,
+            "lift_stop_and_settled_exit": false,
+            "finish_crossing": false,
+            "no_fault_or_intervention": true
+          }
+        }
+      ]
+    },
+    "load-070": {
+      "directory": "C:\\Users\\Yuhina\\Documents\\Codex\\2026-10-24\\tirt\\team-repo\\build-output\\control-recovery\\load-070",
+      "manifest_sha256": "7994437ce06fde142eb9a80aff0473f4baf878d6e79ef1c6e056bd5732f2511e",
+      "source_sha256": "44e32ca542a65af14392eaa8992cbcf2c4dcb009df9fd714fbd1c0d5446939e8",
+      "course_sha256": "6bad3c73beaebb58d6b12c9a3d2973072f0f23d3a5bf7da2419b39381a551566",
+      "candidate_profile_sha256": "5dadabc8c0e33708a76d3762a499a1b6baca23e034ce1a9c75bfd54fe416024e",
+      "diagnostic_limit_s": null,
+      "model_files": {
+        "tools/course_world.py": "a4cd0e102d7ba7c6d948385ba2cb805a287ce0035b27c8462698b721f1fd58a4",
+        "tools/course_referee.py": "d6b8a4ebe669ec3610e3bb2a3311b8da9a6080503800b326f09ba5655149f368",
+        "tools/run_course.py": "c5aaab83991c9a4236e9e549051ced89e0e8063b3d946fd349a92ed9dc7f3667",
+        "tools/simulation_model.py": "f58cac31443705ae475524f0ea5ac697988d0c0b357b39773c3d33d58ad5fb61",
+        "tools/course_qualification.py": "b594bce9a911b2e2110fe0262987529b6f4c47b8199c4d05c8f82f4c9b405cc7",
+        "tools/sim_native.py": "66c70aee8d261fc81146573fc097c9c9a8c9a6705acb1e6740d68331b0531a3f",
+        "tools/learn_course_mission.py": "e7b10c5678cd6c46fdd36345495a05c6604679da426bf60228941fce97d66e65"
+      },
+      "plant_overrides": {
+        "max_accel_mps2": 6,
+        "drive_normal_fraction": 0.7
+      },
+      "contract": {
+        "passed": false,
+        "required_runs": 5,
+        "attempts": [
+          {
+            "passed": false,
+            "reasons": [
+              "ordered_gate_checks",
+              "direction_and_layer",
+              "seesaw_crossing",
+              "lift_stop_and_settled_exit",
+              "finish_crossing"
+            ]
+          },
+          {
+            "passed": false,
+            "reasons": [
+              "ordered_gate_checks",
+              "wheel_road_coverage_with_V_exception",
+              "direction_and_layer",
+              "seesaw_crossing",
+              "lift_stop_and_settled_exit",
+              "finish_crossing"
+            ]
+          },
+          {
+            "passed": false,
+            "reasons": [
+              "ordered_gate_checks",
+              "direction_and_layer",
+              "seesaw_crossing",
+              "lift_stop_and_settled_exit",
+              "finish_crossing"
+            ]
+          },
+          {
+            "passed": false,
+            "reasons": [
+              "ordered_gate_checks",
+              "wheel_road_coverage_with_V_exception",
+              "direction_and_layer",
+              "seesaw_crossing",
+              "lift_stop_and_settled_exit",
+              "finish_crossing"
+            ]
+          },
+          {
+            "passed": false,
+            "reasons": [
+              "ordered_gate_checks",
+              "direction_and_layer",
+              "seesaw_crossing",
+              "lift_stop_and_settled_exit",
+              "finish_crossing"
+            ]
+          }
+        ],
+        "longest_streak": 0,
+        "five_distinct_predeclared_seeds": true
+      },
+      "attempts": [
+        {
+          "seed": 2026110701,
+          "outcome": "timeout",
+          "simulation_seconds": 360.0,
+          "gates_crossed": 115,
+          "gates_required": 209,
+          "first_violation": "reverse_or_wrong_branch_travel",
+          "first_violation_ms": 92545.0,
+          "trace_sha256": "7735e7305ecad6f8b17757712c55e70c861c285cd6bc86e225f1933cf85a4f3c",
+          "independent_checks": {
+            "start_crossing": true,
+            "ordered_gate_checks": false,
+            "body_line_coverage": true,
+            "wheel_road_coverage_with_V_exception": true,
+            "direction_and_layer": false,
+            "shortcut_boundary": true,
+            "seesaw_crossing": false,
+            "lift_stop_and_settled_exit": false,
+            "finish_crossing": false,
+            "no_fault_or_intervention": true
+          }
+        },
+        {
+          "seed": 2026110702,
+          "outcome": "wheel_left_road",
+          "simulation_seconds": 74.715,
+          "gates_crossed": 93,
+          "gates_required": 209,
+          "first_violation": "wheel_left_road",
+          "first_violation_ms": 74715.0,
+          "trace_sha256": "1883d09c783b21f403072f6c94b1356b6599aa031fc28c02985d0a487f299a0a",
+          "independent_checks": {
+            "start_crossing": true,
+            "ordered_gate_checks": false,
+            "body_line_coverage": true,
+            "wheel_road_coverage_with_V_exception": false,
+            "direction_and_layer": false,
+            "shortcut_boundary": true,
+            "seesaw_crossing": false,
+            "lift_stop_and_settled_exit": false,
+            "finish_crossing": false,
+            "no_fault_or_intervention": true
+          }
+        },
+        {
+          "seed": 2026110703,
+          "outcome": "timeout",
+          "simulation_seconds": 360.0,
+          "gates_crossed": 115,
+          "gates_required": 209,
+          "first_violation": "reverse_or_wrong_branch_travel",
+          "first_violation_ms": 95445.0,
+          "trace_sha256": "167d7a2b89975ac8a922685dc33555b0d9ad2ec276027ec895da20d0c7b3427e",
+          "independent_checks": {
+            "start_crossing": true,
+            "ordered_gate_checks": false,
+            "body_line_coverage": true,
+            "wheel_road_coverage_with_V_exception": true,
+            "direction_and_layer": false,
+            "shortcut_boundary": true,
+            "seesaw_crossing": false,
+            "lift_stop_and_settled_exit": false,
+            "finish_crossing": false,
+            "no_fault_or_intervention": true
+          }
+        },
+        {
+          "seed": 2026110704,
+          "outcome": "wheel_left_road",
+          "simulation_seconds": 76.83,
+          "gates_crossed": 93,
+          "gates_required": 209,
+          "first_violation": "wheel_left_road",
+          "first_violation_ms": 76830.0,
+          "trace_sha256": "a3eeec95c1591bc1722b57e201670f0cad214c3e6896109982daea56d207762d",
+          "independent_checks": {
+            "start_crossing": true,
+            "ordered_gate_checks": false,
+            "body_line_coverage": true,
+            "wheel_road_coverage_with_V_exception": false,
+            "direction_and_layer": false,
+            "shortcut_boundary": true,
+            "seesaw_crossing": false,
+            "lift_stop_and_settled_exit": false,
+            "finish_crossing": false,
+            "no_fault_or_intervention": true
+          }
+        },
+        {
+          "seed": 2026110705,
+          "outcome": "timeout",
+          "simulation_seconds": 360.0,
+          "gates_crossed": 115,
+          "gates_required": 209,
+          "first_violation": "reverse_or_wrong_branch_travel",
+          "first_violation_ms": 100030.0,
+          "trace_sha256": "4f4d7c796908903b51b7c1cfae391667e9bc03b824767c326ee4ef09b68dd70f",
+          "independent_checks": {
+            "start_crossing": true,
+            "ordered_gate_checks": false,
+            "body_line_coverage": true,
+            "wheel_road_coverage_with_V_exception": true,
+            "direction_and_layer": false,
+            "shortcut_boundary": true,
+            "seesaw_crossing": false,
+            "lift_stop_and_settled_exit": false,
+            "finish_crossing": false,
+            "no_fault_or_intervention": true
+          }
+        }
+      ]
+    },
+    "mission-v2-probe": {
+      "directory": "C:\\Users\\Yuhina\\Documents\\Codex\\2026-10-24\\tirt\\team-repo\\build-output\\control-recovery\\mission-v2-probe",
+      "manifest_sha256": "ed47b3274caaa8919d9ba72d16b54bc07f0f0b6ef5f6fa75acf0fce69a10b26f",
+      "source_sha256": "44e32ca542a65af14392eaa8992cbcf2c4dcb009df9fd714fbd1c0d5446939e8",
+      "course_sha256": "6bad3c73beaebb58d6b12c9a3d2973072f0f23d3a5bf7da2419b39381a551566",
+      "candidate_profile_sha256": "5dadabc8c0e33708a76d3762a499a1b6baca23e034ce1a9c75bfd54fe416024e",
+      "diagnostic_limit_s": 300.0,
+      "model_files": {
+        "tools/course_world.py": "a4cd0e102d7ba7c6d948385ba2cb805a287ce0035b27c8462698b721f1fd58a4",
+        "tools/course_referee.py": "d6b8a4ebe669ec3610e3bb2a3311b8da9a6080503800b326f09ba5655149f368",
+        "tools/run_course.py": "c5aaab83991c9a4236e9e549051ced89e0e8063b3d946fd349a92ed9dc7f3667",
+        "tools/simulation_model.py": "f58cac31443705ae475524f0ea5ac697988d0c0b357b39773c3d33d58ad5fb61",
+        "tools/course_qualification.py": "b594bce9a911b2e2110fe0262987529b6f4c47b8199c4d05c8f82f4c9b405cc7",
+        "tools/sim_native.py": "66c70aee8d261fc81146573fc097c9c9a8c9a6705acb1e6740d68331b0531a3f",
+        "tools/learn_course_mission.py": "e7b10c5678cd6c46fdd36345495a05c6604679da426bf60228941fce97d66e65"
+      },
+      "plant_overrides": {
+        "max_accel_mps2": 6.0
+      },
+      "contract": {
+        "passed": false,
+        "required_runs": 5,
+        "attempts": [
+          {
+            "passed": false,
+            "reasons": [
+              "ordered_gate_checks",
+              "direction_and_layer",
+              "finish_crossing"
+            ]
+          }
+        ],
+        "longest_streak": 0,
+        "five_distinct_predeclared_seeds": false,
+        "diagnostic_only": true
+      },
+      "attempts": [
+        {
+          "seed": 2026110702,
+          "outcome": "unsupported_surface_or_ceiling",
+          "simulation_seconds": 189.035,
+          "gates_crossed": 195,
+          "gates_required": 209,
+          "first_violation": "reverse_or_wrong_branch_travel",
+          "first_violation_ms": 188925.0,
+          "trace_sha256": "1acf1fd7c06544576d77773b8f95dc0ffa35677da4564da400a146f26625294a",
+          "independent_checks": {
+            "start_crossing": true,
+            "ordered_gate_checks": false,
+            "body_line_coverage": true,
+            "wheel_road_coverage_with_V_exception": true,
+            "direction_and_layer": false,
+            "shortcut_boundary": true,
+            "seesaw_crossing": true,
+            "lift_stop_and_settled_exit": true,
+            "finish_crossing": false,
+            "no_fault_or_intervention": true
+          }
+        }
+      ]
+    }
+  },
+  "official_preflight": {
+    "status": "blocked",
+    "qualification_target": "official_complete_course",
+    "course_sha256": "dfcc34baccc065888f008123d3404b95a83f99ffcda0443f8a0a17ae43e895e0",
+    "blocking_issues": [
+      "missing_verified_metric_geometry",
+      "missing_verified_directed_route_and_branch_exits",
+      "missing_verified_layer_connections_and_heights",
+      "missing_verified_checkpoint_order_and_placement",
+      "missing_verified_shortcut_boundaries",
+      "missing_verified_F_marker_definition",
+      "missing_verified_start_finish_detection_geometry",
+      "missing_verified_seesaw_geometry_and_dynamics",
+      "missing_verified_lift_geometry_and_settled_feedback",
+      "missing_verified_vehicle_geometry_and_motor_calibration",
+      "official_metric_layer_model_and_vehicle_calibration_not_verified"
+    ],
+    "required_consecutive_completions": 5,
+    "executed_official_runs": 0,
+    "consecutive_completions": 0,
+    "passed": false,
+    "attempts": [],
+    "available_experimental_tools": [
+      "run_course.py",
+      "audit_course_run.py"
+    ],
+    "note": "No trials were run; this is a preflight report, not five failed or successful laps."
+  },
+  "portable_profile_sha256": "53143e345a3c17f9201d73dd1b1f68f3179b187f710e35be9fed842d0dba3335",
+  "portable_profile_compiled_source_equals_frozen_heldout": true,
+  "profile_training_prefixes_revalidated": 5,
+  "traction_sensitivity": {
+    "status": "uncalibrated_constrained_longitudinal_model",
+    "duration_s": 2,
+    "step_s": 0.001,
+    "reference_plant": {
+      "track_m": 0.115,
+      "sensor_ahead_m": 0.06,
+      "sensor_spacing_m": 0.014,
+      "sensor_radius_m": 0.002,
+      "line_width_m": 0.02,
+      "road_width_m": 0.2,
+      "max_wheel_mps": 0.65,
+      "dead_pwm": 40,
+      "motor_tau_s": 0.08,
+      "coast_tau_s": 0.24,
+      "max_accel_mps2": 6,
+      "left_gain": 1.0,
+      "right_gain": 1,
+      "battery_factor": 1.0,
+      "friction_mu": 0.55,
+      "drive_normal_fraction": 1.0,
+      "sample_ms": 5,
+      "latency_ms": 5,
+      "adc_noise": 4,
+      "line_adc": 35,
+      "background_adc": 500,
+      "grade_deg": 0
+    },
+    "rows": [
+      {
+        "drive_normal_fraction": 0.7,
+        "grade_deg": 0,
+        "pwm": 100,
+        "final_velocity_mps": 0.18139534883505723,
+        "x_m": 0.348460465116449,
+        "friction_climb_possible": true
+      },
+      {
+        "drive_normal_fraction": 0.7,
+        "grade_deg": 0,
+        "pwm": 150,
+        "final_velocity_mps": 0.3325581395309172,
+        "x_m": 0.638706461391011,
+        "friction_climb_possible": true
+      },
+      {
+        "drive_normal_fraction": 0.7,
+        "grade_deg": 0,
+        "pwm": 230,
+        "final_velocity_mps": 0.5744186046422863,
+        "x_m": 1.0935079471960525,
+        "friction_climb_possible": true
+      },
+      {
+        "drive_normal_fraction": 0.7,
+        "grade_deg": 17.5712587783,
+        "pwm": 100,
+        "final_velocity_mps": -0.05552926100600591,
+        "x_m": -0.1016946457688602,
+        "friction_climb_possible": true
+      },
+      {
+        "drive_normal_fraction": 0.7,
+        "grade_deg": 17.5712587783,
+        "pwm": 150,
+        "final_velocity_mps": 0.09563352968955323,
+        "x_m": 0.17364159394484535,
+        "friction_climb_possible": true
+      },
+      {
+        "drive_normal_fraction": 0.7,
+        "grade_deg": 17.5712587783,
+        "pwm": 230,
+        "final_velocity_mps": 0.3374939946371621,
+        "x_m": 0.5567728934067823,
+        "friction_climb_possible": true
+      },
+      {
+        "drive_normal_fraction": 0.7,
+        "grade_deg": 25,
+        "pwm": 100,
+        "final_velocity_mps": -1.4833577377299947,
+        "x_m": -1.378302158612711,
+        "friction_climb_possible": false
+      },
+      {
+        "drive_normal_fraction": 0.7,
+        "grade_deg": 25,
+        "pwm": 150,
+        "final_velocity_mps": -1.4457931644137467,
+        "x_m": -1.3109887701542415,
+        "friction_climb_possible": false
+      },
+      {
+        "drive_normal_fraction": 0.7,
+        "grade_deg": 25,
+        "pwm": 230,
+        "final_velocity_mps": -1.4457931644137467,
+        "x_m": -1.3109887701542415,
+        "friction_climb_possible": false
+      },
+      {
+        "drive_normal_fraction": 0.85,
+        "grade_deg": 0,
+        "pwm": 100,
+        "final_velocity_mps": 0.18139534883505723,
+        "x_m": 0.348460465116449,
+        "friction_climb_possible": true
+      },
+      {
+        "drive_normal_fraction": 0.85,
+        "grade_deg": 0,
+        "pwm": 150,
+        "final_velocity_mps": 0.3325581395309384,
+        "x_m": 0.6388441860468234,
+        "friction_climb_possible": true
+      },
+      {
+        "drive_normal_fraction": 0.85,
+        "grade_deg": 0,
+        "pwm": 230,
+        "final_velocity_mps": 0.5744186046434727,
+        "x_m": 1.0986586988465368,
+        "friction_climb_possible": true
+      },
+      {
+        "drive_normal_fraction": 0.85,
+        "grade_deg": 17.5712587783,
+        "pwm": 100,
+        "final_velocity_mps": -0.05552926100600591,
+        "x_m": -0.1016946457688602,
+        "friction_climb_possible": true
+      },
+      {
+        "drive_normal_fraction": 0.85,
+        "grade_deg": 17.5712587783,
+        "pwm": 150,
+        "final_velocity_mps": 0.09563352968987524,
+        "x_m": 0.17514041694856622,
+        "friction_climb_possible": true
+      },
+      {
+        "drive_normal_fraction": 0.85,
+        "grade_deg": 17.5712587783,
+        "pwm": 230,
+        "final_velocity_mps": 0.3374939947973648,
+        "x_m": 0.6009167465141692,
+        "friction_climb_possible": true
+      },
+      {
+        "drive_normal_fraction": 0.85,
+        "grade_deg": 25,
+        "pwm": 100,
+        "final_velocity_mps": -0.15027546297510896,
+        "x_m": -0.2616321746316938,
+        "friction_climb_possible": true
+      },
+      {
+        "drive_normal_fraction": 0.85,
+        "grade_deg": 25,
+        "pwm": 150,
+        "final_velocity_mps": 0.0008873277207722038,
+        "x_m": 0.001544768231143302,
+        "friction_climb_possible": true
+      },
+      {
+        "drive_normal_fraction": 0.85,
+        "grade_deg": 25,
+        "pwm": 230,
+        "final_velocity_mps": 0.02120193507309385,
+        "x_m": 0.019225086596418944,
+        "friction_climb_possible": true
+      },
+      {
+        "drive_normal_fraction": 1.0,
+        "grade_deg": 0,
+        "pwm": 100,
+        "final_velocity_mps": 0.18139534883505723,
+        "x_m": 0.348460465116449,
+        "friction_climb_possible": true
+      },
+      {
+        "drive_normal_fraction": 1.0,
+        "grade_deg": 0,
+        "pwm": 150,
+        "final_velocity_mps": 0.3325581395309384,
+        "x_m": 0.6388441860468234,
+        "friction_climb_possible": true
+      },
+      {
+        "drive_normal_fraction": 1.0,
+        "grade_deg": 0,
+        "pwm": 230,
+        "final_velocity_mps": 0.5744186046440193,
+        "x_m": 1.101496937709867,
+        "friction_climb_possible": true
+      },
+      {
+        "drive_normal_fraction": 1.0,
+        "grade_deg": 17.5712587783,
+        "pwm": 100,
+        "final_velocity_mps": -0.05552926100600591,
+        "x_m": -0.1016946457688602,
+        "friction_climb_possible": true
+      },
+      {
+        "drive_normal_fraction": 1.0,
+        "grade_deg": 17.5712587783,
+        "pwm": 150,
+        "final_velocity_mps": 0.09563352968987524,
+        "x_m": 0.17514041694856622,
+        "friction_climb_possible": true
+      },
+      {
+        "drive_normal_fraction": 1.0,
+        "grade_deg": 17.5712587783,
+        "pwm": 230,
+        "final_velocity_mps": 0.33749399480199166,
+        "x_m": 0.6122008389241568,
+        "friction_climb_possible": true
+      },
+      {
+        "drive_normal_fraction": 1.0,
+        "grade_deg": 25,
+        "pwm": 100,
+        "final_velocity_mps": -0.15027546297510896,
+        "x_m": -0.2616321746316938,
+        "friction_climb_possible": true
+      },
+      {
+        "drive_normal_fraction": 1.0,
+        "grade_deg": 25,
+        "pwm": 150,
+        "final_velocity_mps": 0.0008873277207722167,
+        "x_m": 0.0015448528761816077,
+        "friction_climb_possible": true
+      },
+      {
+        "drive_normal_fraction": 1.0,
+        "grade_deg": 25,
+        "pwm": 230,
+        "final_velocity_mps": 0.24274779282142803,
+        "x_m": 0.40210125772916955,
+        "friction_climb_possible": true
+      }
+    ],
+    "shared_circle": [
+      {
+        "drive_normal_fraction": 0.7,
+        "combined_accel_mps2": 3.7768499999999983,
+        "budget_mps2": 3.7768500000000005
+      },
+      {
+        "drive_normal_fraction": 0.85,
+        "combined_accel_mps2": 4.586174999999998,
+        "budget_mps2": 4.586175000000001
+      },
+      {
+        "drive_normal_fraction": 1.0,
+        "combined_accel_mps2": 5.3954999999999975,
+        "budget_mps2": 5.395500000000001
+      }
+    ],
+    "model_sha256": {
+      "course_world.py": "a4cd0e102d7ba7c6d948385ba2cb805a287ce0035b27c8462698b721f1fd58a4",
+      "simulation_model.py": "f58cac31443705ae475524f0ea5ac697988d0c0b357b39773c3d33d58ad5fb61"
+    },
+    "limitations": [
+      "No lateral gravity/slip, tire-specific forces or drivetrain holding model.",
+      "Load fraction also scales modeled turning grip; caster contribution is unresolved.",
+      "Fixed25-degree support is not a moving seesaw; this does not prove whole-course infeasibility."
+    ]
+  },
+  "ui_qa": {
+    "options": 5,
+    "playback": true,
+    "seeking": true,
+    "toggles": true,
+    "diagnostics": true,
+    "errors": []
+  },
+  "limitations": [
+    "Official metric/direction/layer/F/mechanism facts and vehicle calibration remain unverified.",
+    "No lateral gravity/slip, full rigid-body/tipping, individual tire forces, gearbox holding or calibrated caster model.",
+    "Aggregate shared traction and load-fraction comparisons are constrained hypotheses.",
+    "Contact station annotations may switch overlapping occurrences; judging uses ordered gates and labels use audited spatial poses.",
+    "No onboard finish-stop detector; referee alone terminates finish-crossing trials.",
+    "ADC35/500,5ms sampling/latency, motor lag and force are assumptions; AVR loop timing was not measured.",
+    "load-070 and mission-v2-probe use earlier candidate sources, not the final held-out source."
+  ],
+  "frozen_audits": {
+    "heldout_final": {
+      "hash_verified_traces": 5,
+      "native_trace_replays_verified": 5,
+      "physical_sensor_origins_verified": 5,
+      "stricter_current_auditor": false,
+      "auditor_sha256": {},
+      "model_batch": {
+        "passed": false,
+        "required_runs": 5,
+        "attempts": [
+          {
+            "passed": false,
+            "reasons": [
+              "ordered_gate_checks",
+              "direction_and_layer",
+              "finish_crossing",
+              "no_fault_or_intervention"
+            ]
+          },
+          {
+            "passed": false,
+            "reasons": [
+              "ordered_gate_checks",
+              "direction_and_layer",
+              "finish_crossing",
+              "no_fault_or_intervention"
+            ]
+          },
+          {
+            "passed": false,
+            "reasons": [
+              "ordered_gate_checks",
+              "direction_and_layer",
+              "finish_crossing",
+              "no_fault_or_intervention"
+            ]
+          },
+          {
+            "passed": false,
+            "reasons": [
+              "ordered_gate_checks",
+              "wheel_road_coverage_with_V_exception",
+              "direction_and_layer",
+              "finish_crossing"
+            ]
+          },
+          {
+            "passed": false,
+            "reasons": [
+              "ordered_gate_checks",
+              "direction_and_layer",
+              "seesaw_crossing",
+              "lift_stop_and_settled_exit",
+              "finish_crossing"
+            ]
+          }
+        ],
+        "longest_streak": 0,
+        "five_distinct_predeclared_seeds": true
+      },
+      "official_qualification_passed": false
+    },
+    "baseline_current_referee": {
+      "hash_verified_traces": 5,
+      "native_trace_replays_verified": 5,
+      "physical_sensor_origins_verified": 5,
+      "stricter_current_auditor": true,
+      "auditor_sha256": {
+        "course_world.py": "a4cd0e102d7ba7c6d948385ba2cb805a287ce0035b27c8462698b721f1fd58a4",
+        "course_referee.py": "d6b8a4ebe669ec3610e3bb2a3311b8da9a6080503800b326f09ba5655149f368",
+        "simulation_model.py": "f58cac31443705ae475524f0ea5ac697988d0c0b357b39773c3d33d58ad5fb61",
+        "course_qualification.py": "b594bce9a911b2e2110fe0262987529b6f4c47b8199c4d05c8f82f4c9b405cc7",
+        "sim_native.py": "66c70aee8d261fc81146573fc097c9c9a8c9a6705acb1e6740d68331b0531a3f",
+        "audit_course_run.py": "febe21c834caad192546474e117c9b856433b738c7517ee5218d69f1509e950b"
+      },
+      "model_batch": {
+        "passed": false,
+        "required_runs": 5,
+        "attempts": [
+          {
+            "passed": false,
+            "reasons": [
+              "ordered_gate_checks",
+              "direction_and_layer",
+              "seesaw_crossing",
+              "lift_stop_and_settled_exit",
+              "finish_crossing",
+              "no_fault_or_intervention"
+            ]
+          },
+          {
+            "passed": false,
+            "reasons": [
+              "ordered_gate_checks",
+              "direction_and_layer",
+              "seesaw_crossing",
+              "lift_stop_and_settled_exit",
+              "finish_crossing",
+              "no_fault_or_intervention"
+            ]
+          },
+          {
+            "passed": false,
+            "reasons": [
+              "ordered_gate_checks",
+              "direction_and_layer",
+              "seesaw_crossing",
+              "lift_stop_and_settled_exit",
+              "finish_crossing",
+              "no_fault_or_intervention"
+            ]
+          },
+          {
+            "passed": false,
+            "reasons": [
+              "ordered_gate_checks",
+              "direction_and_layer",
+              "seesaw_crossing",
+              "lift_stop_and_settled_exit",
+              "finish_crossing",
+              "no_fault_or_intervention"
+            ]
+          },
+          {
+            "passed": false,
+            "reasons": [
+              "ordered_gate_checks",
+              "direction_and_layer",
+              "seesaw_crossing",
+              "lift_stop_and_settled_exit",
+              "finish_crossing",
+              "no_fault_or_intervention"
+            ]
+          }
+        ],
+        "longest_streak": 0,
+        "five_distinct_predeclared_seeds": true
+      },
+      "official_qualification_passed": false
+    }
+  }
+}

@@ -131,23 +131,44 @@ class Course:
             else:dz=(self.height(s+.0001)-self.height(s-.0001))/.0002
             gx=dz*(seg.b[0]-seg.a[0])/seg.length
             gy=dz*(seg.b[1]-seg.a[1])/seg.length
+            kind='road' if s>=0 else 'branch'
             if mechanisms:
                 if abs(s-self.lift_s) <= self.lift_config['half_length_m']:
                     z = mechanisms.lift_height
                     gx = gy = 0.0
-                if abs(s-self.seesaw_s) <= self.seesaw_config['half_length_m']:
-                    z=mechanisms.pivot_height+(s-self.seesaw_s)*math.sin(mechanisms.theta)
-                    gx=math.sin(mechanisms.theta)*(seg.b[0]-seg.a[0])/seg.length
-                    gy=math.sin(mechanisms.theta)*(seg.b[1]-seg.a[1])/seg.length
-            yield dict(d=d,s=s,x=px,y=py,z=z,gx=gx,gy=gy,index=seg.index)
+                    kind='lift'
+                if abs(s-self.seesaw_s) <= self.seesaw_config['half_length_m']*math.cos(mechanisms.theta):
+                    # Station is horizontal distance; physical board length is
+                    # fixed and its horizontal footprint changes with rotation.
+                    z=mechanisms.pivot_height+(s-self.seesaw_s)*math.tan(mechanisms.theta)
+                    gx=math.tan(mechanisms.theta)*(seg.b[0]-seg.a[0])/seg.length
+                    gy=math.tan(mechanisms.theta)*(seg.b[1]-seg.a[1])/seg.length
+                    kind='seesaw'
+            yield dict(d=d,s=s,x=px,y=py,z=z,gx=gx,gy=gy,index=seg.index,kind=kind)
+
+    def local_surfaces(self,x,y,mechanisms=None):
+        """Merge consecutive strips locally before comparing separate decks.
+
+        Clamped endpoint caps are part of the same continuous road. They cannot
+        form a higher opaque plate over an adjacent segment's own guide.
+        Nonadjacent crossing occurrences and mechanism boundaries stay separate.
+        """
+        groups=[]
+        for p in sorted(self.projections(x,y,mechanisms),key=lambda p:p['index']):
+            if p['d']>self.assumptions['road_width_m']/2:continue
+            if (groups and p['kind'] in ('road','seesaw','lift') and p['kind']==groups[-1][-1]['kind']
+                    and p['index']==groups[-1][-1]['index']+1):
+                groups[-1].append(p)
+            else:groups.append([p])
+        return [min(group,key=lambda p:p['d']) for group in groups]
 
     def contact(self,x,y,z,mechanisms=None,max_step=.025):
-        candidates = [p for p in self.projections(x,y,mechanisms)
+        candidates = [p for p in self.local_surfaces(x,y,mechanisms)
                       if p['d'] <= self.assumptions['road_width_m']/2 and abs(p['z']-z)<=max_step]
         return min(candidates,key=lambda p:(p['d'],abs(p['z']-z))) if candidates else None
 
     def white(self,x,y,sensor_z,mechanisms):
-        surfaces = [p for p in self.projections(x,y,mechanisms)
+        surfaces = [p for p in self.local_surfaces(x,y,mechanisms)
                     if p['d'] <= self.assumptions['road_width_m']/2 and -.002 <= sensor_z-p['z'] <= self.assumptions['sensor_range_m']]
         if not surfaces:
             return False
@@ -176,7 +197,7 @@ class Mechanisms:
         self.lift_phase = 0  # 0 waiting for vehicle, 1 descending, 2 settled
         self.lift_elapsed = self.stop_elapsed = 0.0
         self.theta = math.radians(course.seesaw_config['limit_deg'])
-        self.pivot_height=course.height(course.seesaw_s-course.seesaw_config['half_length_m'])+course.seesaw_config['half_length_m']*math.sin(self.theta)
+        self.pivot_height=course.height(course.seesaw_s-course.seesaw_config['half_length_m']*math.cos(self.theta))+course.seesaw_config['half_length_m']*math.sin(self.theta)
         self.angular_velocity = 0.0
 
     def step(self,dt,station,wheel_speeds,contact=True):
@@ -198,9 +219,11 @@ class Mechanisms:
         cfg=c.seesaw_config
         arm=station-c.seesaw_s
         torque=-cfg['damping_nms']*self.angular_velocity
-        if contact and abs(arm)<=cfg['half_length_m']:
-            torque-=cfg['car_mass_kg']*G*arm*math.cos(self.theta)
-        self.angular_velocity+=torque/cfg['inertia_kgm2']*dt
+        inertia=cfg['inertia_kgm2']
+        if contact and abs(arm)<=cfg['half_length_m']*math.cos(self.theta):
+            torque-=cfg['car_mass_kg']*G*arm
+            inertia+=cfg['car_mass_kg']*(arm/math.cos(self.theta))**2
+        self.angular_velocity+=torque/inertia*dt
         self.theta+=self.angular_velocity*dt
         limit=math.radians(cfg['limit_deg'])
         if abs(self.theta)>=limit:
@@ -229,18 +252,27 @@ def gravity_along(contact,yaw):
 def advance(pose,command,plant,contact,dt):
     grade=gravity_along(contact,pose.yaw)
     normal=G/math.sqrt(1+contact['gx']**2+contact['gy']**2)
-    values=[]
+    values=[];tractions=[]
     for v,pwm,gain in zip((pose.vl,pose.vr),command,(plant.left_gain,plant.right_gain)):
         duty=max(0,abs(pwm)-plant.dead_pwm)/(255-plant.dead_pwm)
         target=math.copysign(plant.max_wheel_mps*duty*gain*plant.battery_factor,pwm)
         tau=plant.motor_tau_s if duty else plant.coast_tau_s
-        limit=min(plant.max_accel_mps2*plant.battery_factor,plant.friction_mu*normal)
-        acceleration=clamp((target-v)/tau,-limit,limit)-G*math.sin(grade)
+        limit=min(plant.max_accel_mps2*plant.battery_factor,plant.friction_mu*normal*plant.drive_normal_fraction)
+        traction=clamp((target-v)/tau,-limit,limit)
+        tractions.append(traction)
+        acceleration=traction-G*math.sin(grade)
         values.append(v+acceleration*dt)
     pose.vl,pose.vr=values
     speed=sum(values)/2
     yaw_rate=(pose.vr-pose.vl)/plant.track_m
-    yaw_rate=clamp(yaw_rate,-plant.friction_mu*normal/max(abs(speed),.02),plant.friction_mu*normal/max(abs(speed),.02))
+    budget=plant.friction_mu*normal*plant.drive_normal_fraction
+    longitudinal=sum(tractions)/2
+    lateral=math.sqrt(max(0,budget**2-longitudinal**2))
+    # Longitudinal motor/braking force and centripetal force share traction.
+    # Near zero center speed a pivot needs no centripetal acceleration; rotational
+    # inertia and individual tire slips remain outside this constrained model.
+    yaw_limit=lateral/max(abs(speed),.02)
+    yaw_rate=clamp(yaw_rate,-yaw_limit,yaw_limit)
     yaw_mid=pose.yaw+yaw_rate*dt/2
     pose.x+=speed*math.cos(grade)*math.cos(yaw_mid)*dt
     pose.y+=speed*math.cos(grade)*math.sin(yaw_mid)*dt
@@ -344,9 +376,9 @@ def inspect_geometry(course,step=.025):
         from simulation_model import Plant
         if geometry(course,m,Pose(*point,yaw),Plant())['ceiling_collision']:
             conflicts.append(round(s,5))
-    entry=course.seesaw_s-course.seesaw_config['half_length_m']
-    exit=course.seesaw_s+course.seesaw_config['half_length_m']
     limit=math.radians(course.seesaw_config['limit_deg'])
+    entry=course.seesaw_s-course.seesaw_config['half_length_m']*math.cos(limit)
+    exit=course.seesaw_s+course.seesaw_config['half_length_m']*math.cos(limit)
     lift_exit=course.lift_s+course.lift_config['half_length_m']+.000001
     return dict(route_length_assumed_m=course.length,route_vertices=len(course.points),ordered_gates=len(course.gates),
                 sampled_ceiling_conflicts_m=conflicts,clearance_sample_step_m=step,

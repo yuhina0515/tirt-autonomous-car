@@ -21,6 +21,7 @@ class Plant:
     right_gain: float = 0.97
     battery_factor: float = 1.0
     friction_mu: float = 0.55
+    drive_normal_fraction: float = 1.0
     sample_ms: int = 5
     latency_ms: int = 5
     adc_noise: float = 4
@@ -39,6 +40,7 @@ class Plant:
         if not isinstance(self.sample_ms,int) or self.sample_ms<1:raise ValueError('sample_ms must be a positive integer')
         if not isinstance(self.latency_ms,int) or self.latency_ms<0:raise ValueError('latency_ms must be a nonnegative integer')
         if self.adc_noise<0:raise ValueError('adc_noise must be nonnegative')
+        if not 0<self.drive_normal_fraction<=1:raise ValueError('drive_normal_fraction must be in (0,1]')
 
 
 def nearest(x, y, points):
@@ -105,6 +107,6 @@ def wheel(v, pwm, gain, p, dt):
     target = math.copysign(p.max_wheel_mps*drive*gain*p.battery_factor, pwm)
     tau = p.motor_tau_s if drive else p.coast_tau_s
     accel = (target-v)/tau
-    limit = min(p.max_accel_mps2*p.battery_factor, p.friction_mu*9.81)
+    limit = min(p.max_accel_mps2*p.battery_factor, p.friction_mu*9.81*p.drive_normal_fraction)
     accel = max(-limit, min(limit, accel)) - 9.81*math.sin(math.radians(p.grade_deg))
     return v + accel*dt

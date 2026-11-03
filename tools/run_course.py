@@ -26,7 +26,7 @@ def file_hash(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
-def run(controller,spec,plant,seed,lift_duration,trace_path,dt_ms=5):
+def run(controller,spec,plant,seed,lift_duration,trace_path,dt_ms=5,diagnostic_limit_s=None):
     if dt_ms not in (1,2,5):
         raise ValueError('dt_ms must be 1, 2 or 5')
     if plant.sample_ms%dt_ms or plant.latency_ms%dt_ms:
@@ -37,9 +37,9 @@ def run(controller,spec,plant,seed,lift_duration,trace_path,dt_ms=5):
     pose=Pose(point[0]+rng.uniform(-.001,.001),point[1],point[2],yaw+rng.uniform(-.005,.005))
     controller.reset()
     queue=deque();command=(0,0);adc=[500]*5
-    rows=[];state=controller.state();outcome='timeout';next_gate=0;station=0.0
+    rows=[];state=controller.state();outcome='diagnostic_timeout' if diagnostic_limit_s else 'timeout';next_gate=0;station=0.0
     still_since=None
-    max_ms=round(spec['timing']['maximum_s']*1000)
+    max_ms=round(min(spec['timing']['maximum_s'],diagnostic_limit_s or spec['timing']['maximum_s'])*1000)
     for ms in range(0,max_ms+1,dt_ms):
         contact=c.contact(pose.x,pose.y,pose.z,m)
         if contact:
@@ -55,7 +55,7 @@ def run(controller,spec,plant,seed,lift_duration,trace_path,dt_ms=5):
                          vl=pose.vl,vr=pose.vr,left=command[0],right=command[1],station=station,
                          support=contact['index'] if contact else -1,lift_height=m.lift_height,
                          lift_phase=m.lift_phase,seesaw_theta=m.theta,ticked=ticked,
-                         a5=adc[0],a4=adc[1],a3=adc[2],a2=adc[3],a1=adc[4],intervention=0,**state))
+                         a5=adc[0],a4=adc[1],a3=adc[2],a2=adc[3],a1=adc[4],intervention=0,**state,**controller.diagnostics()))
         if contact is None or g['ceiling_collision']:
             outcome='unsupported_surface_or_ceiling';break
         if not g['wheel_road']:
@@ -124,7 +124,13 @@ def main():
     p.add_argument('--plant-json',type=Path,help='Explicit hypothetical or measured Plant overrides; frozen before all five trials')
     p.add_argument('--experiment',choices=['capture150','capture150_lift29'],help='Compile a separate test-only settings variant; never changes main firmware')
     p.add_argument('--replay-only',action='store_true')
+    p.add_argument('--diagnostic-limit-s',type=float,help='Bound setup/tuning probes; these batches are explicitly not qualification trials')
+    p.add_argument('--seed-plan',type=Path,help='Predeclared held-out seed JSON; frozen separately without changing course geometry')
+    p.add_argument('--probe-seed',type=int,help='One diagnostic seed; requires diagnostic limit and never qualifies as a five-run batch')
+    p.add_argument('--candidate-profile',type=Path,help='Hypothesis-specific ADC event prefix for the separate experimental core')
     args=p.parse_args();out=args.output.resolve();out.mkdir(parents=True,exist_ok=True)
+    if args.diagnostic_limit_s is not None and (not math.isfinite(args.diagnostic_limit_s) or args.diagnostic_limit_s<=0):raise ValueError('diagnostic limit must be positive and finite')
+    if args.probe_seed is not None and (not args.diagnostic_limit_s or args.seed_plan):raise ValueError('a probe requires a diagnostic limit and cannot use a held-out seed plan')
     spec=json.loads((out/'course.json' if args.replay_only else args.course).read_text(encoding='utf-8'))
     if file_hash(ROOT/spec['source_pdf'])!=spec['source_pdf_sha256']:
         raise ValueError('official PDF source hash mismatch')
@@ -153,17 +159,25 @@ def main():
             text=text.replace(old,new)
         (folder/'controller.h').write_text(text,encoding='utf-8')
         source=folder/'native_car.ino'
+    if args.candidate_profile:
+        if args.experiment:raise ValueError('candidate profile and legacy setting experiment are separate variants')
+        from learn_course_mission import stage_profile
+        source=stage_profile(source,out/'profiled'/'candidate_car',args.candidate_profile,file_hash(args.course))
     dll,digest=build(source,out/'host')
     seeds=spec['timing']['seeds']
-    if len(seeds)!=5 or len(set(seeds))!=5 or any(type(s) is not int for s in seeds):
+    if args.seed_plan:seeds=json.loads(args.seed_plan.read_text(encoding='utf-8'))['seeds']
+    if args.probe_seed is not None:seeds=[args.probe_seed]
+    if ((args.probe_seed is None and len(seeds)!=5) or len(set(seeds))!=len(seeds) or any(type(s) is not int for s in seeds)):
         raise ValueError('exactly five distinct predeclared integer seeds required')
     model_files=('tools/course_world.py','tools/course_referee.py','tools/run_course.py','tools/simulation_model.py',
-                 'tools/course_qualification.py','tools/sim_native.py')
+                 'tools/course_qualification.py','tools/sim_native.py','tools/learn_course_mission.py')
     overrides=json.loads(args.plant_json.read_text(encoding='utf-8')) if args.plant_json else {}
     replace(Plant(),**overrides)
     manifest=dict(course_sha256=file_hash(args.course),source_hash=digest,
                   model_files={n:file_hash(ROOT/n) for n in model_files},expected_seeds=seeds,
-                  official_geometry_verified=False,baseline=args.baseline,experiment=args.experiment,plant_overrides=overrides,trials=[])
+                  official_geometry_verified=False,baseline=args.baseline,experiment=args.experiment,plant_overrides=overrides,
+                  diagnostic_limit_s=args.diagnostic_limit_s,seed_plan_sha256=file_hash(args.seed_plan) if args.seed_plan else None,
+                  candidate_profile_sha256=file_hash(args.candidate_profile) if args.candidate_profile else None,trials=[])
     for seed in seeds:
         rng=random.Random(seed)
         plant=replace(Plant(),battery_factor=rng.uniform(.90,1.0),right_gain=rng.uniform(.94,1.0),
@@ -172,6 +186,8 @@ def main():
         manifest['trials'].append(dict(seed=seed,plant=asdict(plant),lift_duration_s=rng.uniform(*spec['mechanisms']['lift']['duration_range_s'])))
     # Persist seed order, physics and hashes before any vehicle trial executes.
     shutil.copy2(args.course,out/'course.json')
+    if args.seed_plan:shutil.copy2(args.seed_plan,out/'seed-plan.json')
+    if args.candidate_profile:shutil.copy2(args.candidate_profile,out/'candidate-profile.json')
     for name in model_files:
         frozen=out/'model'/name;frozen.parent.mkdir(parents=True,exist_ok=True)
         shutil.copy2(ROOT/name,frozen)
@@ -179,14 +195,15 @@ def main():
     manifest_hash=file_hash(out/'manifest.json');c=Controller(dll);results=[]
     for trial in manifest['trials']:
         label='seed-'+str(trial['seed'])+'.csv'
-        result,_=run(c,spec,Plant(**trial['plant']),trial['seed'],trial['lift_duration_s'],out/label)
+        result,_=run(c,spec,Plant(**trial['plant']),trial['seed'],trial['lift_duration_s'],out/label,diagnostic_limit_s=args.diagnostic_limit_s)
         result.update(source_hash=digest,course_hash=manifest['course_sha256'],manifest_sha256=manifest_hash)
         results.append(result)
         print(result['seed'],result['outcome'],result['simulation_seconds'],str(result['gates_crossed'])+'/'+str(result['gates_required']),flush=True)
     batch=judge_batch(results,digest,manifest['course_sha256'],seeds)
+    if args.diagnostic_limit_s:batch.update(passed=False,diagnostic_only=True)
     summary=dict(status='reconstruction_trials_completed',official_qualification_passed=False,
                  warning='Inferred full-diagram model, not a verified official metric/layer configuration or calibrated car.',
-                 baseline=args.baseline,experiment=args.experiment,manifest_sha256=manifest_hash,source_sha256=digest,
+                 baseline=args.baseline,experiment=args.experiment,diagnostic_limit_s=args.diagnostic_limit_s,manifest_sha256=manifest_hash,source_sha256=digest,
                  course_sha256=manifest['course_sha256'],five_run_model_contract=batch,attempts=results)
     (out/'results.json').write_text(json.dumps(summary,indent=2),encoding='utf-8')
     write_replay(out,spec,results)
