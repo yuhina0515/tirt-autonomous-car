@@ -33,11 +33,12 @@
     {
       "id": "PAPER",
       "url": "https://arxiv.org/abs/2111.04149",
-      "kind": "author_research_abstract",
-      "read_scope": "Abstract and bibliographic metadata only, not full paper",
-      "findings": ["Authors study PID optimization and heuristic system identification on a low-cost differential-drive platform"],
-      "transfer_limit": "No numerical result or implementation detail extracted from the unread paper",
-      "followup": "Read full paper before evaluating any specific algorithm or numerical claim"
+      "kind": "author_research_paper",
+      "read_scope": "Full arXiv v1 HTML, especially sections IV-C through IV-F and VII; figures and source code not reproduced",
+      "full_text_url": "https://arxiv.org/html/2111.04149v1",
+      "findings": ["Authors use a finite recent-error window for integral action", "A sharp turn can make the most recent positional error point opposite the intended exit", "Authors distinguish short loss from persistent loss and use outer-sensor history for recovery", "Authors report traction and sensor spacing as practical limits"],
+      "transfer_limit": "The paper concerns another platform and course. Its reading-count thresholds, PWM fractions, voltage choices and gains are not this vehicle's settings. No experiment reproduced; HTML equations require checking against PDF before reuse",
+      "followup": "Compare recovery direction history against actual sensor-order evidence; inspect source sample-time units before any port"
     },
     {
       "id": "STM32",

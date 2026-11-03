@@ -57,14 +57,15 @@ class CandidateChecks(unittest.TestCase):
 
 
 @unittest.skipUnless(sys.platform=='win32','Actual host bridge requires MSVC')
-class MissionChecks(unittest.TestCase):
+class _MissionHarness(unittest.TestCase):
+    SOURCE=ROOT/'firmware/candidate_car/candidate_car.ino'
     @classmethod
     def setUpClass(cls):
         cls.controllers=[]
-        source=ROOT/'firmware/candidate_car/candidate_car.ino'
+        source=cls.SOURCE
         course=sha(ROOT/'simulation/reconstructed_course.json')
         for name,words in [('lift',[['LIFT']]),('ambiguous',[['LIFT'],['W','LIFT']]),('mismatch',[['L','LIFT']])]:
-            out=ROOT/'build-output/control-recovery/unit-mission'/name
+            out=ROOT/'build-output/control-recovery/unit-mission'/cls.__name__/name
             out.mkdir(parents=True,exist_ok=True)
             profile=dict(course_sha256=course,feature_sha256=feature_identity(source),
                          sensor_model_sha256={n:sha(ROOT/n) for n in MODELS},words=words)
@@ -79,6 +80,9 @@ class MissionChecks(unittest.TestCase):
         for ms in range(0,101,5):c.step(ms,[500,500,35,500,500])
         for ms in range(105,151,5):c.step(ms,[35]*5)
         c.step(155,[500,500,35,500,500])
+
+
+class MissionChecks(_MissionHarness):
 
     def test_lift_resumes_after_full_wait_without_stale_uncertainty(self):
         c=self.controllers[0];self.enter(c)
@@ -119,6 +123,70 @@ class MissionChecks(unittest.TestCase):
         for ms in range(31570,31641,5):command=c.step(ms,[35,190,35,200,500])
         self.assertEqual(c.state()['cornerWideRecovery'],0)
         self.assertGreaterEqual(min(command),0)
+
+
+class PreviewRecoveryChecks(_MissionHarness):
+    # Rejected full-course experiment: functional tests do not imply adoption.
+    SOURCE=ROOT/'firmware/experiments/preview_recovery/preview_recovery.ino'
+
+    def ready_corner(self,c,side):
+        self.enter(c)
+        for ms in range(160,31261,5):c.step(ms,[500,500,35,500,500])
+        gray=[500,130,35,500,500] if side<0 else [500,500,35,130,500]
+        for ms in range(31265,31566,5):c.step(ms,gray)
+        hint=[35,35,35,500,500] if side<0 else [500,500,35,35,35]
+        for ms in range(31570,31641,5):c.step(ms,hint)
+        self.assertEqual(c.state()['cornerWideRecovery'],1)
+        self.assertEqual(c.state()['turnActive'],1)
+        return 31645
+
+    def test_post_lift_preview_slows_both_mirrored_approaches(self):
+        c=self.controllers[0]
+        for side in (-1,1):
+            with self.subTest(side=side):
+                c.reset();self.enter(c)
+                for ms in range(160,31261,5):c.step(ms,[500,500,35,500,500])
+                preview=[280,280,35,500,500] if side<0 else [500,500,35,280,280]
+                for ms in range(31265,31366,5):command=c.step(ms,preview)
+                self.assertEqual(c.state()['straightPwm'],100)
+                self.assertGreaterEqual(min(command),0)
+                self.assertEqual(c.state()['cornerWideRecovery'],0)
+
+    def test_narrow_reacquisition_leaves_pivot_before_confidence_renews(self):
+        c=self.controllers[0]
+        for side in (-1,1):
+            with self.subTest(side=side):
+                c.reset();ms=self.ready_corner(c,side)
+                before=c.diagnostics()['uncertaintyMs']
+                c.step(ms,[500,500,35,500,500])
+                self.assertEqual(c.state()['turnActive'],0)
+                self.assertEqual(c.state()['cornerWideRecovery'],1)
+                self.assertGreater(c.diagnostics()['uncertaintyMs'],before)
+                for at in range(ms+5,ms+21,5):c.step(at,[500,500,35,500,500])
+                self.assertEqual(c.state()['cornerWideRecovery'],0)
+                self.assertEqual(c.diagnostics()['uncertaintyMs'],0)
+
+    def test_opposite_inner_peak_ends_pivot_without_clearing_episode(self):
+        c=self.controllers[0]
+        for side in (-1,1):
+            with self.subTest(side=side):
+                c.reset();ms=self.ready_corner(c,side)
+                opposite=[500,500,500,35,500] if side<0 else [500,35,500,500,500]
+                for at in range(ms,ms+101,5):c.step(at,opposite)
+                self.assertEqual(c.state()['turnActive'],0)
+                self.assertEqual(c.state()['cornerWideRecovery'],1)
+                self.assertGreater(c.diagnostics()['uncertaintyMs'],100)
+                self.assertEqual(c.state()['turnFault'],0)
+
+    def test_opposite_corner_hint_cannot_restart_episode_or_deadline(self):
+        c=self.controllers[0];ms=self.ready_corner(c,-1)
+        for at in range(ms,ms+751,5):
+            command=c.step(at,[500,500,35,35,35])
+            if c.state()['turnFault']:break
+            self.assertEqual(c.state()['turnActive'],0)
+            self.assertEqual(c.state()['cornerWideRecovery'],1)
+        self.assertEqual(c.state()['turnFault'],1)
+        self.assertEqual(command,(0,0))
 
 
 if __name__=='__main__':unittest.main()
