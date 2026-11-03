@@ -12,6 +12,22 @@ from course_world import Course
 
 
 class ProfileChecks(unittest.TestCase):
+    def test_junction_literals_bind_source_and_reject_invalid_actions(self):
+        source=ROOT/'firmware/experiments/junction_context/junction_context.ino'
+        course=sha(ROOT/'simulation/reconstructed_course.json')
+        with tempfile.TemporaryDirectory() as d:
+            out=Path(d);path=out/'profile.json'
+            profile=dict(course_sha256=course,feature_sha256=feature_identity(source),
+                sensor_model_sha256={n:sha(ROOT/n) for n in MODELS},words=[['LIFT']],
+                junctions=[dict(word=['R','W'],turn='R')])
+            path.write_text(json.dumps(profile));staged=stage_profile(source,out/'staged',path,course)
+            self.assertEqual(feature_identity(staged),feature_identity(source))
+            self.assertIn('junctionWordCount = 1',staged.with_name('controller.h').read_text())
+            for bad in ({},[dict(word=['R'],turn='R')],[dict(word=['W'],turn='X')],
+                        [dict(word=['W'],turn='R',station=123)], [dict(word=['LIFT','W'],turn='R')]):
+                profile['junctions']=bad;path.write_text(json.dumps(profile))
+                with self.subTest(bad=bad),self.assertRaises(ValueError):stage_profile(source,out/'bad',path,course)
+
     def test_canonical_model_identity_is_portable_without_changing_raw_evidence(self):
         with tempfile.TemporaryDirectory() as d:
             a=Path(d)/'a.py';b=Path(d)/'b.py'

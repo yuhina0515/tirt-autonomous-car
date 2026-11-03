@@ -35,3 +35,7 @@ jobs:
         run: |
           g++ -m32 -std=c++11 -Wall -Wextra -pedantic '-DCANDIDATE_CORE_HEADER="../firmware/experiments/ordered_recovery/controller.h"' tests/candidate_car.cpp -o test-output/ordered-recovery
           test-output/ordered-recovery
+      - name: Execute junction-context common control contracts
+        run: |
+          g++ -m32 -std=c++11 -Wall -Wextra -pedantic '-DCANDIDATE_CORE_HEADER="../firmware/experiments/junction_context/controller.h"' tests/candidate_car.cpp -o test-output/junction-context
+          test-output/junction-context

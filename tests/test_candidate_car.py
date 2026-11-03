@@ -237,4 +237,89 @@ class OrderedRecoveryChecks(_MissionHarness):
         self.assertGreater(c.diagnostics()['uncertaintyMs'],190)
 
 
+class JunctionContextChecks(_MissionHarness):
+    SOURCE=ROOT/'firmware/experiments/junction_context/junction_context.ino'
+    @classmethod
+    def setUpClass(cls):
+        cls.controllers=[];source=cls.SOURCE;course=sha(ROOT/'simulation/reconstructed_course.json')
+        cases=[[],[dict(word=['W'],turn='R')],[dict(word=['W'],turn='L')],
+               [dict(word=['R','W'],turn='R')],
+               [dict(word=['W'],turn='R'),dict(word=['W'],turn='L')],
+               [dict(word=['W'],turn='R'),dict(word=['W','W'],turn='R')]]
+        for index,junctions in enumerate(cases):
+            out=ROOT/'build-output/junction-context/unit'/str(index);out.mkdir(parents=True,exist_ok=True)
+            profile=dict(course_sha256=course,feature_sha256=feature_identity(source),
+                sensor_model_sha256={n:sha(ROOT/n) for n in MODELS},words=[['LIFT']],junctions=junctions)
+            path=out/'profile.json';path.write_text(json.dumps(profile))
+            staged=stage_profile(source,out/'source',path,course);dll,_=build(staged,out/'host')
+            cls.controllers.append(Controller(dll))
+
+    def ready(self,c):
+        self.enter(c)
+        for ms in range(160,31261,5):c.step(ms,[500,500,35,500,500])
+        return 31265
+
+    def cross(self,c,ms,exit_adc=None):
+        for at in range(ms,ms+41,5):c.step(at,[35]*5)
+        return c.step(ms+45,exit_adc or [500,500,35,500,500])
+
+    def test_unprofiled_junction_does_not_invent_an_exit(self):
+        c=self.controllers[0];ms=self.ready(c);self.cross(c,ms)
+        self.assertEqual(c.state()['cornerWideRecovery'],0)
+        self.assertEqual(c.diagnostics()['missionPhase'],4)
+
+    def test_matching_profile_overrides_stale_direction_and_preserves_timer(self):
+        for index,side in ((1,1),(2,-1)):
+            c=self.controllers[index];ms=self.ready(c)
+            stale=[500,130,35,500,500] if side>0 else [500,500,35,130,500]
+            # Short feedback establishes a stale side without emitting a turn token.
+            for at in range(ms,ms+41,5):c.step(at,stale)
+            self.assertEqual(c.state()['turnDirection'],-side)
+            self.cross(c,ms+45)
+            self.assertEqual(c.state()['turnDirection'],side)
+            self.assertEqual(c.state()['cornerWideRecovery'],1)
+            self.assertEqual(c.diagnostics()['missionPhase'],6)
+            self.assertGreaterEqual(c.diagnostics()['uncertaintyMs'],45)
+
+    def test_missing_prefix_faults_instead_of_guessing(self):
+        c=self.controllers[3];ms=self.ready(c);command=self.cross(c,ms)
+        self.assertEqual(c.state()['turnFault'],1);self.assertEqual(command,(0,0))
+
+    def test_observed_turn_then_wide_matches_context(self):
+        c=self.controllers[3];ms=self.ready(c)
+        for at in range(ms,ms+401,5):c.step(at,[500,500,35,35,500])
+        self.assertEqual(c.diagnostics()['eventCode'],3)
+        self.cross(c,ms+405)
+        self.assertEqual(c.state()['turnFault'],0)
+        self.assertEqual(c.state()['turnDirection'],1)
+        self.assertEqual(c.diagnostics()['missionPhase'],6)
+
+    def test_conflicting_or_ordinary_hypotheses_cannot_select_an_exit(self):
+        for index in (4,5):
+            c=self.controllers[index];ms=self.ready(c);command=self.cross(c,ms)
+            self.assertEqual(c.state()['turnFault'],1);self.assertEqual(command,(0,0))
+            self.assertEqual(c.diagnostics()['missionAmbiguous'],1)
+
+    def test_context_turn_does_not_extend_uncertainty_deadline(self):
+        c=self.controllers[1];ms=self.ready(c);self.cross(c,ms)
+        for at in range(ms+50,ms+801,5):command=c.step(at,[500]*5)
+        self.assertEqual(c.state()['turnFault'],1);self.assertEqual(command,(0,0))
+
+    def test_consumed_context_cannot_turn_again_on_another_wide_event(self):
+        c=self.controllers[1];ms=self.ready(c);self.cross(c,ms)
+        for at in range(ms+50,ms+71,5):c.step(at,[500]*5)
+        for at in range(ms+75,ms+116,5):c.step(at,[500,500,500,500,35])
+        for at in range(ms+120,ms+146,5):c.step(at,[500,500,500,35,500])
+        for at in range(ms+150,ms+281,5):c.step(at,[500,500,35,500,500])
+        self.assertEqual(c.state()['cornerWideRecovery'],0)
+        self.cross(c,ms+285)
+        self.assertEqual(c.state()['cornerWideRecovery'],0)
+        self.assertEqual(c.state()['turnFault'],0)
+
+    def test_context_pivot_keeps_continuous_broad_deadline(self):
+        c=self.controllers[1];ms=self.ready(c);self.cross(c,ms,[500,35,35,35,500])
+        for at in range(ms+50,ms+301,5):command=c.step(at,[500,35,35,35,500])
+        self.assertEqual(c.state()['turnFault'],1);self.assertEqual(command,(0,0))
+
+
 if __name__=='__main__':unittest.main()

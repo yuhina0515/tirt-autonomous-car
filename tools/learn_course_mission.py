@@ -39,6 +39,11 @@ def feature_identity(source):
     if n!=1:raise ValueError('mission count anchor changed')
     text,n=re.subn(r'// MISSION_TABLE_BEGIN.*?// MISSION_TABLE_END','// MISSION_TABLE',text,flags=re.S)
     if n!=1:raise ValueError('mission table anchors changed')
+    if 'TIRT_JUNCTION_PREFIX' in text:
+        text,n=re.subn(r'junctionWordCount = \d+', 'junctionWordCount = PROFILE',text)
+        if n!=1:raise ValueError('junction count anchor changed')
+        text,n=re.subn(r'// JUNCTION_TABLE_BEGIN.*?// JUNCTION_TABLE_END','// JUNCTION_TABLE',text,flags=re.S)
+        if n!=1:raise ValueError('junction table anchors changed')
     return hashlib.sha256(source.read_bytes()+b'\0'+text.encode()).hexdigest()
 
 
@@ -96,6 +101,23 @@ def stage_profile(source,directory,profile_path,course_hash):
     begin=header.index('// MISSION_TABLE_BEGIN')+len('// MISSION_TABLE_BEGIN')
     end=header.index('// MISSION_TABLE_END',begin)
     header=header[:begin]+'\n        switch(hypothesis){'+''.join(cases)+'}return 0;\n        '+header[end:]
+    junctions=profile.get('junctions',[])
+    if not isinstance(junctions,list) or len(junctions)>4:raise ValueError('invalid junction hypotheses')
+    if 'TIRT_JUNCTION_PREFIX' in header and header.count('junctionWordCount = 0')!=1:
+        raise ValueError('source must have an unprofiled junction table')
+    if junctions:
+        if 'TIRT_JUNCTION_PREFIX' not in header:raise ValueError('source does not support junction context')
+        header=header.replace('junctionWordCount = 0','junctionWordCount = '+str(len(junctions)))
+        cases=[]
+        for i,j in enumerate(junctions):
+            if (not isinstance(j,dict) or set(j)!=set(('word','turn')) or j['turn'] not in ('L','R') or
+                not isinstance(j['word'],list) or not 1<=len(j['word'])<=30 or j['word'][-1]!='W' or
+                any(t not in ('L','R','W') for t in j['word'])):raise ValueError('invalid junction word/action')
+            values=','.join(str(mapping[t]) for t in [j['turn']]+j['word'])
+            cases.append('case %d:{static const uint8_t word[]={%s};return at<sizeof(word)?word[at]:0;}'%(i,values))
+        begin=header.index('// JUNCTION_TABLE_BEGIN')+len('// JUNCTION_TABLE_BEGIN')
+        end=header.index('// JUNCTION_TABLE_END',begin)
+        header=header[:begin]+'\n        switch(hypothesis){'+''.join(cases)+'}return 0;\n        '+header[end:]
     directory.mkdir(parents=True,exist_ok=True)
     (directory/'controller.h').write_text(header,encoding='utf-8')
     shutil.copy2(source,directory/source.name)

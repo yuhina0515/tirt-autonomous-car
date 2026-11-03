@@ -1,0 +1,442 @@
+{
+  "date": "2026-11-04",
+  "status": "two_known_model_diagnostics_passed_not_promoted",
+  "official_qualification_passed": false,
+  "official_verified_runs": 0,
+  "five_run_model_qualification_passed": false,
+  "known_diagnostic_attempts": 2,
+  "known_diagnostic_passes": 2,
+  "unseen_validation_runs": 0,
+  "reserved_unseen_seeds": [
+    2026110741,
+    2026110742,
+    2026110743,
+    2026110744,
+    2026110745
+  ],
+  "python_tests_passed": 100,
+  "native_cpp_contracts_passed": true,
+  "unprofiled_avr": {
+    "flash": 8574,
+    "global_ram": 203
+  },
+  "profiled_avr": {
+    "flash": 9772,
+    "global_ram": 251
+  },
+  "profile_sha256": "d5d211cc17d1ff20bb1701307a9199a6f004c6f3957af6c9c85ba9249d87f054",
+  "source_sha256": "054e609023286c2b9955623ca1fd931e3a0a68d73cd3f524d133b221ddc25973",
+  "lift_prefixes_revalidated": 5,
+  "junction_teacher_targets": 4,
+  "junction_teacher_rejected_targets": 1,
+  "all_teacher_prefixes_replayed": 5,
+  "junctions": [
+    {
+      "word": [
+        "R",
+        "L",
+        "W",
+        "L",
+        "R",
+        "L",
+        "R",
+        "L",
+        "W"
+      ],
+      "turn": "R"
+    }
+  ],
+  "uploaded": false,
+  "default_and_previous_candidates_changed": false,
+  "physical_model_and_judge_changed": false,
+  "diagnostics": {
+    "711": {
+      "directory": "build-output\\junction-context\\diagnostic-711",
+      "manifest_sha256": "146cc4fdee208e9a660650b49b3f94c4e2898f4d72baed3b5f7e72ddd0ee5226",
+      "results_sha256": "916562b3b7a5f17740d6458e56c48981f24598f17424d371cf194a31a7e03c18",
+      "source_sha256": "054e609023286c2b9955623ca1fd931e3a0a68d73cd3f524d133b221ddc25973",
+      "course_sha256": "6bad3c73beaebb58d6b12c9a3d2973072f0f23d3a5bf7da2419b39381a551566",
+      "candidate_profile_sha256": "d5d211cc17d1ff20bb1701307a9199a6f004c6f3957af6c9c85ba9249d87f054",
+      "diagnostic_limit_s": 240.0,
+      "plant_overrides": {
+        "max_accel_mps2": 6.0
+      },
+      "attempts": [
+        {
+          "seed": 2026110711,
+          "outcome": "finished",
+          "simulation_seconds": 219.32,
+          "elapsed_s": 218.88,
+          "gates_crossed": 209,
+          "gates_required": 209,
+          "trace_sha256": "16d452909240c9a910dcdacae15d77f561e2ebc377f40e4b08e4742036de4720",
+          "first_violation": null,
+          "first_violation_ms": null,
+          "independent_checks": {
+            "start_crossing": true,
+            "ordered_gate_checks": true,
+            "body_line_coverage": true,
+            "wheel_road_coverage_with_V_exception": true,
+            "direction_and_layer": true,
+            "shortcut_boundary": true,
+            "seesaw_crossing": true,
+            "lift_stop_and_settled_exit": true,
+            "finish_crossing": true,
+            "no_fault_or_intervention": true
+          },
+          "native_trace_replay_verified": true,
+          "physical_sensor_origin_verified": true
+        }
+      ],
+      "attempt_judgments": [
+        {
+          "passed": true,
+          "reasons": []
+        }
+      ]
+    },
+    "714": {
+      "directory": "build-output\\junction-context\\diagnostic-714",
+      "manifest_sha256": "ffe32f58ab2e605efadd5b6e11a7f8e0deceee524d8e3c53eb1723a8ea6be902",
+      "results_sha256": "773ab2edd94403bdbcf637c39ea3433e5e097637e517f86da86b93395a9a9e5f",
+      "source_sha256": "054e609023286c2b9955623ca1fd931e3a0a68d73cd3f524d133b221ddc25973",
+      "course_sha256": "6bad3c73beaebb58d6b12c9a3d2973072f0f23d3a5bf7da2419b39381a551566",
+      "candidate_profile_sha256": "d5d211cc17d1ff20bb1701307a9199a6f004c6f3957af6c9c85ba9249d87f054",
+      "diagnostic_limit_s": 240.0,
+      "plant_overrides": {
+        "max_accel_mps2": 6.0
+      },
+      "attempts": [
+        {
+          "seed": 2026110714,
+          "outcome": "finished",
+          "simulation_seconds": 221.195,
+          "elapsed_s": 220.755,
+          "gates_crossed": 209,
+          "gates_required": 209,
+          "trace_sha256": "175aeb0cd9d51baa839243152387a0c45648b5000a24d6c01d963044fde31598",
+          "first_violation": null,
+          "first_violation_ms": null,
+          "independent_checks": {
+            "start_crossing": true,
+            "ordered_gate_checks": true,
+            "body_line_coverage": true,
+            "wheel_road_coverage_with_V_exception": true,
+            "direction_and_layer": true,
+            "shortcut_boundary": true,
+            "seesaw_crossing": true,
+            "lift_stop_and_settled_exit": true,
+            "finish_crossing": true,
+            "no_fault_or_intervention": true
+          },
+          "native_trace_replay_verified": true,
+          "physical_sensor_origin_verified": true
+        }
+      ],
+      "attempt_judgments": [
+        {
+          "passed": true,
+          "reasons": []
+        }
+      ]
+    }
+  },
+  "teachers": [
+    {
+      "directory": "build-output\\junction-context\\teacher-701",
+      "manifest_sha256": "d14f7e0e8b9a43b9582c5f29c177ff37ac77a4fd2ae5c34190c2f1799c608c7c",
+      "results_sha256": "1abfd1dbfdc19726b4f52c983240e9c49cbca7086be612f1b8f6131589a9134b",
+      "source_sha256": "34a36dab7740584bfee0e63e652200d4d2578cef5da0aeb5583b51b97ab2b4fe",
+      "course_sha256": "6bad3c73beaebb58d6b12c9a3d2973072f0f23d3a5bf7da2419b39381a551566",
+      "candidate_profile_sha256": "f39791d5c08cdab780e011d85969ffb8c9390c3b3d541440dc49d535796d7afa",
+      "diagnostic_limit_s": 240.0,
+      "plant_overrides": {
+        "max_accel_mps2": 6.0
+      },
+      "attempts": [
+        {
+          "seed": 2026110701,
+          "outcome": "unsupported_surface_or_ceiling",
+          "simulation_seconds": 189.43,
+          "elapsed_s": 189.43,
+          "gates_crossed": 195,
+          "gates_required": 209,
+          "trace_sha256": "b42686095e2c5343ff02dcd9b8fb0ec996d7fc1f9dde6eb9871d87fafc2b0685",
+          "first_violation": "reverse_or_wrong_branch_travel",
+          "first_violation_ms": 189330.0,
+          "independent_checks": {
+            "start_crossing": true,
+            "ordered_gate_checks": false,
+            "body_line_coverage": true,
+            "wheel_road_coverage_with_V_exception": true,
+            "direction_and_layer": false,
+            "shortcut_boundary": true,
+            "seesaw_crossing": true,
+            "lift_stop_and_settled_exit": true,
+            "finish_crossing": false,
+            "no_fault_or_intervention": true
+          },
+          "native_trace_replay_verified": true,
+          "physical_sensor_origin_verified": true
+        }
+      ],
+      "attempt_judgments": [
+        {
+          "passed": false,
+          "reasons": [
+            "ordered_gate_checks",
+            "direction_and_layer",
+            "finish_crossing"
+          ]
+        }
+      ]
+    },
+    {
+      "directory": "build-output\\junction-context\\teacher-702",
+      "manifest_sha256": "7854f33b376209b79f5fb4167204c37a7d4437569647c5b3b20859ab34a04c3b",
+      "results_sha256": "487e558c64bdc3d05969bb75c21373bfb2456d93ece28c4d87cafa1e17436801",
+      "source_sha256": "34a36dab7740584bfee0e63e652200d4d2578cef5da0aeb5583b51b97ab2b4fe",
+      "course_sha256": "6bad3c73beaebb58d6b12c9a3d2973072f0f23d3a5bf7da2419b39381a551566",
+      "candidate_profile_sha256": "f39791d5c08cdab780e011d85969ffb8c9390c3b3d541440dc49d535796d7afa",
+      "diagnostic_limit_s": 240.0,
+      "plant_overrides": {
+        "max_accel_mps2": 6.0
+      },
+      "attempts": [
+        {
+          "seed": 2026110702,
+          "outcome": "wheel_left_road",
+          "simulation_seconds": 195.195,
+          "elapsed_s": 195.195,
+          "gates_crossed": 198,
+          "gates_required": 209,
+          "trace_sha256": "915bf34b19c43f2955d872810f9f4882f97feeffbd99857047636ba44b426f6c",
+          "first_violation": "wheel_left_road",
+          "first_violation_ms": 195195.0,
+          "independent_checks": {
+            "start_crossing": true,
+            "ordered_gate_checks": false,
+            "body_line_coverage": true,
+            "wheel_road_coverage_with_V_exception": false,
+            "direction_and_layer": false,
+            "shortcut_boundary": true,
+            "seesaw_crossing": true,
+            "lift_stop_and_settled_exit": true,
+            "finish_crossing": false,
+            "no_fault_or_intervention": true
+          },
+          "native_trace_replay_verified": true,
+          "physical_sensor_origin_verified": true
+        }
+      ],
+      "attempt_judgments": [
+        {
+          "passed": false,
+          "reasons": [
+            "ordered_gate_checks",
+            "wheel_road_coverage_with_V_exception",
+            "direction_and_layer",
+            "finish_crossing"
+          ]
+        }
+      ]
+    },
+    {
+      "directory": "build-output\\junction-context\\teacher-703",
+      "manifest_sha256": "cd45d4ebaad0b527c922a4946e5344da7b22e2655cfaf00081a57179be4cfdff",
+      "results_sha256": "525a6f69ae7c1579b4e554329c6d1e464ecfb704ef81b191302a49039b8d7c7f",
+      "source_sha256": "34a36dab7740584bfee0e63e652200d4d2578cef5da0aeb5583b51b97ab2b4fe",
+      "course_sha256": "6bad3c73beaebb58d6b12c9a3d2973072f0f23d3a5bf7da2419b39381a551566",
+      "candidate_profile_sha256": "f39791d5c08cdab780e011d85969ffb8c9390c3b3d541440dc49d535796d7afa",
+      "diagnostic_limit_s": 240.0,
+      "plant_overrides": {
+        "max_accel_mps2": 6.0
+      },
+      "attempts": [
+        {
+          "seed": 2026110703,
+          "outcome": "wheel_left_road",
+          "simulation_seconds": 201.26,
+          "elapsed_s": 201.26,
+          "gates_crossed": 198,
+          "gates_required": 209,
+          "trace_sha256": "764173b2a6ca927599f6c710fef0d8c9b5c2ddc8679e0a6dee59d50601da6147",
+          "first_violation": "wheel_left_road",
+          "first_violation_ms": 201260.0,
+          "independent_checks": {
+            "start_crossing": true,
+            "ordered_gate_checks": false,
+            "body_line_coverage": true,
+            "wheel_road_coverage_with_V_exception": false,
+            "direction_and_layer": false,
+            "shortcut_boundary": true,
+            "seesaw_crossing": true,
+            "lift_stop_and_settled_exit": true,
+            "finish_crossing": false,
+            "no_fault_or_intervention": true
+          },
+          "native_trace_replay_verified": true,
+          "physical_sensor_origin_verified": true
+        }
+      ],
+      "attempt_judgments": [
+        {
+          "passed": false,
+          "reasons": [
+            "ordered_gate_checks",
+            "wheel_road_coverage_with_V_exception",
+            "direction_and_layer",
+            "finish_crossing"
+          ]
+        }
+      ]
+    },
+    {
+      "directory": "build-output\\junction-context\\teacher-704",
+      "manifest_sha256": "4ddb4a80bb3242c97d7a4a7def146ebc8197804986b806168b1aef56c26e65f7",
+      "results_sha256": "a9dde56d52f1dd19dc485bc8840cb3cacc2c873c651ada8ae88c83b1c3e2d5a5",
+      "source_sha256": "34a36dab7740584bfee0e63e652200d4d2578cef5da0aeb5583b51b97ab2b4fe",
+      "course_sha256": "6bad3c73beaebb58d6b12c9a3d2973072f0f23d3a5bf7da2419b39381a551566",
+      "candidate_profile_sha256": "f39791d5c08cdab780e011d85969ffb8c9390c3b3d541440dc49d535796d7afa",
+      "diagnostic_limit_s": 240.0,
+      "plant_overrides": {
+        "max_accel_mps2": 6.0
+      },
+      "attempts": [
+        {
+          "seed": 2026110704,
+          "outcome": "wheel_left_road",
+          "simulation_seconds": 200.9,
+          "elapsed_s": 200.9,
+          "gates_crossed": 198,
+          "gates_required": 209,
+          "trace_sha256": "885d351854fad25d3c88ae44b7e1bf562c31f90f3893fcdbcc787caa1684a73d",
+          "first_violation": "wheel_left_road",
+          "first_violation_ms": 200900.0,
+          "independent_checks": {
+            "start_crossing": true,
+            "ordered_gate_checks": false,
+            "body_line_coverage": true,
+            "wheel_road_coverage_with_V_exception": false,
+            "direction_and_layer": false,
+            "shortcut_boundary": true,
+            "seesaw_crossing": true,
+            "lift_stop_and_settled_exit": true,
+            "finish_crossing": false,
+            "no_fault_or_intervention": true
+          },
+          "native_trace_replay_verified": true,
+          "physical_sensor_origin_verified": true
+        }
+      ],
+      "attempt_judgments": [
+        {
+          "passed": false,
+          "reasons": [
+            "ordered_gate_checks",
+            "wheel_road_coverage_with_V_exception",
+            "direction_and_layer",
+            "finish_crossing"
+          ]
+        }
+      ]
+    },
+    {
+      "directory": "build-output\\junction-context\\teacher-705",
+      "manifest_sha256": "dcf7d605eef8db8eecf8fc0f29c351c258040f009c66ff372e0845a0e629c582",
+      "results_sha256": "70c72382fa1d5ca027850d5a5079713bc2cd15eb57f73a96ee14bfb84911b6bc",
+      "source_sha256": "34a36dab7740584bfee0e63e652200d4d2578cef5da0aeb5583b51b97ab2b4fe",
+      "course_sha256": "6bad3c73beaebb58d6b12c9a3d2973072f0f23d3a5bf7da2419b39381a551566",
+      "candidate_profile_sha256": "f39791d5c08cdab780e011d85969ffb8c9390c3b3d541440dc49d535796d7afa",
+      "diagnostic_limit_s": 240.0,
+      "plant_overrides": {
+        "max_accel_mps2": 6.0
+      },
+      "attempts": [
+        {
+          "seed": 2026110705,
+          "outcome": "wheel_left_road",
+          "simulation_seconds": 211.29,
+          "elapsed_s": 211.29,
+          "gates_crossed": 198,
+          "gates_required": 209,
+          "trace_sha256": "90ba4c9b9d56d92b88c6c491de968c7b6a29f1106a2db48d096bac24ec7f8d9c",
+          "first_violation": "wheel_left_road",
+          "first_violation_ms": 211290.0,
+          "independent_checks": {
+            "start_crossing": true,
+            "ordered_gate_checks": false,
+            "body_line_coverage": true,
+            "wheel_road_coverage_with_V_exception": false,
+            "direction_and_layer": false,
+            "shortcut_boundary": true,
+            "seesaw_crossing": true,
+            "lift_stop_and_settled_exit": true,
+            "finish_crossing": false,
+            "no_fault_or_intervention": true
+          },
+          "native_trace_replay_verified": true,
+          "physical_sensor_origin_verified": true
+        }
+      ],
+      "attempt_judgments": [
+        {
+          "passed": false,
+          "reasons": [
+            "ordered_gate_checks",
+            "wheel_road_coverage_with_V_exception",
+            "direction_and_layer",
+            "finish_crossing"
+          ]
+        }
+      ]
+    }
+  ],
+  "first_changes": [
+    {
+      "seed": 2026110711,
+      "baseline_directory": "build-output\\ordered-recovery\\seed-711",
+      "baseline_trace_sha256": "15c8a986c4dab118826dc9e1524e87eece624b220353d9e739fcb76f0721f28b",
+      "identical_records": 39005,
+      "first_changed_ms": 195025,
+      "event_serial": 27,
+      "changed_fields": [
+        "left",
+        "right",
+        "turnActive",
+        "cornerWideRecovery",
+        "turnDirection",
+        "straightPwm",
+        "missionPhase"
+      ]
+    },
+    {
+      "seed": 2026110714,
+      "baseline_directory": "build-output\\ordered-recovery\\seed-714",
+      "baseline_trace_sha256": "ce6e7cdd71980c71fb5542de460289b6462b1153382af610b37d1a30b41f3209",
+      "identical_records": 39330,
+      "first_changed_ms": 196650,
+      "event_serial": 27,
+      "changed_fields": [
+        "left",
+        "right",
+        "turnActive",
+        "cornerWideRecovery",
+        "turnDirection",
+        "straightPwm",
+        "missionPhase"
+      ]
+    }
+  ],
+  "remaining_counterexample": {
+    "seed": 2026110701,
+    "outcome": "unsupported_surface_or_ceiling",
+    "ms": 189430,
+    "z_m": 0,
+    "body_line": true,
+    "wheel_road_with_V_exception": true,
+    "physical_contact": null,
+    "nearest_V_zone_m": 0.09611080243708388,
+    "note": "Support/road-legality boundary needs independent floor/source verification; no support or legality change made this turn."
+  }
+}
