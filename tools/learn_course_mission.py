@@ -12,6 +12,7 @@ import math
 from pathlib import Path
 import re
 import shutil
+import sys
 
 from course_world import Course
 from course_referee import verify_sensor_trace,audit_trace
@@ -101,7 +102,7 @@ def stage_profile(source,directory,profile_path,course_hash):
     return directory/source.name
 
 
-def learn(directories,source=None):
+def learn(directories,source=None,progress=None):
     words=set();provenance=[];rejected=[];course_hash=models=feature=None
     replacement=None;replacement_hash=None
     if source is not None:
@@ -141,6 +142,7 @@ def learn(directories,source=None):
         if [r['seed'] for r in results['attempts']]!=manifest['expected_seeds'] or len(trials)!=len(results['attempts']):
             raise ValueError('incomplete training batch')
         for trial,attempt in zip(trials,results['attempts']):
+            if progress:progress('Auditing physical trace and sensor/core replay: seed='+str(attempt['seed']))
             if attempt['seed'] not in spec['timing']['seeds']:raise ValueError('held-out seeds cannot be used for training')
             if (trial['seed']!=attempt['seed'] or trial['plant']!=attempt['plant'] or
                 trial['lift_duration_s']!=attempt['lift_duration_s'] or attempt['source_hash']!=source_hash or
@@ -173,6 +175,7 @@ def learn(directories,source=None):
             words.add(tuple(word));provenance.append(dict(seed=attempt['seed'],source_sha256=source_hash,
                 manifest_sha256=results['manifest_sha256'],trace_sha256=trace_hash,word=word,
                 prefix_end_ms=int(target['ms']),revalidated_source_sha256=replacement_hash))
+            if progress:progress('Verified training prefix: seed='+str(attempt['seed'])+' end_ms='+str(target['ms']))
     if not words:raise ValueError('no lift-labelled training prefix')
     if len(words)>4 or any(len(w)>30 for w in words):raise ValueError('observed mission exceeds fixed onboard capacity')
     return dict(status='hypothesis_specific_experiment_not_officially_verified',course_sha256=course_hash,
@@ -187,7 +190,8 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('directories',nargs='+',type=Path);p.add_argument('--output',required=True,type=Path)
     p.add_argument('--source',type=Path,help='Revalidate identical actual-core behavior through every training prefix before rebinding')
-    args=p.parse_args();payload=learn(args.directories,args.source)
+    args=p.parse_args();payload=learn(args.directories,args.source,
+        progress=lambda message:print(message,file=sys.stderr,flush=True))
     args.output.parent.mkdir(parents=True,exist_ok=True)
     args.output.write_text(json.dumps(payload,indent=2),encoding='utf-8')
     print(json.dumps({'words':payload['words'],'training_prefixes':len(payload['training']),'rejected':len(payload['rejected_training'])},indent=2))

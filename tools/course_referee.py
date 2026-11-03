@@ -13,6 +13,38 @@ from course_world import Course, Mechanisms, Pose, crossed_gate, geometry, advan
 REQUIRED_COLUMNS={'ms','x','y','z','yaw','pitch','vl','vr','left','right','turnFault','intervention'}
 
 
+def crossed_route_gate(course,station,previous,current):
+    """Use the directed tangent bisector at vertices, not the incoming ray.
+
+    An axle rounding a legal corner can remain behind the incoming endpoint
+    plane forever. The bisector separates incoming and outgoing route strips.
+    Width, height, positive crossing and ordered-gate requirements remain; this
+    is model progress geometry, not an official checkpoint-placement claim.
+    Straight-interior/start/finish gates keep their original tangent plane.
+    """
+    i=bisect.bisect_left(course.stations,station)
+    if not (0<i<len(course.main_segments) and abs(course.stations[i]-station)<1e-9):
+        return crossed_gate(course,station,previous,current)
+    incoming,outgoing=course.main_segments[i-1:i+1]
+    nx=(incoming.b[0]-incoming.a[0])/incoming.length+(outgoing.b[0]-outgoing.a[0])/outgoing.length
+    ny=(incoming.b[1]-incoming.a[1])/incoming.length+(outgoing.b[1]-outgoing.a[1])/outgoing.length
+    length=math.hypot(nx,ny)
+    if length<1e-9:
+        # An exact reversal has no unique bisector. Preserve the original rule
+        # rather than silently accepting a U-turn with no route evidence.
+        return crossed_gate(course,station,previous,current)
+    nx/=length;ny/=length
+    point,_=course.at(station)
+    before=(previous.x-point[0])*nx+(previous.y-point[1])*ny
+    after=(current.x-point[0])*nx+(current.y-point[1])*ny
+    if not before<=0<after:return False
+    t=-before/(after-before)
+    x=previous.x+t*(current.x-previous.x);y=previous.y+t*(current.y-previous.y)
+    z=previous.z+t*(current.z-previous.z)
+    lateral=abs(-(x-point[0])*ny+(y-point[1])*nx)
+    return lateral<course.assumptions['road_width_m']/2 and abs(z-point[2])<.03
+
+
 def directed_travel(course,previous,current,mechanisms,next_gate,tolerance_m=1e-6):
     """Disambiguate route occurrence using the referee's ordered gate history.
 
@@ -112,7 +144,7 @@ def audit_trace(path,course_spec,plant,lift_duration,expected_hash=None):
         wheels_ok &= g['wheel_road']
         layer_ok &= not g['ceiling_collision']
         no_fault &= numeric['turnFault']==0 and numeric['intervention']==0
-        if previous is not None and next_gate<len(c.gates) and crossed_gate(c,c.gates[next_gate],previous,pose):
+        if previous is not None and next_gate<len(c.gates) and crossed_route_gate(c,c.gates[next_gate],previous,pose):
             gate_events.append(dict(index=next_gate,ms=ms,station_m=c.gates[next_gate]))
             if next_gate==0:
                 start_ms=ms

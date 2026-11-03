@@ -12,7 +12,7 @@ import unittest
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'tools'))
 from course_world import Course,Mechanisms,Pose,advance,geometry,gravity_along,sense,crossed_gate,forward_travel
-from course_referee import audit_trace,verify_sensor_trace,directed_travel
+from course_referee import audit_trace,verify_sensor_trace,directed_travel,crossed_route_gate
 from simulation_model import Plant
 
 
@@ -32,6 +32,40 @@ def fixture(points=None):
 
 
 class WorldChecks(unittest.TestCase):
+    def test_vertex_bisector_accepts_rounded_corner_but_not_reverse_far_or_other_layer(self):
+        for points in ([[100,500],[300,500],[300,300],[500,300]],
+                       [[100,500],[300,500],[300,700],[500,700]]):
+            c=Course(fixture(points));s=c.stations[1];point,_=c.at(s)
+            sign=1 if points[2][1]<500 else -1
+            a=Pose(point[0]-.05,point[1]+sign*.03,point[2],0)
+            b=Pose(point[0]-.03,point[1]+sign*.05,point[2],0)
+            self.assertFalse(crossed_gate(c,s,a,b))
+            self.assertTrue(crossed_route_gate(c,s,a,b))
+            self.assertFalse(crossed_route_gate(c,s,b,a))
+            self.assertFalse(crossed_route_gate(c,s,Pose(a.x,a.y,a.z+.2,0),Pose(b.x,b.y,b.z+.2,0)))
+            farA=Pose(point[0]-.2,point[1]+sign*.18,point[2],0)
+            farB=Pose(point[0]-.18,point[1]+sign*.2,point[2],0)
+            self.assertFalse(crossed_route_gate(c,s,farA,farB))
+
+    def test_frozen_A_apex_has_legal_footprints_but_never_crosses_incoming_plane(self):
+        c=Course(json.loads((ROOT/'simulation/reconstructed_course.json').read_text()));m=Mechanisms(c,27)
+        a=Pose(1.5492046689621242,1.6748712205179355,0,-24.530074803429663)
+        b=Pose(1.5498169835497537,1.675282013240267,0,-24.553572930524457)
+        for pose in (a,b):
+            g=geometry(c,m,pose,Plant())
+            self.assertTrue(g['body_line']);self.assertTrue(g['wheel_road'])
+        self.assertFalse(crossed_gate(c,c.stations[195],a,b))
+        self.assertTrue(crossed_route_gate(c,c.stations[195],a,b))
+
+    def test_straight_and_exact_reversal_keep_original_gate_semantics(self):
+        for points in (None,[[100,500],[300,500],[100,500],[500,500]]):
+            c=Course(fixture(points))
+            for s in (.5,c.stations[1]):
+                point,yaw=c.at(s)
+                a=Pose(point[0]-.01,point[1],point[2],yaw)
+                b=Pose(point[0]+.01,point[1],point[2],yaw)
+                self.assertEqual(crossed_gate(c,s,a,b),crossed_route_gate(c,s,a,b))
+
     def test_ordered_occurrence_resolves_opposing_overlapping_guides(self):
         c=Course(json.loads((ROOT/'simulation/reconstructed_course.json').read_text()));m=Mechanisms(c,27)
         # Frozen seed702 at100530->100535ms: nearest occurrence switches118->137

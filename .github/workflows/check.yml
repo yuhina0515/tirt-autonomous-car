@@ -31,3 +31,7 @@ jobs:
         run: |
           g++ -m32 -std=c++11 -Wall -Wextra -pedantic tests/candidate_car.cpp -o test-output/candidate-car
           test-output/candidate-car
+      - name: Execute ordered-recovery common control contracts
+        run: |
+          g++ -m32 -std=c++11 -Wall -Wextra -pedantic '-DCANDIDATE_CORE_HEADER="../firmware/experiments/ordered_recovery/controller.h"' tests/candidate_car.cpp -o test-output/ordered-recovery
+          test-output/ordered-recovery

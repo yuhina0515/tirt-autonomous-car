@@ -14,7 +14,7 @@ def sha(path):
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('directory',type=Path)
-    p.add_argument('--current-referee',action='store_true',help='Also audit historical traces with the current stricter physical/sensor referee')
+    p.add_argument('--current-referee',action='store_true',help='Also audit historical traces with the current referee; corrected semantics need not be strictly stronger')
     p.add_argument('--audit-label',default='strict',help='Name a new auditor snapshot when code changes; existing snapshots are immutable')
     args=p.parse_args();out=args.directory.resolve()
     if not re.fullmatch('[a-z0-9_-]+',args.audit_label):raise ValueError('invalid audit label')
@@ -73,8 +73,8 @@ def main():
     if manifest.get('diagnostic_limit_s'):batch.update(passed=False,diagnostic_only=True)
     report=dict(hash_verified_traces=len(audited),native_trace_replays_verified=len(audited),
                 physical_sensor_origins_verified=len(audited) if hasattr(course_referee,'verify_sensor_trace') else 0,
-                stricter_current_auditor=bool(args.current_referee),auditor_sha256=auditor_files,
-                model_batch=batch,official_qualification_passed=False)
+                current_referee_used=bool(args.current_referee),auditor_sha256=auditor_files,
+                audited_attempts=audited,model_batch=batch,official_qualification_passed=False)
     (out/(args.audit_label+'-audited.json' if args.current_referee else 'audited.json')).write_text(json.dumps(report,indent=2),encoding='utf-8')
     print(json.dumps(report,indent=2))
 

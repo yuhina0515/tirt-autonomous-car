@@ -1,4 +1,7 @@
-#include "../firmware/candidate_car/controller.h"
+#ifndef CANDIDATE_CORE_HEADER
+#define CANDIDATE_CORE_HEADER "../firmware/candidate_car/controller.h"
+#endif
+#include CANDIDATE_CORE_HEADER
 #include <assert.h>
 #include <stdio.h>
 

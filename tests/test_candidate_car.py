@@ -189,4 +189,52 @@ class PreviewRecoveryChecks(_MissionHarness):
         self.assertEqual(command,(0,0))
 
 
+class OrderedRecoveryChecks(_MissionHarness):
+    SOURCE=ROOT/'firmware/experiments/ordered_recovery/ordered_recovery.ino'
+    ready_corner=PreviewRecoveryChecks.ready_corner
+
+    def test_entry_center_cannot_confirm_a_return_without_departure(self):
+        c=self.controllers[0];ms=self.ready_corner(c,-1)
+        for at in range(ms,ms+101,5):c.step(at,[500,500,35,500,500])
+        self.assertEqual(c.state()['cornerWideRecovery'],1)
+        self.assertEqual(c.state()['turnActive'],1)
+        self.assertGreater(c.diagnostics()['uncertaintyMs'],100)
+
+    def test_chosen_side_return_softens_pivot_then_center_confirms(self):
+        c=self.controllers[0]
+        for side in (-1,1):
+            with self.subTest(side=side):
+                c.reset();ms=self.ready_corner(c,side)
+                for at in range(ms,ms+21,5):c.step(at,[500]*5)
+                outer=[35,500,500,500,500] if side<0 else [500,500,500,500,35]
+                for at in range(ms+25,ms+86,5):command=c.step(at,outer)
+                self.assertEqual(c.state()['turnActive'],0)
+                self.assertEqual(c.state()['cornerWideRecovery'],1)
+                self.assertEqual(c.state()['straightPwm'],90)
+                self.assertGreater(min(command),0)
+                inner=[500,35,500,500,500] if side<0 else [500,500,500,35,500]
+                for at in range(ms+90,ms+111,5):c.step(at,inner)
+                for at in range(ms+115,ms+136,5):c.step(at,[500,500,35,500,500])
+                self.assertEqual(c.state()['cornerWideRecovery'],0)
+                self.assertEqual(c.diagnostics()['uncertaintyMs'],0)
+
+    def test_wrong_side_then_center_cannot_renew_deadline(self):
+        c=self.controllers[0];ms=self.ready_corner(c,-1)
+        for at in range(ms,ms+21,5):c.step(at,[500]*5)
+        for at in range(ms+25,ms+106,5):c.step(at,[500,500,500,35,35])
+        for at in range(ms+110,ms+751,5):command=c.step(at,[500,500,35,500,500])
+        self.assertEqual(c.state()['turnFault'],1)
+        self.assertEqual(command,(0,0))
+
+    def test_opposite_error_does_not_reverse_frozen_capture_direction(self):
+        c=self.controllers[0];ms=self.ready_corner(c,-1)
+        for at in range(ms,ms+21,5):c.step(at,[500]*5)
+        for at in range(ms+25,ms+86,5):c.step(at,[35,500,500,500,500])
+        for at in range(ms+90,ms+191,5):c.step(at,[500,500,500,35,500])
+        self.assertEqual(c.state()['turnDirection'],-1)
+        self.assertEqual(c.state()['turnActive'],0)
+        self.assertEqual(c.state()['cornerWideRecovery'],1)
+        self.assertGreater(c.diagnostics()['uncertaintyMs'],190)
+
+
 if __name__=='__main__':unittest.main()

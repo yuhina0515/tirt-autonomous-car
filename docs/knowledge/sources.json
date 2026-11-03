@@ -4,6 +4,15 @@
   "scope": "Primary-source strategy references, not vehicle acceptance",
   "sources": [
     {
+      "id": "CAGE_TR",
+      "url": "https://www.cagebot.com/website/product_detailed/66/154",
+      "kind": "manufacturer_product_specification",
+      "read_scope": "Complete CAGEBOT TR single-shaft wired motor product page, including specification text",
+      "findings": ["Listed rated voltage DC4.5V, applicable voltage DC3V to6V, reduction1/55 and rotational speed130rpm plus/minus10 percent"],
+      "transfer_limit": "The installed motor is not identified as this TR product. The page does not specify rotational-speed load conditions, step response, stopping time or torque curve. These values cannot replace vehicle measurements or set simulation acceleration/latency",
+      "followup": "Identify the installed motor and transmission, then measure wheel diameter, loaded wheel speed, reversal lag and battery voltage"
+    },
+    {
       "id": "QTR",
       "url": "https://github.com/pololu/qtr-sensors-arduino/blob/master/usage.md",
       "kind": "manufacturer_documentation",

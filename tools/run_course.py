@@ -15,8 +15,8 @@ import random
 import shutil
 import subprocess
 
-from course_world import Course,Mechanisms,Pose,advance,sense,geometry,crossed_gate,chassis_pitch
-from course_referee import audit_trace,verify_controller_trace,verify_sensor_trace
+from course_world import Course,Mechanisms,Pose,advance,sense,geometry,chassis_pitch
+from course_referee import audit_trace,verify_controller_trace,verify_sensor_trace,crossed_route_gate
 from course_qualification import judge_batch
 from simulation_model import Plant
 from sim_native import ROOT,Controller,build
@@ -85,7 +85,7 @@ def run(controller,spec,plant,seed,lift_duration,trace_path,dt_ms=5,diagnostic_l
         advance(pose,command,plant,contact,dt_ms/1000)
         new=c.contact(pose.x,pose.y,pose.z,m,max_step=.03)
         if new:pose.z=new['z']
-        if next_gate<len(c.gates) and crossed_gate(c,c.gates[next_gate],old,pose):next_gate+=1
+        if next_gate<len(c.gates) and crossed_route_gate(c,c.gates[next_gate],old,pose):next_gate+=1
     with Path(trace_path).open('w',newline='',encoding='utf-8') as f:
         writer=csv.DictWriter(f,fieldnames=rows[0]);writer.writeheader();writer.writerows(rows)
     audit=audit_trace(trace_path,spec,plant,lift_duration)
@@ -162,7 +162,7 @@ def main():
     if args.candidate_profile:
         if args.experiment:raise ValueError('candidate profile and legacy setting experiment are separate variants')
         from learn_course_mission import stage_profile
-        source=stage_profile(source,out/'profiled'/'candidate_car',args.candidate_profile,file_hash(args.course))
+        source=stage_profile(source,out/'profiled'/source.stem,args.candidate_profile,file_hash(args.course))
     dll,digest=build(source,out/'host')
     seeds=spec['timing']['seeds']
     if args.seed_plan:seeds=json.loads(args.seed_plan.read_text(encoding='utf-8'))['seeds']
