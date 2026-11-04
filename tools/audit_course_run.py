@@ -34,7 +34,7 @@ def main():
     auditor_files={}
     if args.current_referee:
         root=Path(__file__).resolve().parents[1]
-        for name in ('course_world.py','course_referee.py','simulation_model.py','course_qualification.py','sim_native.py','audit_course_run.py'):
+        for name in ('course_world.py','course_environment.py','ground_support.py','course_referee.py','simulation_model.py','course_qualification.py','sim_native.py','audit_course_run.py'):
             src=root/'tools'/name
             auditor_files[name]=sha(src)
             dest=out/(args.audit_label+'-audit-model')/name;dest.parent.mkdir(parents=True,exist_ok=True)

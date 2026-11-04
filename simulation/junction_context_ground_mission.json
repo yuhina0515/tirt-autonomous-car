@@ -1,0 +1,401 @@
+{
+  "status": "hypothesis_specific_experiment_not_officially_verified",
+  "course_sha256": "9e691481b0983e112756fd621137d045c7693e850453f187db0ad1f6d218104c",
+  "feature_sha256": "f377afc1405f7882231d36ab7c43bf2110682bf079592c704d5bd63cd6c3c5b7",
+  "feature_binding": "entire core and adapter except learned literals; changes require fresh training or identical physical ADC/core/state/command replay through every audited training target",
+  "model_hash_encoding": "utf8_lf",
+  "model_features": [
+    "ground_backing"
+  ],
+  "sensor_model_sha256": {
+    "tools/course_world.py": "a4cd0e102d7ba7c6d948385ba2cb805a287ce0035b27c8462698b721f1fd58a4",
+    "tools/simulation_model.py": "753fd97446490d9d7abf47c9b62aa10b141d9dc9fabaf41550121e86bc8a8b00",
+    "tools/course_environment.py": "8e2edcd2348f8c9d522bf60e3e0513868e4dc2c69633d9f78ef028c6e1c79718",
+    "tools/ground_support.py": "fab404fac97b206b94fda43c652846287c8730cb5ee78241e7a7f6fdb1e0b2ef"
+  },
+  "words": [
+    [
+      "L",
+      "R",
+      "W",
+      "R",
+      "W",
+      "L",
+      "R",
+      "L",
+      "R",
+      "L",
+      "R",
+      "L",
+      "R",
+      "L",
+      "R",
+      "L",
+      "R",
+      "L",
+      "R",
+      "LIFT"
+    ],
+    [
+      "L",
+      "R",
+      "W",
+      "R",
+      "W",
+      "L",
+      "R",
+      "L",
+      "R",
+      "L",
+      "R",
+      "L",
+      "R",
+      "L",
+      "R",
+      "L",
+      "R",
+      "LIFT"
+    ]
+  ],
+  "training": [
+    {
+      "seed": 2026110701,
+      "source_sha256": "72944da27794eb499afdda33562217c01c72c15593c7021eef4c73a0395f61db",
+      "manifest_sha256": "c6a5533d972d8f4a7d440dcf3d9ab55d810cbd1abc0f0f97e8cfc0c1a41d5042",
+      "trace_sha256": "b25033a6331d30946b0718fd8b4a7735dc4479bfe064cc4c0224e8012a29a20a",
+      "word": [
+        "L",
+        "R",
+        "W",
+        "R",
+        "W",
+        "L",
+        "R",
+        "L",
+        "R",
+        "L",
+        "R",
+        "L",
+        "R",
+        "L",
+        "R",
+        "L",
+        "R",
+        "L",
+        "R",
+        "LIFT"
+      ],
+      "prefix_end_ms": 125385,
+      "revalidated_source_sha256": null
+    },
+    {
+      "seed": 2026110702,
+      "source_sha256": "72944da27794eb499afdda33562217c01c72c15593c7021eef4c73a0395f61db",
+      "manifest_sha256": "fbe8b47fbd2aee879570d150bcff39902dba87f25727d3eadb382d427d03c9d4",
+      "trace_sha256": "e0fb456c4e038e809738354caf504cfc111eba2580adeff2c8abf5e5362a44a7",
+      "word": [
+        "L",
+        "R",
+        "W",
+        "R",
+        "W",
+        "L",
+        "R",
+        "L",
+        "R",
+        "L",
+        "R",
+        "L",
+        "R",
+        "L",
+        "R",
+        "L",
+        "R",
+        "LIFT"
+      ],
+      "prefix_end_ms": 124940,
+      "revalidated_source_sha256": null
+    },
+    {
+      "seed": 2026110703,
+      "source_sha256": "72944da27794eb499afdda33562217c01c72c15593c7021eef4c73a0395f61db",
+      "manifest_sha256": "8e39acfd9fff625d2197a1ecc3d003946911722241d8fd36c4b50a9c32da4e26",
+      "trace_sha256": "fe4d683b45e76cff5b4dc67c0b9b669bcce66d9e3395f268066fece48c31d8a1",
+      "word": [
+        "L",
+        "R",
+        "W",
+        "R",
+        "W",
+        "L",
+        "R",
+        "L",
+        "R",
+        "L",
+        "R",
+        "L",
+        "R",
+        "L",
+        "R",
+        "L",
+        "R",
+        "LIFT"
+      ],
+      "prefix_end_ms": 129585,
+      "revalidated_source_sha256": null
+    },
+    {
+      "seed": 2026110704,
+      "source_sha256": "72944da27794eb499afdda33562217c01c72c15593c7021eef4c73a0395f61db",
+      "manifest_sha256": "93016c786c0010bd3ae186e381705e5eedb026f31e103c32d26558abfde17f4c",
+      "trace_sha256": "b01beea99bc07d37c14b9059237f912bd2f947698d241ed16e0a763d6dd7fb9e",
+      "word": [
+        "L",
+        "R",
+        "W",
+        "R",
+        "W",
+        "L",
+        "R",
+        "L",
+        "R",
+        "L",
+        "R",
+        "L",
+        "R",
+        "L",
+        "R",
+        "L",
+        "R",
+        "L",
+        "R",
+        "LIFT"
+      ],
+      "prefix_end_ms": 129300,
+      "revalidated_source_sha256": null
+    },
+    {
+      "seed": 2026110705,
+      "source_sha256": "72944da27794eb499afdda33562217c01c72c15593c7021eef4c73a0395f61db",
+      "manifest_sha256": "2324898d739994cd01b52bfc8e3db8a98e14912157d34ca5188bdbacd213d105",
+      "trace_sha256": "4dde82db71902d5896e3fb31fe3946f9345f234bc66fb9365beb11aef07a6633",
+      "word": [
+        "L",
+        "R",
+        "W",
+        "R",
+        "W",
+        "L",
+        "R",
+        "L",
+        "R",
+        "L",
+        "R",
+        "L",
+        "R",
+        "L",
+        "R",
+        "L",
+        "R",
+        "L",
+        "R",
+        "LIFT"
+      ],
+      "prefix_end_ms": 137395,
+      "revalidated_source_sha256": null
+    }
+  ],
+  "rejected_training": [],
+  "note": "Offline observer labels lift. Actual-core event diagnostics are verified from regenerated seeded ADC/time. Firmware receives literal words and ADC/time only.",
+  "junctions": [
+    {
+      "word": [
+        "R",
+        "L",
+        "W",
+        "L",
+        "R",
+        "L",
+        "R",
+        "L",
+        "W"
+      ],
+      "turn": "R"
+    }
+  ],
+  "junction_teacher": {
+    "vertex": 198,
+    "label_source": "audited physical sensor footprint and preceding ordered gates; inferred route, not official geometry",
+    "labeler_sha256": "870c2a13546e7f4a1e731787923f4ada2c97b334a1058ee211dcbb1228e34cb2",
+    "training": [
+      {
+        "directory": "C:\\Users\\Yuhina\\Documents\\Codex\\2026-11-03\\tirt-github\\build-output\\ground-support\\junction-teacher-701",
+        "seed": 2026110701,
+        "manifest_sha256": "f871c9714bbcc5d807a22039554047b6f7d3d9da87b41329e0312c85a38d99d4",
+        "source_sha256": "c3e7e4dc8d4af7643da7ae7d5d6a96f78f753c3772fac349505251d0af817fe5",
+        "course_sha256": "a2572a4a9ce372f83abf5a2ef18cff42ea10d2e01ea90bbbdc3d55d352a1e0b2",
+        "sensor_model_sha256": {
+          "tools/course_world.py": "a4cd0e102d7ba7c6d948385ba2cb805a287ce0035b27c8462698b721f1fd58a4",
+          "tools/simulation_model.py": "753fd97446490d9d7abf47c9b62aa10b141d9dc9fabaf41550121e86bc8a8b00",
+          "tools/course_environment.py": "8e2edcd2348f8c9d522bf60e3e0513868e4dc2c69633d9f78ef028c6e1c79718",
+          "tools/ground_support.py": "fab404fac97b206b94fda43c652846287c8730cb5ee78241e7a7f6fdb1e0b2ef"
+        },
+        "trace_sha256": "247d42830706dc1f368e8654b1831f62f982e6531c3ae5fca8609cb3e3fb99e4",
+        "word": [
+          "R",
+          "L",
+          "W",
+          "L"
+        ],
+        "turn": "R",
+        "target_ms": null,
+        "reason": "modeled_junction_not_observed",
+        "revalidated_profiled_source_sha256": "054e609023286c2b9955623ca1fd931e3a0a68d73cd3f524d133b221ddc25973",
+        "prefix_sha256": "247d42830706dc1f368e8654b1831f62f982e6531c3ae5fca8609cb3e3fb99e4",
+        "prefix_last_ms": 189450,
+        "target_action_verified": false
+      },
+      {
+        "directory": "C:\\Users\\Yuhina\\Documents\\Codex\\2026-11-03\\tirt-github\\build-output\\ground-support\\junction-teacher-702",
+        "seed": 2026110702,
+        "manifest_sha256": "de5d837b3b45e45d7bc33dc2083fb871b1b991c1562c9786c55636960d04ea3f",
+        "source_sha256": "c3e7e4dc8d4af7643da7ae7d5d6a96f78f753c3772fac349505251d0af817fe5",
+        "course_sha256": "a2572a4a9ce372f83abf5a2ef18cff42ea10d2e01ea90bbbdc3d55d352a1e0b2",
+        "sensor_model_sha256": {
+          "tools/course_world.py": "a4cd0e102d7ba7c6d948385ba2cb805a287ce0035b27c8462698b721f1fd58a4",
+          "tools/simulation_model.py": "753fd97446490d9d7abf47c9b62aa10b141d9dc9fabaf41550121e86bc8a8b00",
+          "tools/course_environment.py": "8e2edcd2348f8c9d522bf60e3e0513868e4dc2c69633d9f78ef028c6e1c79718",
+          "tools/ground_support.py": "fab404fac97b206b94fda43c652846287c8730cb5ee78241e7a7f6fdb1e0b2ef"
+        },
+        "trace_sha256": "915bf34b19c43f2955d872810f9f4882f97feeffbd99857047636ba44b426f6c",
+        "word": [
+          "R",
+          "L",
+          "W",
+          "L",
+          "R",
+          "L",
+          "R",
+          "L",
+          "W"
+        ],
+        "turn": "R",
+        "target_ms": 194930,
+        "reason": null,
+        "revalidated_profiled_source_sha256": "054e609023286c2b9955623ca1fd931e3a0a68d73cd3f524d133b221ddc25973",
+        "prefix_sha256": "241133eeba5a4c505e6a8e8676b2a51992b7506f5a213a58c19fc24e7ac1fd2f",
+        "prefix_last_ms": 194925,
+        "target_action_verified": true
+      },
+      {
+        "directory": "C:\\Users\\Yuhina\\Documents\\Codex\\2026-11-03\\tirt-github\\build-output\\ground-support\\junction-teacher-703",
+        "seed": 2026110703,
+        "manifest_sha256": "abb7ff85ecceb4cd63822468a4e890e06a683e47708ee49eaf2493222a990490",
+        "source_sha256": "c3e7e4dc8d4af7643da7ae7d5d6a96f78f753c3772fac349505251d0af817fe5",
+        "course_sha256": "a2572a4a9ce372f83abf5a2ef18cff42ea10d2e01ea90bbbdc3d55d352a1e0b2",
+        "sensor_model_sha256": {
+          "tools/course_world.py": "a4cd0e102d7ba7c6d948385ba2cb805a287ce0035b27c8462698b721f1fd58a4",
+          "tools/simulation_model.py": "753fd97446490d9d7abf47c9b62aa10b141d9dc9fabaf41550121e86bc8a8b00",
+          "tools/course_environment.py": "8e2edcd2348f8c9d522bf60e3e0513868e4dc2c69633d9f78ef028c6e1c79718",
+          "tools/ground_support.py": "fab404fac97b206b94fda43c652846287c8730cb5ee78241e7a7f6fdb1e0b2ef"
+        },
+        "trace_sha256": "764173b2a6ca927599f6c710fef0d8c9b5c2ddc8679e0a6dee59d50601da6147",
+        "word": [
+          "R",
+          "L",
+          "W",
+          "L",
+          "R",
+          "L",
+          "R",
+          "L",
+          "W"
+        ],
+        "turn": "R",
+        "target_ms": 200990,
+        "reason": null,
+        "revalidated_profiled_source_sha256": "054e609023286c2b9955623ca1fd931e3a0a68d73cd3f524d133b221ddc25973",
+        "prefix_sha256": "8edfe331794a8eb527418d5ad3c9a1d5cc52155549d58a7fdf78302cbd27c097",
+        "prefix_last_ms": 200985,
+        "target_action_verified": true
+      },
+      {
+        "directory": "C:\\Users\\Yuhina\\Documents\\Codex\\2026-11-03\\tirt-github\\build-output\\ground-support\\junction-teacher-704",
+        "seed": 2026110704,
+        "manifest_sha256": "178ac5d2baf2dc2c34c14d674ae71a8b5c7f6f0c4a3ba190bcd07091d8b13b12",
+        "source_sha256": "c3e7e4dc8d4af7643da7ae7d5d6a96f78f753c3772fac349505251d0af817fe5",
+        "course_sha256": "a2572a4a9ce372f83abf5a2ef18cff42ea10d2e01ea90bbbdc3d55d352a1e0b2",
+        "sensor_model_sha256": {
+          "tools/course_world.py": "a4cd0e102d7ba7c6d948385ba2cb805a287ce0035b27c8462698b721f1fd58a4",
+          "tools/simulation_model.py": "753fd97446490d9d7abf47c9b62aa10b141d9dc9fabaf41550121e86bc8a8b00",
+          "tools/course_environment.py": "8e2edcd2348f8c9d522bf60e3e0513868e4dc2c69633d9f78ef028c6e1c79718",
+          "tools/ground_support.py": "fab404fac97b206b94fda43c652846287c8730cb5ee78241e7a7f6fdb1e0b2ef"
+        },
+        "trace_sha256": "885d351854fad25d3c88ae44b7e1bf562c31f90f3893fcdbcc787caa1684a73d",
+        "word": [
+          "R",
+          "L",
+          "W",
+          "L",
+          "R",
+          "L",
+          "R",
+          "L",
+          "W"
+        ],
+        "turn": "R",
+        "target_ms": 200630,
+        "reason": null,
+        "revalidated_profiled_source_sha256": "054e609023286c2b9955623ca1fd931e3a0a68d73cd3f524d133b221ddc25973",
+        "prefix_sha256": "3085e9f4205fefbd7bb2dad0fb6a1122b8fb6248d6f7af3148b09945298e4885",
+        "prefix_last_ms": 200625,
+        "target_action_verified": true
+      },
+      {
+        "directory": "C:\\Users\\Yuhina\\Documents\\Codex\\2026-11-03\\tirt-github\\build-output\\ground-support\\junction-teacher-705",
+        "seed": 2026110705,
+        "manifest_sha256": "11ec5df50cc02f7d52b5bcfab99c68c15e015a0c657249c74270687091cc06ca",
+        "source_sha256": "c3e7e4dc8d4af7643da7ae7d5d6a96f78f753c3772fac349505251d0af817fe5",
+        "course_sha256": "a2572a4a9ce372f83abf5a2ef18cff42ea10d2e01ea90bbbdc3d55d352a1e0b2",
+        "sensor_model_sha256": {
+          "tools/course_world.py": "a4cd0e102d7ba7c6d948385ba2cb805a287ce0035b27c8462698b721f1fd58a4",
+          "tools/simulation_model.py": "753fd97446490d9d7abf47c9b62aa10b141d9dc9fabaf41550121e86bc8a8b00",
+          "tools/course_environment.py": "8e2edcd2348f8c9d522bf60e3e0513868e4dc2c69633d9f78ef028c6e1c79718",
+          "tools/ground_support.py": "fab404fac97b206b94fda43c652846287c8730cb5ee78241e7a7f6fdb1e0b2ef"
+        },
+        "trace_sha256": "90ba4c9b9d56d92b88c6c491de968c7b6a29f1106a2db48d096bac24ec7f8d9c",
+        "word": [
+          "R",
+          "L",
+          "W",
+          "L",
+          "R",
+          "L",
+          "R",
+          "L",
+          "W"
+        ],
+        "turn": "R",
+        "target_ms": 211005,
+        "reason": null,
+        "revalidated_profiled_source_sha256": "054e609023286c2b9955623ca1fd931e3a0a68d73cd3f524d133b221ddc25973",
+        "prefix_sha256": "712ea67ceb1ac2c35641a60720f9150c77cfa245b1126457eb2ee38c684e7a93",
+        "prefix_last_ms": 211000,
+        "target_action_verified": true
+      }
+    ]
+  },
+  "junction_binding": "entire core and source-bound lift profile; all teacher poses/ADC audited, actual profiled commands/states/events identical before target; target action and unchanged timer checked",
+  "course_text_transfers": [
+    {
+      "old_raw_sha256": "a2572a4a9ce372f83abf5a2ef18cff42ea10d2e01ea90bbbdc3d55d352a1e0b2",
+      "new_raw_sha256": "9e691481b0983e112756fd621137d045c7693e850453f187db0ad1f6d218104c",
+      "utf8_lf_sha256": "9e691481b0983e112756fd621137d045c7693e850453f187db0ad1f6d218104c",
+      "old_newlines": "CRLF",
+      "new_newlines": "LF",
+      "policy_payload_sha256": "f3975364f8147a939e3660bc29e4b6f6f07a090a0fb91f765bdf99a548756f7f",
+      "method": "uniform CRLF/LF only; all normalized UTF8 bytes and parsed JSON identical; raw teacher/manifests retained",
+      "tool_sha256": "1c03fa9869e81d1f9362f900d02e36f1dffa5e73eba286dd5299a4d5ccec3f58"
+    }
+  ]
+}

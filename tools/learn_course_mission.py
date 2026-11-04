@@ -5,6 +5,7 @@ event words, never coordinates. Conservative source binding requires retraining
 after any core/adapter edit, including edits confined to motor control.
 """
 import argparse
+from concurrent.futures import ProcessPoolExecutor
 import csv
 import hashlib
 import json
@@ -14,13 +15,25 @@ import re
 import shutil
 import sys
 
-from course_world import Course
+from course_environment import Course,model_features
 from course_referee import verify_sensor_trace,audit_trace
 from simulation_model import Plant
 from sim_native import ROOT, Controller, build
 
 TOKENS={1:'W',2:'L',3:'R',4:'LIFT'}
 MODELS=('tools/course_world.py','tools/simulation_model.py')
+GROUND_MODELS=('tools/course_environment.py','tools/ground_support.py')
+# Old two-module profiles predate the dispatcher. Permit only the independently
+# checked, exact legacy delegation; changing it requires an explicit re-audit.
+LEGACY_DISPATCH_SHA256='8e2edcd2348f8c9d522bf60e3e0513868e4dc2c69633d9f78ef028c6e1c79718'
+
+
+def models_for_features(features):
+    if features not in ([],['ground_backing']):raise ValueError('unsupported world features')
+    return MODELS+GROUND_MODELS if features else MODELS
+
+
+def models_for_spec(spec):return models_for_features(model_features(spec))
 
 
 def sha(path):return hashlib.sha256(Path(path).read_bytes()).hexdigest()
@@ -77,12 +90,16 @@ def lift_observation(row,course,gate_events):
         abs(across)<course.assumptions['road_width_m']/2 and abs(float(row['z'])-point[2])<.03)
 
 
-def stage_profile(source,directory,profile_path,course_hash):
+def stage_profile(source,directory,profile_path,course_hash,course_spec=None):
     source=Path(source);directory=Path(directory)
     profile=json.loads(Path(profile_path).read_text(encoding='utf-8'))
     if profile['course_sha256']!=course_hash:raise ValueError('mission belongs to a different course hypothesis')
     if feature_identity(source)!=profile['feature_sha256']:raise ValueError('mission core/event semantics changed; retraining required')
-    if set(profile['sensor_model_sha256'])!=set(MODELS):raise ValueError('incomplete mission model identity')
+    features=profile.get('model_features',[])
+    if not features and canonical_sha(ROOT/'tools/course_environment.py')!=LEGACY_DISPATCH_SHA256:
+        raise ValueError('legacy world dispatcher changed; compatibility re-audit required')
+    if course_spec is not None and model_features(course_spec)!=features:raise ValueError('mission world features differ from actual course')
+    if set(profile['sensor_model_sha256'])!=set(models_for_features(features)):raise ValueError('incomplete mission model identity')
     model_hash=canonical_sha if profile.get('model_hash_encoding')=='utf8_lf' else sha
     for name,digest in profile['sensor_model_sha256'].items():
         if model_hash(ROOT/name)!=digest:raise ValueError('mission sensor/world model changed: '+name)
@@ -124,8 +141,8 @@ def stage_profile(source,directory,profile_path,course_hash):
     return directory/source.name
 
 
-def learn(directories,source=None,progress=None):
-    words=set();provenance=[];rejected=[];course_hash=models=feature=None
+def learn(directories,source=None,progress=None,allow_empty=False):
+    words=set();provenance=[];rejected=[];course_hash=models=feature=features=None
     replacement=None;replacement_hash=None
     if source is not None:
         source=Path(source)
@@ -144,7 +161,11 @@ def learn(directories,source=None,progress=None):
         if results['course_sha256']!=digest:raise ValueError('result course identity changed')
         if course_hash is not None and course_hash!=digest:raise ValueError('mixed course hypotheses')
         course_hash=digest
-        frozen_models={n:canonical_sha(folder/'model'/n) for n in MODELS}
+        spec=json.loads((folder/'course.json').read_text(encoding='utf-8'))
+        current_features=model_features(spec)
+        if features is not None and features!=current_features:raise ValueError('mixed world features')
+        features=current_features
+        frozen_models={n:canonical_sha(folder/'model'/n) for n in models_for_spec(spec)}
         for name,value in manifest['model_files'].items():
             if sha(folder/'model'/name)!=value:raise ValueError('frozen model changed: '+name)
         if models is not None and models!=frozen_models:raise ValueError('mixed training world/sensor models')
@@ -198,22 +219,46 @@ def learn(directories,source=None,progress=None):
                 manifest_sha256=results['manifest_sha256'],trace_sha256=trace_hash,word=word,
                 prefix_end_ms=int(target['ms']),revalidated_source_sha256=replacement_hash))
             if progress:progress('Verified training prefix: seed='+str(attempt['seed'])+' end_ms='+str(target['ms']))
-    if not words:raise ValueError('no lift-labelled training prefix')
+    if not words and not allow_empty:raise ValueError('no lift-labelled training prefix')
     if len(words)>4 or any(len(w)>30 for w in words):raise ValueError('observed mission exceeds fixed onboard capacity')
     return dict(status='hypothesis_specific_experiment_not_officially_verified',course_sha256=course_hash,
         feature_sha256=replacement_feature if replacement is not None else feature,
         feature_binding='entire core and adapter except learned literals; changes require fresh training or identical physical ADC/core/state/command replay through every audited training target',
-        model_hash_encoding='utf8_lf',sensor_model_sha256=models,
+        model_hash_encoding='utf8_lf',model_features=features,sensor_model_sha256=models,
         words=[list(w) for w in sorted(words)],training=provenance,rejected_training=rejected,
         note='Offline observer labels lift. Actual-core event diagnostics are verified from regenerated seeded ADC/time. Firmware receives literal words and ADC/time only.')
+
+
+def merge_profiles(profiles):
+    if not profiles:raise ValueError('no audited profiles')
+    result=dict(profiles[0]);words=set();training=[];rejected=[];seeds=set()
+    identity=('course_sha256','feature_sha256','sensor_model_sha256','model_hash_encoding','model_features')
+    for profile in profiles:
+        if any(profile[k]!=result[k] for k in identity):raise ValueError('mixed audited profile identities')
+        for record in profile['training']+profile['rejected_training']:
+            if record['seed'] in seeds:raise ValueError('duplicate teacher seed')
+            seeds.add(record['seed'])
+        words.update(tuple(w) for w in profile['words'])
+        training.extend(profile['training']);rejected.extend(profile['rejected_training'])
+    if not words or len(words)>4 or any(len(w)>30 for w in words):raise ValueError('invalid merged mission capacity')
+    result.update(words=[list(w) for w in sorted(words)],training=training,rejected_training=rejected)
+    return result
+
+
+def learn_directory(directory):
+    return learn([directory],progress=lambda message:print(message,file=sys.stderr,flush=True),allow_empty=True)
 
 
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('directories',nargs='+',type=Path);p.add_argument('--output',required=True,type=Path)
     p.add_argument('--source',type=Path,help='Revalidate identical actual-core behavior through every training prefix before rebinding')
-    args=p.parse_args();payload=learn(args.directories,args.source,
-        progress=lambda message:print(message,file=sys.stderr,flush=True))
+    p.add_argument('--workers',type=int,default=1,help='Independent unchanged-source teacher audits; changed-source cache revalidation remains serial')
+    args=p.parse_args()
+    if not 1<=args.workers<=5 or args.source and args.workers!=1:raise ValueError('workers1..5 requires unchanged source; --source revalidation must be serial')
+    if args.workers>1:
+        with ProcessPoolExecutor(max_workers=args.workers) as pool:payload=merge_profiles(list(pool.map(learn_directory,args.directories)))
+    else:payload=learn(args.directories,args.source,progress=lambda message:print(message,file=sys.stderr,flush=True))
     args.output.parent.mkdir(parents=True,exist_ok=True)
     args.output.write_text(json.dumps(payload,indent=2),encoding='utf-8')
     print(json.dumps({'words':payload['words'],'training_prefixes':len(payload['training']),'rejected':len(payload['rejected_training'])},indent=2))

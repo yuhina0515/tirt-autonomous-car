@@ -4,14 +4,30 @@ from pathlib import Path
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'tools'))
-from learn_course_mission import feature_identity,stage_profile,observable_events,lift_observation,MODELS,sha,canonical_sha
+from learn_course_mission import feature_identity,stage_profile,observable_events,lift_observation,MODELS,sha,canonical_sha,merge_profiles
 from course_world import Course
 
 
 class ProfileChecks(unittest.TestCase):
+    def test_legacy_dispatcher_changes_fail_closed(self):
+        source=ROOT/'firmware/experiments/junction_context/junction_context.ino'
+        profile=ROOT/'simulation/junction_context_mission.json'
+        with tempfile.TemporaryDirectory() as d,patch('learn_course_mission.canonical_sha',return_value='changed'):
+            with self.assertRaisesRegex(ValueError,'dispatcher changed'):
+                stage_profile(source,Path(d)/'staged',profile,sha(ROOT/'simulation/reconstructed_course.json'))
+
+    def test_parallel_merge_preserves_rejections_and_refuses_mixed_or_duplicate_teachers(self):
+        a=dict(course_sha256='c',feature_sha256='f',sensor_model_sha256={'m':'h'},model_hash_encoding='utf8_lf',model_features=[],
+               words=[['LIFT']],training=[dict(seed=1)],rejected_training=[])
+        b={**a,'words':[],'training':[],'rejected_training':[dict(seed=2)]}
+        result=merge_profiles([a,b]);self.assertEqual(result['rejected_training'],[dict(seed=2)])
+        self.assertEqual(result['training'],[dict(seed=1)])
+        for bad in ({**b,'feature_sha256':'other'},{**b,'rejected_training':[dict(seed=1)]}):
+            with self.assertRaises(ValueError):merge_profiles([a,bad])
     def test_junction_literals_bind_source_and_reject_invalid_actions(self):
         source=ROOT/'firmware/experiments/junction_context/junction_context.ino'
         course=sha(ROOT/'simulation/reconstructed_course.json')

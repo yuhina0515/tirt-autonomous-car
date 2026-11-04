@@ -15,7 +15,8 @@ import random
 import shutil
 import subprocess
 
-from course_world import Course,Mechanisms,Pose,advance,sense,geometry,chassis_pitch
+from course_world import Mechanisms,Pose,advance,sense,chassis_pitch
+from course_environment import Course,geometry
 from course_referee import audit_trace,verify_controller_trace,verify_sensor_trace,crossed_route_gate
 from course_qualification import judge_batch
 from simulation_model import Plant
@@ -162,14 +163,14 @@ def main():
     if args.candidate_profile:
         if args.experiment:raise ValueError('candidate profile and legacy setting experiment are separate variants')
         from learn_course_mission import stage_profile
-        source=stage_profile(source,out/'profiled'/source.stem,args.candidate_profile,file_hash(args.course))
+        source=stage_profile(source,out/'profiled'/source.stem,args.candidate_profile,file_hash(args.course),course_spec=spec)
     dll,digest=build(source,out/'host')
     seeds=spec['timing']['seeds']
     if args.seed_plan:seeds=json.loads(args.seed_plan.read_text(encoding='utf-8'))['seeds']
     if args.probe_seed is not None:seeds=[args.probe_seed]
     if ((args.probe_seed is None and len(seeds)!=5) or len(set(seeds))!=len(seeds) or any(type(s) is not int for s in seeds)):
         raise ValueError('exactly five distinct predeclared integer seeds required')
-    model_files=('tools/course_world.py','tools/course_referee.py','tools/run_course.py','tools/simulation_model.py',
+    model_files=('tools/course_world.py','tools/course_environment.py','tools/ground_support.py','tools/course_referee.py','tools/run_course.py','tools/simulation_model.py',
                  'tools/course_qualification.py','tools/sim_native.py','tools/learn_course_mission.py')
     overrides=json.loads(args.plant_json.read_text(encoding='utf-8')) if args.plant_json else {}
     replace(Plant(),**overrides)

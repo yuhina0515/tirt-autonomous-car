@@ -1,0 +1,297 @@
+{
+  "date": "2026-11-04",
+  "status": "ground_support_isolated_701_still_fails",
+  "official_verified_runs": 0,
+  "official_qualification_passed": false,
+  "unseen_validation_runs": 0,
+  "reserved_unseen_seeds": [
+    2026110741,
+    2026110742,
+    2026110743,
+    2026110744,
+    2026110745
+  ],
+  "controller_changed": false,
+  "python_tests_passed": 110,
+  "ground_backing": {
+    "status": "inferred_not_measured",
+    "height_m": 0,
+    "bounds_px": [
+      76,
+      809,
+      1024,
+      1074
+    ],
+    "support_model": "center point, not full footprint"
+  },
+  "source_pdf": {
+    "url": "https://www.tirtpointsrace.org/Files/Docs/EventDoc/ba032d0d-103c-4902-9559-b58fc8772b8b/2026TIRT-%E5%85%A8%E5%9C%8B%E8%87%AA%E9%A7%95%E8%BB%8A%E5%89%B5%E5%AE%A2%E8%B3%BD%E8%A6%8F%E5%89%87-%E6%8C%87%E5%AE%9A%E7%B5%84-%E5%9C%8B%E9%AB%98%E4%B8%AD%E8%81%B7%E7%B5%84.pdf",
+    "bytes": 1389853,
+    "sha256": "8c42f4cf04e1d50424f92bc86fbb38ced78f3743b19384695de8e36485d21ef8",
+    "matches_saved": true
+  },
+  "profile_sha256": "03451101c49aeca9b4dee49b7ca363436734196cfb90fea9d885aec2e2133720",
+  "course_sha256": "9e691481b0983e112756fd621137d045c7693e850453f187db0ad1f6d218104c",
+  "source_sha256": "054e609023286c2b9955623ca1fd931e3a0a68d73cd3f524d133b221ddc25973",
+  "course_text_transfers": [
+    {
+      "old_raw_sha256": "a2572a4a9ce372f83abf5a2ef18cff42ea10d2e01ea90bbbdc3d55d352a1e0b2",
+      "new_raw_sha256": "9e691481b0983e112756fd621137d045c7693e850453f187db0ad1f6d218104c",
+      "utf8_lf_sha256": "9e691481b0983e112756fd621137d045c7693e850453f187db0ad1f6d218104c",
+      "old_newlines": "CRLF",
+      "new_newlines": "LF",
+      "policy_payload_sha256": "f3975364f8147a939e3660bc29e4b6f6f07a090a0fb91f765bdf99a548756f7f",
+      "method": "uniform CRLF/LF only; all normalized UTF8 bytes and parsed JSON identical; raw teacher/manifests retained",
+      "tool_sha256": "1c03fa9869e81d1f9362f900d02e36f1dffa5e73eba286dd5299a4d5ccec3f58"
+    }
+  ],
+  "teacher_target_count": 4,
+  "teacher_rejected_count": 1,
+  "all_five_prefixes_revalidated": true,
+  "legacy_711_trace_sha256": "16d452909240c9a910dcdacae15d77f561e2ebc377f40e4b08e4742036de4720",
+  "diagnostics": [
+    {
+      "directory": "build-output/ground-support/diagnostic-701-rerun",
+      "results_sha256": "cab5d76dd9752d43e6e1e4a977aecc9c302542414a547e0140260bc56e5a39a7",
+      "manifest_sha256": "8b766375b014d570c5d9f1d488b8868745d92cc9cceeefb4169e6fba71643858",
+      "seed": 2026110701,
+      "outcome": "body_lost_guide",
+      "simulation_seconds": 189.45,
+      "gates_crossed": 195,
+      "gates_required": 209,
+      "trace_sha256": "247d42830706dc1f368e8654b1831f62f982e6531c3ae5fca8609cb3e3fb99e4",
+      "independent_checks": {
+        "start_crossing": true,
+        "ordered_gate_checks": false,
+        "body_line_coverage": false,
+        "wheel_road_coverage_with_V_exception": true,
+        "direction_and_layer": false,
+        "shortcut_boundary": true,
+        "seesaw_crossing": true,
+        "lift_stop_and_settled_exit": true,
+        "finish_crossing": false,
+        "no_fault_or_intervention": true
+      },
+      "first_violation": "reverse_or_wrong_branch_travel",
+      "first_violation_ms": 189330.0,
+      "native_trace_replay_verified": true,
+      "physical_sensor_origin_verified": true
+    },
+    {
+      "directory": "build-output/ground-support/diagnostic-711-rerun",
+      "results_sha256": "f9b5ee2f845e090800e95364d2e85bc09cf9bf1779449670dc17bf65f10dc019",
+      "manifest_sha256": "0490ac0000e1f6c10b49d706a8e56365c035e771a8a36ed27819d2449cac2e02",
+      "seed": 2026110711,
+      "outcome": "finished",
+      "simulation_seconds": 219.32,
+      "gates_crossed": 209,
+      "gates_required": 209,
+      "trace_sha256": "16d452909240c9a910dcdacae15d77f561e2ebc377f40e4b08e4742036de4720",
+      "independent_checks": {
+        "start_crossing": true,
+        "ordered_gate_checks": true,
+        "body_line_coverage": true,
+        "wheel_road_coverage_with_V_exception": true,
+        "direction_and_layer": true,
+        "shortcut_boundary": true,
+        "seesaw_crossing": true,
+        "lift_stop_and_settled_exit": true,
+        "finish_crossing": true,
+        "no_fault_or_intervention": true
+      },
+      "first_violation": null,
+      "first_violation_ms": null,
+      "native_trace_replay_verified": true,
+      "physical_sensor_origin_verified": true
+    },
+    {
+      "directory": "build-output/ground-support/diagnostic-714-rerun",
+      "results_sha256": "847eb50f1a6315d932faeda64b8accadae74815a4a61b06109e6311bc8b69146",
+      "manifest_sha256": "078c1140d56c936698bf1db2686372837a7a1168439b0e538c19f8a82465b951",
+      "seed": 2026110714,
+      "outcome": "finished",
+      "simulation_seconds": 221.195,
+      "gates_crossed": 209,
+      "gates_required": 209,
+      "trace_sha256": "175aeb0cd9d51baa839243152387a0c45648b5000a24d6c01d963044fde31598",
+      "independent_checks": {
+        "start_crossing": true,
+        "ordered_gate_checks": true,
+        "body_line_coverage": true,
+        "wheel_road_coverage_with_V_exception": true,
+        "direction_and_layer": true,
+        "shortcut_boundary": true,
+        "seesaw_crossing": true,
+        "lift_stop_and_settled_exit": true,
+        "finish_crossing": true,
+        "no_fault_or_intervention": true
+      },
+      "first_violation": null,
+      "first_violation_ms": null,
+      "native_trace_replay_verified": true,
+      "physical_sensor_origin_verified": true
+    }
+  ],
+  "701_causal": {
+    "hint_samples": [
+      {
+        "ms": 188905,
+        "weights": [
+          0,
+          202,
+          984,
+          797,
+          993
+        ],
+        "hint": 1,
+        "turnDirection": "1",
+        "linePosition": "362",
+        "cornerWideRecovery": "0",
+        "sensorF": "4",
+        "left": "202",
+        "right": "156"
+      },
+      {
+        "ms": 188910,
+        "weights": [
+          4,
+          217,
+          995,
+          1000,
+          1000
+        ],
+        "hint": 1,
+        "turnDirection": "1",
+        "linePosition": "467",
+        "cornerWideRecovery": "0",
+        "sensorF": "6",
+        "left": "212",
+        "right": "146"
+      },
+      {
+        "ms": 188915,
+        "weights": [
+          0,
+          427,
+          995,
+          993,
+          995
+        ],
+        "hint": 0,
+        "turnDirection": "1",
+        "linePosition": "372",
+        "cornerWideRecovery": "0",
+        "sensorF": "6",
+        "left": "210",
+        "right": "136"
+      },
+      {
+        "ms": 188975,
+        "weights": [
+          10,
+          991,
+          1000,
+          604,
+          0
+        ],
+        "hint": 0,
+        "turnDirection": "-1",
+        "linePosition": "-263",
+        "cornerWideRecovery": "0",
+        "sensorF": "12",
+        "left": "186",
+        "right": "174"
+      },
+      {
+        "ms": 189015,
+        "weights": [
+          0,
+          804,
+          402,
+          0,
+          0
+        ],
+        "hint": 0,
+        "turnDirection": "-1",
+        "linePosition": "-800",
+        "cornerWideRecovery": "0",
+        "sensorF": "0",
+        "left": "106",
+        "right": "222"
+      },
+      {
+        "ms": 189020,
+        "weights": [
+          0,
+          387,
+          0,
+          0,
+          12
+        ],
+        "hint": 0,
+        "turnDirection": "-1",
+        "linePosition": "-800",
+        "cornerWideRecovery": "0",
+        "sensorF": "0",
+        "left": "100",
+        "right": "230"
+      }
+    ],
+    "direction_samples": [
+      {
+        "ms": 189325,
+        "accepted": true,
+        "expected_segment": 195,
+        "projections": [
+          {
+            "index": 194,
+            "distance_m": 0.05987053763313364,
+            "progress_m": 0.001452330272019484,
+            "eligible": true
+          },
+          {
+            "index": 195,
+            "distance_m": 0.05987053763313364,
+            "progress_m": -0.0018208104639211872,
+            "eligible": true
+          }
+        ]
+      },
+      {
+        "ms": 189330,
+        "accepted": false,
+        "expected_segment": 195,
+        "projections": [
+          {
+            "index": 194,
+            "distance_m": 0.061599941541558595,
+            "progress_m": 0.001435282131449829,
+            "eligible": false
+          },
+          {
+            "index": 195,
+            "distance_m": 0.061599941541558595,
+            "progress_m": -0.0018204478407491376,
+            "eligible": false
+          }
+        ]
+      }
+    ],
+    "rule_changed": false,
+    "classification": "no_eligible_route_projection, not independently proven reverse"
+  },
+  "limits": [
+    "inferred geometry, floor and dynamics",
+    "center-point physical support",
+    "no onboard finish stop",
+    "known diagnostics are not unseen validation",
+    "no hardware upload or motor operation",
+    "not promoted or merged"
+  ],
+  "profile_transport_tool_sha256": "1c03fa9869e81d1f9362f900d02e36f1dffa5e73eba286dd5299a4d5ccec3f58",
+  "profiled_avr": {
+    "flash": 9772,
+    "global_ram": 251,
+    "fresh_build": true
+  }
+}

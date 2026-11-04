@@ -37,3 +37,15 @@ scenarios.json可設定物理參數及情境。預設比較00e0db0原生移植�
 驗證：`py -3.11 -m unittest discover -s tests -v`。有新控制行為時，保留舊版對照並新增定向測試，不要求所有物理壓力案例都「到達」。反向ADC案例刻意展示極性錯誤的風險；三白、白字與關卡仍可能有相同觀測。不能把到達數當作實車成功率。
 
 本輪修正：已在搜尋期限內連續確認15 ms的回線，在800 ms邊界可完成轉彎；確認不足或確認完成時間超過原搜尋期限仍故障。原速度、停車開關與根目錄XML／INO不變。完整報告見docs/SIMULATION_ENV_2026-11-03.zh-TW.md。
+
+## Isolated ground-backing hypothesis (2026-11-04)
+
+Use `reconstructed_course_ground.json` only with `junction_context_ground_mission.json`; the original course/profile remain separate. See [support/legality audit](../docs/GROUND_SUPPORT_2026-11-04.zh-TW.md) and [receipt](../docs/simulations/2026-11-04-ground-support.json). Bounds, height and material remain inferred. The backing does not add sensor paint or legalize wheel departure.
+
+Example known diagnostic (choose a fresh output directory):
+
+```powershell
+py -3.11 tools/run_course.py --course simulation/reconstructed_course_ground.json --source firmware/experiments/junction_context/junction_context.ino --candidate-profile simulation/junction_context_ground_mission.json --plant-json simulation/plant_high_torque_hypothesis.json --probe-seed 2026110701 --diagnostic-limit-s 240 --output build-output/my-ground-701
+```
+
+Known711/714 pass209/209; known701 remains195/209. Never pool these with legacy results or call them unseen qualification. Profile transport changes only uniform CRLF/LF after learning, with exact normalized bytes/policy equality and retained raw receipts. Further training still requires matching raw teacher identity; finish learning before terminal transport, or collect new teachers on the destination course. No hardware operation is implied.

@@ -8,7 +8,8 @@ from dataclasses import replace
 import random
 from pathlib import Path
 
-from course_world import Course, Mechanisms, Pose, crossed_gate, geometry, advance,chassis_pitch,sense,forward_travel
+from course_world import Mechanisms, Pose, crossed_gate, advance,chassis_pitch,sense,forward_travel
+from course_environment import Course,geometry
 
 REQUIRED_COLUMNS={'ms','x','y','z','yaw','pitch','vl','vr','left','right','turnFault','intervention'}
 

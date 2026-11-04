@@ -1,0 +1,15 @@
+# Ground support squad handoff, 2026-11-04
+
+Plan: plans/2026-11-04-squad-ground-audit.md. Baseline950519a plus local work. Stable source snapshot outside worktree: C:\Users\Yuhina\AppData\Local\Temp\tirt-squad-ground-20261104; baseline and diff captured. Bulk traces/dependencies/secrets excluded.
+
+Workers: /root/support, /root/profile, /root/recovery, all independent read-only, fork_turns none, inherited model (API did not expose concrete model identifier), no overrides or subagents. All three launched before reports consumed. Lead alone edited.
+
+Accepted: legacy dispatcher previously outside old profile identity; pinned canonical audited delegation, with negative regression. Support/legality separation verified at frozen701 pose and ordinary illegal departure; worker sampled1,000 additional legal/sensor parity poses. Recovery hint lasts5ms, no10ms confirmation; lead reproduced direction flip and100/230 interval from frozen trace. At189330 route projection distance61.600mm exceeds60mm eligibility, so describe corridor departure, not independently proven reversal. No judge changes.
+
+Rejected as a fix request: transformed lift profile with old raw teachers fails junction learner identity. Failure is real but intentionally fail-closed; transport is terminal after learning. Documented workflow instead of accepting course-history metadata as a waiver. Parallel merge preserved rejected samples and rejects duplicate/mixed identities. No confirmed defect in backing contact dispatch. Deferred: full support footprint, measured ground extent/material, bounded observable-preview control experiment. No automatic shortening of confirmation/deadline extension.
+
+Validation: 110 Python tests; known ground701 body_lost_guide189.450s195/209,711 finished219.320s209/209,714 finished221.195s209/209. All three actual-core and physical-sensor origin replays true; completed pair all10independentchecks true. Ground metrics remain separate from legacy. Profiled source exact SHA054e609...973 unchanged, Nano9772Flash/251global RAM freshly compiled. Prior unprofiled build remains historical8574/203; no new unprofiled claim. Original-world711 trace exact parity16d452...4720.
+
+Tool/setup failures: inherited PATH had stray double quote, vcvars reported Google Cloud unexpected; locally trimming subprocess PATH restored compiler, system settings unchanged. Failed setup folders retained and fresh -rerun outputs used. Initial109test pass followed by final110 after guard fix. PDF downloaded via HTTPS matched saved SHA; rendered pages5..7 inspected. No verified physical ground dimensions. Terminal-only transfer workflow documented in the report; transfer-tool bytes match the stored receipt. No model failure/substitution.
+
+Delivery: task-scoped branch/PR6 only; no merge, force-push or stable ref changes. Official qualification0, unseen741..745 unexecuted. Hardware firmware/capture/calibration, onboard finish-stop and official metric geometry remain unaccepted. No upload or motor operation. Machine receipt docs/simulations/2026-11-04-ground-support.json; Traditional Chinese report docs/GROUND_SUPPORT_2026-11-04.zh-TW.md.

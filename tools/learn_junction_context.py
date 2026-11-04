@@ -12,11 +12,11 @@ import math
 from pathlib import Path
 import sys
 
-from course_world import Course
+from course_environment import Course
 from course_referee import audit_trace,verify_sensor_trace
 from simulation_model import Plant
 from sim_native import ROOT,Controller,build
-from learn_course_mission import MODELS,TOKENS,canonical_sha,feature_identity,sha,observable_events,stage_profile
+from learn_course_mission import models_for_spec,TOKENS,canonical_sha,feature_identity,sha,observable_events,stage_profile
 
 
 def training_seed(seed,spec):
@@ -71,7 +71,7 @@ def audit_teacher(task):
             attempt['course_hash']!=course_hash or attempt['manifest_sha256']!=manifest_hash):raise ValueError('teacher trial differs from manifest')
     for name,digest in manifest['model_files'].items():
         if sha(folder/'model'/name)!=digest:raise ValueError('frozen teacher model changed')
-    models={n:canonical_sha(folder/'model'/n) for n in MODELS}
+    models={n:canonical_sha(folder/'model'/n) for n in models_for_spec(spec)}
     if any(canonical_sha(ROOT/n)!=digest for n,digest in models.items()):raise ValueError('teacher sensor/world model differs')
     dll,digest=build(folder/'host'/'sketch.inc',work/'host')
     if digest!=manifest['source_hash']:raise ValueError('teacher source changed')
