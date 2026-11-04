@@ -1,0 +1,45 @@
+{
+  "date": "2026-11-05",
+  "baseline_revision": "0fc45e6",
+  "fqbn": "arduino:avr:nano:cpu=atmega328old",
+  "test_count": 139,
+  "new_directed_cases": 29,
+  "tests_passed": true,
+  "source_sha256": {
+    "firmware/layered_car/controller.h": "a1eb44c5a41cf4b416c83c6251d17bd5a3b9098b2d167dda50dc4d241ac552fa",
+    "firmware/layered_car/layered_car.ino": "a372d5ca94833b5ecc242c03b8ebc9ed95a2ca01b5c4d824c3034f8729a31c5b",
+    "firmware/layered_car/mission.h": "c42561da627c60456ea00da6f3b742501cb910520e99007e6abc6c13c7880446",
+    "firmware/layered_car/motion.h": "5f29b19a081682472d29e3ca68173db99ed3ab54498fdfecb971c655611e3604"
+  },
+  "builds": [
+    {
+      "profile": "practice",
+      "fixture_only": false,
+      "uploaded": false,
+      "hex_sha256": "DEE52931AD5212B95993164BD52D0A5A97511E0397003EA50FB3E5142910B0B6",
+      "flash_bytes": 6074,
+      "global_ram_bytes": 157
+    },
+    {
+      "profile": "field-route",
+      "fixture_only": true,
+      "uploaded": false,
+      "hex_sha256": "4F13289A3FB3EDFBCBF8C7260568304D8837ED055AC782F1D634924A37A5B00A",
+      "flash_bytes": 6110,
+      "global_ram_bytes": 187
+    },
+    {
+      "profile": "race-route",
+      "fixture_only": true,
+      "uploaded": false,
+      "hex_sha256": "DF6B95FF5483D69ED3681ADE6EC7CB67885F88D3236528799235AC823896ABEA",
+      "flash_bytes": 6032,
+      "global_ram_bytes": 209
+    }
+  ],
+  "verified_official_course_runs": 0,
+  "hardware_uploaded": false,
+  "download_replaced": false,
+  "route_is_verified": false,
+  "rules_sha256": "8c42f4cf04e1d50424f92bc86fbb38ced78f3743b19384695de8e36485d21ef8"
+}

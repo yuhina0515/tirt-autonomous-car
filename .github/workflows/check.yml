@@ -27,6 +27,10 @@ jobs:
         run: |
           g++ -m32 -std=c++11 -Wall -Wextra -pedantic tests/native_car.cpp -o test-output/native-car
           test-output/native-car
+      - name: Execute layered mission and motion contracts on 32-bit integers
+        run: |
+          g++ -m32 -std=c++11 -Wall -Wextra -pedantic -I tests/layered_arduino tests/layered_car.cpp -o test-output/layered-car
+          test-output/layered-car
       - name: Execute experimental continuous-position controller
         run: |
           g++ -m32 -std=c++11 -Wall -Wextra -pedantic tests/candidate_car.cpp -o test-output/candidate-car

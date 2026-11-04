@@ -21,3 +21,4 @@
 - [2026-10-26 Project save and summary](2026-10-26-project-save.md): latest audit-data snapshot, three unresolved bugs, exact source/stable backup and checksums; no controller edits.
 
 - [2026-11-04 Ground support squad](2026-11-04-squad-ground-support.md): isolated support/legality, dispatcher identity guard,110tests, known701 remains195/209; ground711/714209/209, no unseen/hardware qualification.
+- [2026-11-05 Layered control squad](2026-11-05-squad-layered-control.md): preserved runnable native; independent motion/mission design, explicit field lift profile,29new/139total tests and three Nano builds; route/hardware qualification pending.
