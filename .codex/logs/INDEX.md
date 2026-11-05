@@ -1,5 +1,7 @@
 # Local handoff logs
 
+- [Start-to-finish scenario analysis](2026-11-05-start-finish-analysis.md):210segments/10phases, actual reference209/209 at218.880s, actual layered empty-route82/209 Signal at103.305s,143tests; known inferred-model diagnostics only.
+
 - [Continuous control and physics recovery squad](2026-11-03-control-recovery-squad.md): candidate PD/observable mission, corrected contact/grip/seesaw/referee,76 tests; final held-out0/5 max194 with direction violations, default unchanged.
 
 - [Squad course reconstruction and physics](2026-11-03-squad-course.md): executable full-diagram hypothesis, independent physical/sensor evidence, capture-dropout fix,57 tests,15 failed comparison runs; official five-run goal unmet.
