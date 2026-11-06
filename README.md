@@ -1,5 +1,7 @@
 # TIRT 自駕車專案
 
+**11/7最後練習候選**：[兩次五白任務版](firmware/race_two_marker/README.md)、[32種排列與狀態優先序](docs/race-two-marker-2026-11-06/LOGIC.zh-TW.md)、[09:00–11:00驗證清單](docs/race-two-marker-2026-11-06/PRACTICE.zh-TW.md)。沿用native循線核心，首次五白停等27秒，確認離台後第二次五白鎖停；獨立候選，尚未實車驗收。單檔無NeoPixel依賴，Nano編譯8250/287bytes，161項測試通過；原可啟動版本保留。
+
 **2026-11-05 起終點逐段分析與整圈實跑**：[210路段策略、十階段圖與結果](docs/start-finish-2026-11-05/REPORT.zh-TW.md)。相同已知診斷案例下，既有 junction_context 策略完成209/209、起終點218.880秒；新兩層空路線基準在103.305秒、82/209觸發Signal停車。實際C++與物理ADC重播通過；完整圈參考另經凍結來源獨立稽核。這是推定模型診斷，不是新版完賽或實車驗收。
 
 **2026-11-05 兩層控制重整**：[獨立新版與使用界線](firmware/layered_car/README.md)。循線／PD 與路線任務分開，祥儀現場升降23350ms保留為明確設定，另有需機構就緒輸入的保守設定。新增29項核心／按鈕／期限測試；預設空路線只做循線練習，不冒充正賽任務。可啟動的 native_car 與回復XML不變，[來源回復快照](snapshots/2026-11-05-runnable-native/manifest.json)已保存；Hina Web 下載與車上程式未由本次重整更換。

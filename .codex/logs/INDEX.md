@@ -1,5 +1,7 @@
 # Local handoff logs
 
+- [Two-marker final-practice candidate](2026-11-06-two-marker-candidate.md):native-motion-derived firstfivewhite27s/secondfinish,32patterns,161tests,Nano8250/287,verified versionedINO download; field checks pending.
+
 - [Rules and204000local corner trials](2026-11-06-corner-1000.md):204turn vertices×1000,52057strict passes, actual layered core; local planar benchmark,148tests and408replays, not official qualification.
 
 - [Hina Web interactive replay](2026-11-05-hina-replay.md): deployed native project player, two verified traces,145tests, identical preview/production image; existing login required.
