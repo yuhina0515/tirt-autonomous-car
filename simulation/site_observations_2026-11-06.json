@@ -1,0 +1,18 @@
+{
+  "date": "2026-11-06",
+  "status": "user_reported_layout_correction_pending_geometry",
+  "observations": [
+    {
+      "marker": "F",
+      "reported_type": "lift",
+      "user_statement": "F點應該是升降台才對",
+      "confidence": "user_suggested_identification_not_independently_confirmed",
+      "photo_sha256": "be5e40a4ff567bfb7f704dcbc3f73e302a455881aae6e3c7df83e0d4b9882cdd",
+      "photo_observation": "A mechanism and upper/lower track connections are visible near the center. The photograph has no visible F label and does not establish motion or dimensions.",
+      "previous_model": {"lift_near_px": [1028, 450], "occurrence_after_vertex": 154, "F": "undefined"},
+      "pending": ["F-to-photo registration", "incoming and outgoing track connections", "platform motion and heights", "whether the existing modeled lift is replaced or an additional mechanism exists"],
+      "consequence": "Existing successful full-lap traces do not validate the reported F-lift layout. Local planar corner trials do not exercise any lift configuration."
+    }
+  ],
+  "historical_artifacts": "Preserve frozen models, source-bound mission profiles and traces; construct a separately identified corrected model after topology is resolved."
+}
