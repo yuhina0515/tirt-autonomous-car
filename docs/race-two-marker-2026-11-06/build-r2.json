@@ -13,5 +13,8 @@
   "global_ram_bytes": 293,
   "target": "arduino:avr:nano:cpu=atmega328old",
   "field_acceptance": false,
-  "download_url": "https://hina-tw.ddns.net/downloads/files/tirt-two-marker-20261106-r2/race_two_marker.ino"
+  "download_url": "https://hina-tw.ddns.net/downloads/files/tirt-two-marker-20261106-r2/race_two_marker.ino",
+  "total_host_tests": 167,
+  "generated_sensor_sequences": 1000,
+  "https_download_hash_verified": true
 }

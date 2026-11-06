@@ -1,10 +1,10 @@
 {
-  "title": "TIRT 兩次全白候選版（2026-11-06）",
-  "description": "11/7 最後練習用：第一次五顆全白停車等待 27 秒，離台重新循線後，第二次五顆全白停止。單檔 INO、不需額外函式庫；尚未實車驗收。",
-  "file": "tirt-two-marker-20261106/race_two_marker.ino",
-  "size": "25,641 bytes",
-  "source": "race_two_marker，來源提交 15e17b2；獨立候選版，保留 native_car 回復版本",
-  "sha256": "6A6B4B6DFA22351A0E2B635D48F173ACD20278F2BBD7E3A930F9D0C60FDC1CE7",
+  "title": "TIRT 兩次全白候選版 R2（2026-11-06・離台循線修正）",
+  "description": "修正離台固定直行與僅中央白才能恢復循線的問題：離台立即低速修正，連續有效窄線 100 ms 後重新接受標記。第一次五白等 27 秒，第二次五白停止；須實車重測。",
+  "file": "tirt-two-marker-20261106-r2/race_two_marker.ino",
+  "size": "27,100 bytes",
+  "source": "race_two_marker R2，來源提交 fc2d687；保留 native_car 回復版本",
+  "sha256": "8317D7BBC17CB36215CDAC448C45A0EB011C8179C1F450DDCAB714F014B499F6",
   "steps": [
     "下載 race_two_marker.ino，以 Arduino IDE 開啟並放在同名資料夾；不需安裝 Adafruit NeoPixel 或其他函式庫。",
     "選擇 Arduino Nano、ATmega328P (Old Bootloader) 與車子實際的 COM 埠，再燒錄。",
@@ -14,11 +14,11 @@
   "help": [
     {
       "summary": "驗證結果與現場限制",
-      "body": "161 項自動測試通過；Nano Old Bootloader 編譯 Flash 8250 bytes、全域 RAM 287 bytes。這不是實車驗收；全白只會遇到兩次仍須現場確認。"
+      "body": "167 項自動測試通過，含 1000 組生成感測序列；Nano Old Bootloader 編譯 Flash 8670 bytes、全域 RAM 293 bytes。這不是實車成功率；須置中、左偏、右偏各做 10 次離台重測。"
     },
     {
       "summary": "離台如何避免重複計數",
-      "body": "五顆全白立即停車，連續 30 ms 才計數。等待 27 秒後以 PWM 45 離台；須在 1.5 秒內取得僅中間為白的 00100，且穩定 100 ms，才允許第二個標記。超時停止並須重設。"
+      "body": "五白立即停車，連續 30 ms 計數並等 27 秒。離台看到窄線即以 PWM 15–45 修正；外側黑、中央有效窄線連續 100 ms 後才允許第二次計數，不再只限 00100。1.5 秒離台期限不變；曾見窄線後失線僅保留 120 ms 搜尋，再停車。"
     }
   ]
 }
