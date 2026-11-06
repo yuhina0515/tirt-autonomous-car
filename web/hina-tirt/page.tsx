@@ -17,17 +17,20 @@ export default function TirtProject() {
     </header>
     <section className={styles.release} aria-label="兩次全白練習候選版">
       <span className={styles.eyebrow}>11/7 09:00–11:00 最後練習</span>
-      <h2>兩次全白 R2 · 離台循線修正版</h2>
-      <p>第一次五顆全白立即停車，連續確認 30 ms 後等待 27 秒；離台立即依中央三顆白線位置低速修正；外側黑、中央有效窄線連續 100 ms 才重新接受標記，不再只限 00100。第二次確認五顆全白後停止，直到重設。</p>
+      <h2>兩次全白 R3 · 暫停低速離台</h2>
+      <p>第一次五顆全白立即停車，連續確認 30 ms 後等待 27 秒；暫停專用低速離台：等待結束仍全白時以原生起步 PWM 100 前進，其餘立即正常循線。外側黑、中央有效窄線連續 100 ms 才重新接受標記；1.5 秒逾時仍保留。第二次確認五顆全白後停止，直到重設。</p>
       <nav className={styles.links} aria-label="練習版本下載">
-        <a href="/downloads/files/tirt-two-marker-20261106-r2/race_two_marker.ino" download>下載 R2 race_two_marker.ino</a>
+        <a href="/downloads/files/tirt-two-marker-20261106-r3/race_two_marker.ino" download>下載 R3 主程式</a>
+        <a href="/downloads/files/tirt-two-marker-20261106-r3/race_capture.ino" download>下載 R3 行駛回傳版（會驅動馬達）</a>
         <a href="/downloads/files/tirt-native-20261104/native_car.ino" download>下載 native_car 回復版本</a>
       </nav>
       <p>單一 INO，不需額外函式庫。Arduino Nano → ATmega328P (Old Bootloader)。先架空車輪；D12 按鈕先放開再按下啟動，運行中再按一次停止，須重設才能重啟。</p>
-      <p>167 項自動測試通過，包含 1,000 組生成感測序列；Nano 編譯 Flash 8,670 bytes／全域 RAM 293 bytes。請先置中、左偏、右偏各重測 10 次離台，腳本不代表實車成功率。尚未實車驗收；「全白只會遇到兩次」是待現場驗證的策略假設。須確認 F 點升降台、離台循線、額外白區與終點計時器是否真正觸發。</p>
+      <p>控制與回傳測試通過；主程式 Nano 編譯 Flash 8,738 bytes／全域 RAM 294 bytes。請先置中、左偏、右偏各重測 10 次離台，腳本不代表實車成功率。尚未實車驗收；「全白只會遇到兩次」是待現場驗證的策略假設。須確認 F 點升降台、離台循線、額外白區與終點計時器是否真正觸發。</p>
+      <p>今天預設 useSlowExit=false；明早需要比較時，改 true 可恢復 R2。回傳版與主程式採相同控制，D12 啟動後正常行駛，以 USB 115200 回傳二進位資料；先開記錄再啟動，緩衝區滿會略過封包，避免阻塞控制。</p>
       <nav className={styles.links} aria-label="練習準備資料">
-        <a href="https://github.com/yuhina0515/tirt-autonomous-car/blob/fc2d687/docs/race-two-marker-2026-11-06/LOGIC.zh-TW.md" target="_blank" rel="noreferrer">32 種感測排列與狀態邏輯 ↗</a>
-        <a href="https://github.com/yuhina0515/tirt-autonomous-car/blob/fc2d687/docs/race-two-marker-2026-11-06/PRACTICE.zh-TW.md" target="_blank" rel="noreferrer">09:00–11:00 練習檢查表 ↗</a>
+        <a href="https://github.com/yuhina0515/tirt-autonomous-car/blob/92be47e/docs/race-two-marker-2026-11-06/TELEMETRY.md" target="_blank" rel="noreferrer">行駛回傳與 CSV 操作 ↗</a>
+        <a href="https://github.com/yuhina0515/tirt-autonomous-car/blob/92be47e/docs/race-two-marker-2026-11-06/LOGIC.zh-TW.md" target="_blank" rel="noreferrer">32 種感測排列與狀態邏輯 ↗</a>
+        <a href="https://github.com/yuhina0515/tirt-autonomous-car/blob/92be47e/docs/race-two-marker-2026-11-06/PRACTICE.zh-TW.md" target="_blank" rel="noreferrer">09:00–11:00 練習檢查表 ↗</a>
       </nav>
     </section>
     <h2 className={styles.archiveHeading}>11/5 模型回放 · 非本次候選版</h2>

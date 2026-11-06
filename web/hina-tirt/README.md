@@ -17,3 +17,7 @@ Build against the live Next/React lockfile in an isolated preview first, verify 
 ## November 6 candidate publication
 
 `two-marker-download.json` is the download item inserted first into the live `app/downloads/view.tsx` ITEMS array. Relabel the previous native entry as `TIRT 回復版本 native_car（2026-11-03）`; retain its path, hash, dependency and operating instructions. Preserve all other download items. The project page and stylesheet introduce the candidate above the frozen replay, with explicit model/field-validation boundaries. Deployment receipt: `.codex/logs/2026-11-06-hina-two-marker-publication.md`.
+
+## R3 running telemetry
+
+R3 temporarily disables slow exit via a reversible Config flag. `two-marker-download.json` replaces the R2 item; `running-capture-download.json` replaces the old stationary listing (not its historical artifact). Both derive from the same firmware source. Running capture drives motors after D12, and the page states this explicitly. Docs/source links pin firmware commit92be47e. See the R3 handoff and build receipt.

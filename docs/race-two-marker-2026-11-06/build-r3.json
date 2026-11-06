@@ -47,5 +47,7 @@
       "download_url": "https://hina-tw.ddns.net/downloads/files/tirt-two-marker-20261106-r3/race_capture.ino"
     }
   ],
-  "total_host_tests": 194
+  "total_host_tests": 194,
+  "https_download_hashes_verified": true,
+  "web_image": "sha256:1d6f61b77e51c06a108b6aaa876013e34361beffb9def65c8d49b949eaf95c80"
 }
