@@ -13,3 +13,7 @@ Copy the generated directory into Hina Web `public/projects/tirt/`. Assets share
 Player: two case tabs, play/pause/restart,0.25..16x speed,1s stepping, timestamp seek, phase jumps, route/source toggles,100..200% map zoom, current ordered gates, ADC, PWM, height/tilt and final result. Unreached phase jumps are disabled. Layered bridge lacks detailed mission telemetry, so it is not fabricated in the UI. Playback is explicitly labelled as precomputed, not a browser C++ solver.
 
 Build against the live Next/React lockfile in an isolated preview first, verify desktop/mobile UI and live HTTPS assets after deployment. Back up the original project source and running image. Promote only the reviewed image and copy task-scoped source/assets; preserve unrelated dirty server files, existing auth policy, downloads, firmware and legacy simulator.
+
+## November 6 candidate publication
+
+`two-marker-download.json` is the download item inserted first into the live `app/downloads/view.tsx` ITEMS array. Relabel the previous native entry as `TIRT 回復版本 native_car（2026-11-03）`; retain its path, hash, dependency and operating instructions. Preserve all other download items. The project page and stylesheet introduce the candidate above the frozen replay, with explicit model/field-validation boundaries. Deployment receipt: `.codex/logs/2026-11-06-hina-two-marker-publication.md`.

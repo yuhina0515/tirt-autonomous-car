@@ -1,0 +1,7 @@
+# Hina Web two-marker publication — 2026-11-06
+
+Published candidate at the top of /downloads and /projects/tirt. The native INO remains the rollback. Existing replay is explicitly identified as the November 5 model, not the new candidate or confirmed F layout. Added 32-pattern and final-practice links pinned to firmware commit 15e17b2.
+
+Validation: fresh isolated production build succeeded; browser DOM verified both pages and download destinations. Screenshot capture timed out twice; no visual screenshot claim. Production uses exactly the preview image sha256:251aae2264cc351d9d7212fbc2d4bb352fb8ba3a62ecce3ec47c43eeb5fe27b9. Live HTTPS downloads HTML includes candidate and rollback. Project route retains authentication redirect; deployed prerender HTML verified inside the matching production image. Direct INO HTTPS SHA-256 remains 6a6b4b6dfa22351a0e2b635d48f173acd20278f2bbd7e3a930f9d0c60fdc1ce7 (25641 bytes).
+
+Only three production source files changed: app/downloads/view.tsx and app/projects/tirt/{page.tsx,Replay.module.css}. Source hashes and running image checked before promotion. Original sources: /srv/docker/hina-web-backups/two-marker-20261106. Rollback image: hina-web-rollback:pre-two-marker-20261106. Unrelated source, data, authentication and firmware unchanged. No new hardware acceptance. Existing firmware test/build results are prior validated evidence, not rerun for this content-only deployment.
