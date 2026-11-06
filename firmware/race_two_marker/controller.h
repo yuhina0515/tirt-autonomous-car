@@ -1,5 +1,6 @@
 #pragma once
 #include "motion_core.h"
+#include "exit_motion.h"
 namespace race {
 using Wheels=race_motion::Wheels;
 enum class Phase:uint8_t { BeforeLift,WaitLift,ExitLift,AfterLift,Finished,Fault };
@@ -9,7 +10,7 @@ struct Config {
  uint32_t whiteConfirmMs=30,liftWaitMs=27000,rearmMs=100,exitMs=1500,runMs=360000,uncertainMs=800;
 };
 class Controller {
- Config cfg;race_motion::Controller motion;
+ Config cfg;race_motion::Controller motion;race_motion::ExitFollower exitFollower;
  bool started=false,pending=false,clearPending=false,uncertain=false,recovering=false;
  uint32_t began=0,last=0,whiteAt=0,waitAt=0,exitAt=0,clearAt=0,uncertainAt=0,recoverAt=0,motionMs=0;
  uint8_t bits=0,count=0;
@@ -39,16 +40,17 @@ public:
   const uint8_t inner=(bits>>1)&7;
   if(phase==Phase::WaitLift){
    if(now-waitAt<cfg.liftWaitMs)return Wheels();
-   phase=Phase::ExitLift;exitAt=now;clearPending=false;motion.reset();motionMs=0;
+   phase=Phase::ExitLift;exitAt=now;clearPending=false;motion.reset();motionMs=0;exitFollower.reset();
   }
   if(phase==Phase::ExitLift){
    // Expiry wins over a late line return. All-white here is the same marker.
    if(now-exitAt>=cfg.exitMs)return fail(Fault::ExitTimeout);
-   if(bits==4){
+   Wheels exitWheels=exitFollower.tick(now,bits);
+   if(race_motion::ExitFollower::clearMarker(bits)){
     if(!clearPending){clearPending=true;clearAt=now;}
     if(now-clearAt>=cfg.rearmMs){phase=Phase::AfterLift;pending=false;uncertain=false;motion.reset();motionMs=0;}
    }else clearPending=false;
-   return Wheels(45,45);
+   return exitWheels;
   }
   if(allWhite){
    // Stop on first observation; require continuous confirmation to count.

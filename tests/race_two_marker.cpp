@@ -17,7 +17,56 @@ int main(int argc,char**argv){assert(argc==2);const char* name=argv[1];
   for(int mask=0;mask<32;mask++){race::Controller c;for(int t=0;t<=40;t+=5)sample(c,t,mask);assert(c.events()==(mask==31?1:0));}
   for(int mask=0;mask<32;mask++){race::Controller c;uint32_t t=after(c);for(int d=5;d<=45;d+=5)sample(c,t+d,mask);assert(c.events()==(mask==31?2:1));}
  }else if(!strcmp(name,"exit_patterns")){
-  for(int mask=0;mask<32;mask++){race::Controller c;auto t=lift(c);for(int d=5;d<27000;d+=5)sample(c,t+d,31);for(int d=27000;d<=27105;d+=5)sample(c,t+d,mask);assert(c.events()==1);assert(c.phase==(mask==4?race::Phase::AfterLift:race::Phase::ExitLift));}
+  for(int mask=0;mask<32;mask++){race::Controller c;auto t=lift(c);for(int d=5;d<27000;d+=5)sample(c,t+d,31);for(int d=27000;d<=27105;d+=5)sample(c,t+d,mask);assert(c.events()==1);assert(c.phase==((mask==2||mask==4||mask==6||mask==8||mask==12)?race::Phase::AfterLift:race::Phase::ExitLift));}
+ }else if(!strcmp(name,"exit_steering")){
+  race::Controller c;auto at=lift(c);for(int d=5;d<27000;d+=5)sample(c,at+d,31);
+  auto w=sample(c,at+27000,8);assert(w.left<w.right&&w.right<=45);assert(c.phase==race::Phase::ExitLift&&c.events()==1);
+  w=sample(c,at+27005,2);assert(w.right<w.left&&w.left<=45);
+ }else if(!strcmp(name,"exit_curved_rearm")){
+  int masks[]={2,6,8,12};for(int mask: masks){race::Controller c;auto at=lift(c);for(int d=5;d<27000;d+=5)sample(c,at+d,31);
+   for(int d=27000;d<=27100;d+=5)sample(c,at+d,mask);
+   assert(c.phase==race::Phase::AfterLift&&c.events()==1);
+   auto w=sample(c,at+27105,mask);assert(mask==8||mask==12?w.left<w.right:w.right<w.left);
+   for(int d=27110;d<=27140;d+=5)sample(c,at+d,31);
+   assert(c.phase==race::Phase::Finished&&c.events()==2);
+  }
+ }else if(!strcmp(name,"exit_loss")){
+  race::Config cfg;cfg.liftWaitMs=50;race::Controller c(cfg);auto at=lift(c);
+  for(int d=5;d<50;d+=5)sample(c,at+d,31);
+  auto w=sample(c,at+50,8);assert(w.left<w.right);
+  for(int d=55;d<=165;d+=5){w=sample(c,at+d,0);assert(w.left<w.right&&c.events()==1);}
+  w=sample(c,at+170,0);assert(w.left==0&&w.right==0);
+  w=sample(c,at+175,2);assert(w.right<w.left&&c.phase==race::Phase::ExitLift);
+  for(int d=180;d<=275;d+=5)sample(c,at+d,6);
+  assert(c.phase==race::Phase::AfterLift&&c.events()==1);
+ }else if(!strcmp(name,"exit_rearm_noise")){
+  race::Config cfg;cfg.liftWaitMs=50;race::Controller c(cfg);auto at=lift(c);
+  for(int d=5;d<50;d+=5)sample(c,at+d,31);
+  for(int d=50;d<=145;d+=5)sample(c,at+d,8);
+  auto w=sample(c,at+150,31);assert(w.left==0&&w.right==0&&c.events()==1);
+  for(int d=155;d<=250;d+=5)sample(c,at+d,8);
+  assert(c.phase==race::Phase::ExitLift);sample(c,at+255,12);assert(c.phase==race::Phase::AfterLift);
+ }else if(!strcmp(name,"exit_outer_and_split")){
+  race::Config cfg;cfg.liftWaitMs=50;race::Controller c(cfg);auto at=lift(c);
+  for(int d=5;d<50;d+=5)sample(c,at+d,31);
+  for(int d=50;d<=200;d+=5){auto w=sample(c,at+d,9);assert(w.left<w.right&&c.phase==race::Phase::ExitLift);}
+  auto w=sample(c,at+205,10);assert(w.left==0&&w.right==0&&c.events()==1);
+  uint16_t raw[5]={500,35,500,500,500};w=c.tick(at+210,raw,true);assert(w.left==0&&w.right==0&&c.fault==race::Fault::Manual);
+ }else if(!strcmp(name,"exit_seeded")){
+  // 1000 generated sensor sequences, not physics or real-car trials.
+  uint32_t seed=7301;
+  for(int trial=0;trial<1000;trial++){
+   race::Config cfg;cfg.liftWaitMs=50;race::Controller c(cfg);auto at=lift(c);
+   for(int d=5;d<50;d+=5)sample(c,at+d,31);
+   bool left=trial%2;int masks[3]={left?8:2,left?12:6,4};
+   for(int d=50;d<=150;d+=5){seed=seed*1664525U+1013904223U;auto w=sample(c,at+d,masks[seed%3]);
+    assert(w.left>=15&&w.right>=15&&w.left<=45&&w.right<=45&&c.events()==1);
+    if(d<150)assert(c.phase==race::Phase::ExitLift);
+   }
+   assert(c.phase==race::Phase::AfterLift);
+   for(int d=155;d<=185;d+=5){auto w=sample(c,at+d,31);assert(w.left==0&&w.right==0);}
+   assert(c.phase==race::Phase::Finished&&c.events()==2);
+  }
  }else if(!strcmp(name,"blips")){
   race::Controller c;for(int t=0;t<=800;t+=5)sample(c,t,t%100==95?4:0);assert(c.fault==race::Fault::Uncertain);
  }else if(!strcmp(name,"transitions")){

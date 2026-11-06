@@ -1,5 +1,7 @@
 # Local handoff logs
 
+- [R2 exit recovery](2026-11-06-exit-recovery-r2.md): immediate low-speed steering and clean-narrow rearm,167 tests,1000 sensor sequences,Nano8670/293; field retest pending.
+
 - [Two-marker final-practice candidate](2026-11-06-two-marker-candidate.md):native-motion-derived firstfivewhite27s/secondfinish,32patterns,161tests,Nano8250/287,verified versionedINO download; field checks pending.
 
 - [Rules and204000local corner trials](2026-11-06-corner-1000.md):204turn vertices×1000,52057strict passes, actual layered core; local planar benchmark,148tests and408replays, not official qualification.
