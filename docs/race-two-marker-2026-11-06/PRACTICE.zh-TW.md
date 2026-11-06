@@ -1,6 +1,6 @@
 # 11月7日09:00–11:00最後練習
 
-候選版：race_two_marker，2026-11-06 R2（離台循線修正）。第一次五白確認30ms後停等27000ms；第二次五白確認30ms後鎖停。原native_car保存作回復，這份候選尚無實車完賽證明。
+候選版：race_two_marker，2026-11-06 R3（專用低速離台暫停，可恢復）。第一次五白確認30ms後停等27000ms；第二次五白確認30ms後鎖停。原native_car保存作回復，這份候選尚無實車完賽證明。
 
 | 時間 | 驗證內容 | 通過條件 |
 |---|---|---|
@@ -15,8 +15,10 @@
 
 **規則核對**：PDF第5頁文字要求車體通過終點線由計時器停表，圖示有白色橫向區域，沒有寫全場必定只有兩次五白。第6頁要求升降十字白線停車，下降27秒±5%且完全停止才可離開。27秒計時沒有機構回授，須現場確認。
 
-候選下載：https://hina-tw.ddns.net/downloads/files/tirt-two-marker-20261106-r2/race_two_marker.ino
+候選下載：https://hina-tw.ddns.net/downloads/files/tirt-two-marker-20261106-r3/race_two_marker.ino
 
 回復下載：https://hina-tw.ddns.net/downloads/files/tirt-native-20261104/native_car.ino （需Adafruit NeoPixel1.15.3；原版運行中D12不是停止鈕）
 
-R2先做置中、左偏、右偏各10次離台測試，記錄成功／逾時／失線，並檢查同一白區不重算、第二白區停車。腳本1000組感測序列不等於實車成功率。
+R3先做置中、左偏、右偏各10次離台測試，記錄成功／逾時／失線，並檢查同一白區不重算、第二白區停車。腳本1000組感測序列不等於實車成功率。
+
+行駛回傳版：race_capture.ino，D12後會驅動馬達，USB接收先開再按啟動。需要恢復低速離台比較時，將Config::useSlowExit改true；主程式與回傳版必須用同一設定。

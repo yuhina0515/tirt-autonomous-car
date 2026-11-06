@@ -6,6 +6,7 @@ using Wheels=race_motion::Wheels;
 enum class Phase:uint8_t { BeforeLift,WaitLift,ExitLift,AfterLift,Finished,Fault };
 enum class Fault:uint8_t { None,Manual,Timing,RunLimit,ExitTimeout,Motion,Uncertain };
 struct Config {
+ bool useSlowExit=false; // Temporarily disabled for final practice; true restores R2.
  uint16_t whiteOn[5]={70,70,70,70,70},whiteOff[5]={100,100,100,100,100};
  uint32_t whiteConfirmMs=30,liftWaitMs=27000,rearmMs=100,exitMs=1500,runMs=360000,uncertainMs=800;
 };
@@ -45,14 +46,17 @@ public:
   if(phase==Phase::ExitLift){
    // Expiry wins over a late line return. All-white here is the same marker.
    if(now-exitAt>=cfg.exitMs)return fail(Fault::ExitTimeout);
-   Wheels exitWheels=exitFollower.tick(now,bits);
+   Wheels exitWheels=cfg.useSlowExit?exitFollower.tick(now,bits):Wheels();
    if(race_motion::ExitFollower::clearMarker(bits)){
     if(!clearPending){clearPending=true;clearAt=now;}
-    if(now-clearAt>=cfg.rearmMs){phase=Phase::AfterLift;pending=false;uncertain=false;motion.reset();motionMs=0;}
+    if(now-clearAt>=cfg.rearmMs){phase=Phase::AfterLift;pending=false;uncertain=false;if(cfg.useSlowExit){motion.reset();motionMs=0;}}
    }else clearPending=false;
-   return exitWheels;
+   if(cfg.useSlowExit)return exitWheels;
+   // Keep marker lockout, but let normal tracking run immediately.
+   // A wide patch has no lateral position: use native startup speed until line appears.
+   if(allWhite)return Wheels(race_motion::Settings::stage1,race_motion::Settings::stage1);
   }
-  if(allWhite){
+  if(allWhite&&phase!=Phase::ExitLift){
    // Stop on first observation; require continuous confirmation to count.
    if(!pending){pending=true;whiteAt=now;}
    if(now-whiteAt>=cfg.whiteConfirmMs){

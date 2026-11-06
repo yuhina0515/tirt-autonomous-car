@@ -7,7 +7,7 @@ import sys
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
-CASES = 'patterns transitions complete noise stuck deadline rollover stop runlimit timing adapter exit_patterns blips exit_steering exit_curved_rearm exit_loss exit_rearm_noise exit_outer_and_split exit_seeded'.split()
+CASES = 'normal_exit normal_exit_guards normal_exit_continuity patterns transitions complete noise stuck deadline rollover stop runlimit timing adapter exit_patterns blips exit_steering exit_curved_rearm exit_loss exit_rearm_noise exit_outer_and_split exit_seeded'.split()
 
 
 class RaceMarkerCore(unittest.TestCase):
