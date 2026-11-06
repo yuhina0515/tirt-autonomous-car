@@ -1,5 +1,7 @@
 # Local handoff logs
 
+- [Rules and204000local corner trials](2026-11-06-corner-1000.md):204turn vertices×1000,52057strict passes, actual layered core; local planar benchmark,148tests and408replays, not official qualification.
+
 - [Hina Web interactive replay](2026-11-05-hina-replay.md): deployed native project player, two verified traces,145tests, identical preview/production image; existing login required.
 
 - [Start-to-finish scenario analysis](2026-11-05-start-finish-analysis.md):210segments/10phases, actual reference209/209 at218.880s, actual layered empty-route82/209 Signal at103.305s,143tests; known inferred-model diagnostics only.
