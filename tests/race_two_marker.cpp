@@ -11,15 +11,15 @@ int analogRead(uint8_t pin){return pin==A3?35:500;}
 uint32_t millis(){return clockMs;}
 static race::Wheels sample(race::Controller& c,uint32_t t,int mask){uint16_t a[5];for(int i=0;i<5;i++)a[i]=(mask&(16>>i))?35:500;return c.tick(t,a);}
 static uint32_t lift(race::Controller& c,uint32_t start=0){for(uint32_t t=0;t<=30;t+=5){auto w=sample(c,start+t,31);assert(w.left==0&&w.right==0);}assert(c.events()==1&&c.phase==race::Phase::WaitLift);return start+30;}
-static uint32_t after(race::Controller& c,uint32_t start=0){uint32_t at=lift(c,start);for(uint32_t d=5;d<27000;d+=5){auto w=sample(c,at+d,int(d/5)%32);assert(w.left==0&&w.right==0&&c.events()==1);}sample(c,at+27000,31);assert(c.phase==race::Phase::ExitLift);for(uint32_t d=5;d<=105;d+=5)sample(c,at+27000+d,4);assert(c.phase==race::Phase::AfterLift);return at+27105;}
+static uint32_t after(race::Controller& c,uint32_t start=0){uint32_t at=lift(c,start);for(uint32_t d=5;d<20000;d+=5){auto w=sample(c,at+d,int(d/5)%32);assert(w.left==0&&w.right==0&&c.events()==1);}sample(c,at+20000,31);assert(c.phase==race::Phase::ExitLift);for(uint32_t d=5;d<=105;d+=5)sample(c,at+20000+d,4);assert(c.phase==race::Phase::AfterLift);return at+20105;}
 int main(int argc,char**argv){assert(argc==2);const char* name=argv[1];
  if(!strcmp(name,"normal_exit")){
-  race::Controller c;auto at=lift(c);for(int d=5;d<27000;d+=5)sample(c,at+d,31);
-  auto w=sample(c,at+27000,31);assert(w.left==100&&w.right==100&&c.events()==1);
-  w=sample(c,at+27005,8);assert(w.left<w.right&&w.right>45&&c.phase==race::Phase::ExitLift);
-  for(int d=27010;d<=27105;d+=5)sample(c,at+d,12);
+  race::Controller c;auto at=lift(c);for(int d=5;d<20000;d+=5)sample(c,at+d,31);
+  auto w=sample(c,at+20000,31);assert(w.left==100&&w.right==100&&c.events()==1);
+  w=sample(c,at+20005,8);assert(w.left<w.right&&w.right>45&&c.phase==race::Phase::ExitLift);
+  for(int d=20010;d<=20105;d+=5)sample(c,at+d,12);
   assert(c.phase==race::Phase::AfterLift&&c.events()==1);
-  for(int d=27110;d<=27140;d+=5)sample(c,at+d,31);
+  for(int d=20110;d<=20140;d+=5)sample(c,at+d,31);
   assert(c.phase==race::Phase::Finished&&c.events()==2);
  }else if(!strcmp(name,"normal_exit_continuity")){
   race::Config cfg;cfg.liftWaitMs=50;race::Controller c(cfg);auto at=lift(c);
@@ -28,27 +28,27 @@ int main(int argc,char**argv){assert(argc==2);const char* name=argv[1];
   assert(c.phase==race::Phase::AfterLift&&c.motionState().straightElapsed>=90);
  }else if(!strcmp(name,"normal_exit_guards")){
   race::Controller c;auto at=lift(c);
-  for(int d=5;d<=28500;d+=5){auto w=sample(c,at+d,31);assert(c.events()==1);if(d<27000||d>=28500)assert(w.left==0&&w.right==0);}
+  for(int d=5;d<=21500;d+=5){auto w=sample(c,at+d,31);assert(c.events()==1);if(d<20000||d>=21500)assert(w.left==0&&w.right==0);}
   assert(c.fault==race::Fault::ExitTimeout);
   race::Controller stoppedController;at=lift(stoppedController);
-  for(int d=5;d<=27000;d+=5)sample(stoppedController,at+d,31);
-  uint16_t raw[5]={500,35,500,500,500};auto w=stoppedController.tick(at+27005,raw,true);
+  for(int d=5;d<=20000;d+=5)sample(stoppedController,at+d,31);
+  uint16_t raw[5]={500,35,500,500,500};auto w=stoppedController.tick(at+20005,raw,true);
   assert(w.left==0&&w.right==0&&stoppedController.fault==race::Fault::Manual);
  }else if(!strcmp(name,"patterns")){
   for(int mask=0;mask<32;mask++){race::Config slow;slow.useSlowExit=true;race::Controller c(slow);for(int t=0;t<=40;t+=5)sample(c,t,mask);assert(c.events()==(mask==31?1:0));}
   for(int mask=0;mask<32;mask++){race::Config slow;slow.useSlowExit=true;race::Controller c(slow);uint32_t t=after(c);for(int d=5;d<=45;d+=5)sample(c,t+d,mask);assert(c.events()==(mask==31?2:1));}
  }else if(!strcmp(name,"exit_patterns")){
-  for(int mask=0;mask<32;mask++){race::Config slow;slow.useSlowExit=true;race::Controller c(slow);auto t=lift(c);for(int d=5;d<27000;d+=5)sample(c,t+d,31);for(int d=27000;d<=27105;d+=5)sample(c,t+d,mask);assert(c.events()==1);assert(c.phase==((mask==2||mask==4||mask==6||mask==8||mask==12)?race::Phase::AfterLift:race::Phase::ExitLift));}
+  for(int mask=0;mask<32;mask++){race::Config slow;slow.useSlowExit=true;race::Controller c(slow);auto t=lift(c);for(int d=5;d<20000;d+=5)sample(c,t+d,31);for(int d=20000;d<=20105;d+=5)sample(c,t+d,mask);assert(c.events()==1);assert(c.phase==((mask==2||mask==4||mask==6||mask==8||mask==12)?race::Phase::AfterLift:race::Phase::ExitLift));}
  }else if(!strcmp(name,"exit_steering")){
-  race::Config slow;slow.useSlowExit=true;race::Controller c(slow);auto at=lift(c);for(int d=5;d<27000;d+=5)sample(c,at+d,31);
-  auto w=sample(c,at+27000,8);assert(w.left<w.right&&w.right<=45);assert(c.phase==race::Phase::ExitLift&&c.events()==1);
-  w=sample(c,at+27005,2);assert(w.right<w.left&&w.left<=45);
+  race::Config slow;slow.useSlowExit=true;race::Controller c(slow);auto at=lift(c);for(int d=5;d<20000;d+=5)sample(c,at+d,31);
+  auto w=sample(c,at+20000,8);assert(w.left<w.right&&w.right<=45);assert(c.phase==race::Phase::ExitLift&&c.events()==1);
+  w=sample(c,at+20005,2);assert(w.right<w.left&&w.left<=45);
  }else if(!strcmp(name,"exit_curved_rearm")){
-  int masks[]={2,6,8,12};for(int mask: masks){race::Config slow;slow.useSlowExit=true;race::Controller c(slow);auto at=lift(c);for(int d=5;d<27000;d+=5)sample(c,at+d,31);
-   for(int d=27000;d<=27100;d+=5)sample(c,at+d,mask);
+  int masks[]={2,6,8,12};for(int mask: masks){race::Config slow;slow.useSlowExit=true;race::Controller c(slow);auto at=lift(c);for(int d=5;d<20000;d+=5)sample(c,at+d,31);
+   for(int d=20000;d<=20100;d+=5)sample(c,at+d,mask);
    assert(c.phase==race::Phase::AfterLift&&c.events()==1);
-   auto w=sample(c,at+27105,mask);assert(mask==8||mask==12?w.left<w.right:w.right<w.left);
-   for(int d=27110;d<=27140;d+=5)sample(c,at+d,31);
+   auto w=sample(c,at+20105,mask);assert(mask==8||mask==12?w.left<w.right:w.right<w.left);
+   for(int d=20110;d<=20140;d+=5)sample(c,at+d,31);
    assert(c.phase==race::Phase::Finished&&c.events()==2);
   }
  }else if(!strcmp(name,"exit_loss")){
@@ -99,9 +99,9 @@ int main(int argc,char**argv){assert(argc==2);const char* name=argv[1];
   race::Config slow;slow.useSlowExit=true;race::Controller c(slow);for(int t=0;t<200;t+=5)sample(c,t,t%30<25?31:4);assert(c.events()==0);
   race::Controller h;uint16_t a[5]={35,35,35,35,35};h.tick(0,a);for(auto& x:a)x=85;h.tick(5,a);assert(h.mask()==31);for(auto& x:a)x=100;h.tick(10,a);assert(h.mask()==0&&h.events()==0);
  }else if(!strcmp(name,"stuck")){
-  race::Config slow;slow.useSlowExit=true;race::Controller c(slow);auto t=lift(c);for(int d=5;d<=28500;d+=5)sample(c,t+d,31);assert(c.events()==1&&c.fault==race::Fault::ExitTimeout);
+  race::Config slow;slow.useSlowExit=true;race::Controller c(slow);auto t=lift(c);for(int d=5;d<=21500;d+=5)sample(c,t+d,31);assert(c.events()==1&&c.fault==race::Fault::ExitTimeout);
  }else if(!strcmp(name,"deadline")){
-  race::Config slow;slow.useSlowExit=true;race::Controller c(slow);auto at=lift(c);for(int d=5;d<=28495;d+=5)sample(c,at+d,d>=28400?4:31);sample(c,at+28500,4);assert(c.fault==race::Fault::ExitTimeout&&c.events()==1);
+  race::Config slow;slow.useSlowExit=true;race::Controller c(slow);auto at=lift(c);for(int d=5;d<=21495;d+=5)sample(c,at+d,d>=21400?4:31);sample(c,at+21500,4);assert(c.fault==race::Fault::ExitTimeout&&c.events()==1);
  }else if(!strcmp(name,"rollover")){
   race::Config slow;slow.useSlowExit=true;race::Controller c(slow);auto t=after(c,0xfffff000U);for(int d=5;d<=35;d+=5)sample(c,t+d,31);assert(c.phase==race::Phase::Finished);
  }else if(!strcmp(name,"stop")){

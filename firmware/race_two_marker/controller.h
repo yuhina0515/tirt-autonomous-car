@@ -8,7 +8,7 @@ enum class Fault:uint8_t { None,Manual,Timing,RunLimit,ExitTimeout,Motion,Uncert
 struct Config {
  bool useSlowExit=false; // Temporarily disabled for final practice; true restores R2.
  uint16_t whiteOn[5]={70,70,70,70,70},whiteOff[5]={100,100,100,100,100};
- uint32_t whiteConfirmMs=30,liftWaitMs=27000,rearmMs=100,exitMs=1500,runMs=360000,uncertainMs=800;
+ uint32_t whiteConfirmMs=30,liftWaitMs=20000,rearmMs=100,exitMs=1500,runMs=360000,uncertainMs=800;
 };
 class Controller {
  Config cfg;race_motion::Controller motion;race_motion::ExitFollower exitFollower;

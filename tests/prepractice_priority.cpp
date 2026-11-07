@@ -8,15 +8,15 @@ static race::Wheels tick(race::Controller& c,uint32_t t,int mask,bool stop=false
 static void bounds(race::Wheels w){assert(w.left>=-255&&w.left<=255&&w.right>=-255&&w.right<=255);}
 static void zero(race::Wheels w){assert(w.left==0&&w.right==0);}
 int main(){
- // All32 masks in real27s wait and in both exit strategies.
+ // All32 masks in real20s wait and in both exit strategies.
  for(int slow=0;slow<2;slow++)for(int mask=0;mask<32;mask++){
   race::Config cfg;cfg.useSlowExit=slow;race::Controller c(cfg);
   for(int t=0;t<=30;t+=5)zero(tick(c,t,31));
   assert(c.phase==race::Phase::WaitLift&&c.events()==1);
-  for(int t=35;t<27030;t+=5){zero(tick(c,t,mask));assert(c.events()==1);}
-  for(int t=27030;t<=27050;t+=5){bounds(tick(c,t,mask));assert(c.events()==1);}
-  zero(tick(c,27055,mask,true));assert(c.fault==race::Fault::Manual);
-  for(int other=0;other<32;other++)zero(tick(c,27060+5*other,other));
+  for(int t=35;t<20030;t+=5){zero(tick(c,t,mask));assert(c.events()==1);}
+  for(int t=20030;t<=20050;t+=5){bounds(tick(c,t,mask));assert(c.events()==1);}
+  zero(tick(c,20055,mask,true));assert(c.fault==race::Fault::Manual);
+  for(int other=0;other<32;other++)zero(tick(c,20060+5*other,other));
  }
  // Variable-dt sensor histories with terminal-stop and count invariants.
  uint32_t random=0x1107;

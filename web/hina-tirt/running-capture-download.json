@@ -1,10 +1,10 @@
 {
-  "title": "TIRT R3.1 行駛回傳版（取代原採集版）",
-  "description": "練習前複核：修正全白前後的計時殘留。會正常驅動馬達：D12 放開再按開始、再按停止。沿用 R3 控制，只增加 USB 二進位資料回傳；不是馬達關閉的舊採集版。",
-  "file": "tirt-two-marker-20261107-r3-1/race_capture.ino",
+  "title": "TIRT R3.2 行駛回傳版（20 秒練習版）",
+  "description": "首次五白確認後等待 20 秒。練習前複核：修正全白前後的計時殘留。會正常驅動馬達：D12 放開再按開始、再按停止。沿用 R3 控制，只增加 USB 二進位資料回傳；不是馬達關閉的舊採集版。",
+  "file": "tirt-two-marker-20261107-r3-2/race_capture.ino",
   "size": "32,419 bytes",
-  "source": "最新 race_two_marker R3.1 + Opus 5.5 medium 回傳模組",
-  "sha256": "397BBD04EA047C185F24CD037AF62F8409DAEF163E733AD054E650A674012C0B",
+  "source": "最新 race_two_marker R3.2 + Opus 5.5 medium 回傳模組",
+  "sha256": "C6DED5623E023ADEF3CD3D3C51E363614F01EE3A6B2EC81384B431EB1CDF4147",
   "steps": [
     "下載 race_capture.ino，放在同名 race_capture 資料夾，以 Nano / ATmega328P (Old Bootloader) 燒錄；不需額外 Arduino 函式庫。",
     "先接好 USB 並開啟記錄程式，再按 D12 啟動；不要在行進中開關序列埠，可能造成 Nano 重設。",

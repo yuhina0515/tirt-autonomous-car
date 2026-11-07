@@ -1,3 +1,5 @@
+**2026-11-07 R3.2 practice setting:** first confirmed marker waits 20,000 ms. Earlier release timings below are historical. Verify the platform is stationary before departure.
+
 # Two-marker practice candidate — 2026-11-07 R3.1
 
 R3.1 additionally fixes uncertainty/recovery carry-over across full-white overrides. All speed/deadline settings remain R3 values. See docs/prepractice-2026-11-07.
