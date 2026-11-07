@@ -54,9 +54,10 @@ public:
    if(cfg.useSlowExit)return exitWheels;
    // Keep marker lockout, but let normal tracking run immediately.
    // A wide patch has no lateral position: use native startup speed until line appears.
-   if(allWhite)return Wheels(race_motion::Settings::stage1,race_motion::Settings::stage1);
+   if(allWhite){uncertain=false;recovering=false;return Wheels(race_motion::Settings::stage1,race_motion::Settings::stage1); }
   }
   if(allWhite&&phase!=Phase::ExitLift){
+   recovering=false; // White interrupts continuous narrow recovery, not its budget.
    // Stop on first observation; require continuous confirmation to count.
    if(!pending){pending=true;whiteAt=now;}
    if(now-whiteAt>=cfg.whiteConfirmMs){

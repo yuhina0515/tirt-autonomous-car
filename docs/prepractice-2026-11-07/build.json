@@ -1,0 +1,44 @@
+{
+  "version": "2026-11-07 R3.1",
+  "baseline": "a67eb06",
+  "model": [
+    "claude-opus-5-5"
+  ],
+  "effort_requested": "medium",
+  "permission_denials": [],
+  "total_host_tests": 195,
+  "hardware_acceptance": false,
+  "builds": [
+    {
+      "source_hashes": {
+        "motion_core.h": "dc7d52e120382e89a6d968c3390a28445ec82c44b010a4fd1da29bd7a1caf814",
+        "exit_motion.h": "7d9a3827040ec8c0f4c96066e645c93133d0deca50a47d542d8b16760bb99f91",
+        "controller.h": "1d82f250a6cd8c0d7165864019f18349a5a72daabf8a4618e45391da857c005d",
+        "race_two_marker.ino": "38deecd5c2f56c25b5978ad1c38d494002ec248c001e1e60fb7377a24c3cbbdf"
+      },
+      "ino_sha256": "c8c8437ea7c4f031f3f50a0ce773bc6a064934d22b0d6cf74df7d939bb20e221",
+      "dependencies": [],
+      "uploaded": false,
+      "name": "race_two_marker",
+      "flash_bytes": 8754,
+      "global_ram_bytes": 294,
+      "url": "https://hina-tw.ddns.net/downloads/files/tirt-two-marker-20261107-r3-1/race_two_marker.ino"
+    },
+    {
+      "source_hashes": {
+        "motion_core.h": "dc7d52e120382e89a6d968c3390a28445ec82c44b010a4fd1da29bd7a1caf814",
+        "exit_motion.h": "7d9a3827040ec8c0f4c96066e645c93133d0deca50a47d542d8b16760bb99f91",
+        "controller.h": "1d82f250a6cd8c0d7165864019f18349a5a72daabf8a4618e45391da857c005d",
+        "telemetry.h": "af70710c44f77561af4fb457f0d6f8770509ed23de5765dd233d45e8e1f6bd5f",
+        "race_two_marker.ino": "38deecd5c2f56c25b5978ad1c38d494002ec248c001e1e60fb7377a24c3cbbdf"
+      },
+      "ino_sha256": "397bbd04ea047c185f24cd037af62f8409daef163e733ad054e650a674012c0b",
+      "dependencies": [],
+      "uploaded": false,
+      "name": "race_capture",
+      "flash_bytes": 10690,
+      "global_ram_bytes": 491,
+      "url": "https://hina-tw.ddns.net/downloads/files/tirt-two-marker-20261107-r3-1/race_capture.ino"
+    }
+  ]
+}

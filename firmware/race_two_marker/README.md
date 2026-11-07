@@ -1,4 +1,6 @@
-# Two-marker practice candidate — 2026-11-06 R3
+# Two-marker practice candidate — 2026-11-07 R3.1
+
+R3.1 additionally fixes uncertainty/recovery carry-over across full-white overrides. All speed/deadline settings remain R3 values. See docs/prepractice-2026-11-07.
 
 R3 temporarily disables the R2 slow exit via `Config::useSlowExit=false`. Set true to restore R2 for field comparison. Marker lockout, clean-narrow100ms confirmation and1500ms exit deadline remain. On all-white after waiting, use native startup PWM100; otherwise run normal motion immediately. The retained R2 policy below only applies when the flag is true.
 
