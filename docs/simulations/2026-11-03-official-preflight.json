@@ -1,0 +1,28 @@
+{
+  "status": "blocked",
+  "qualification_target": "official_complete_course",
+  "course_sha256": "dfcc34baccc065888f008123d3404b95a83f99ffcda0443f8a0a17ae43e895e0",
+  "blocking_issues": [
+    "missing_verified_metric_geometry",
+    "missing_verified_directed_route_and_branch_exits",
+    "missing_verified_layer_connections_and_heights",
+    "missing_verified_checkpoint_order_and_placement",
+    "missing_verified_shortcut_boundaries",
+    "missing_verified_F_marker_definition",
+    "missing_verified_start_finish_detection_geometry",
+    "missing_verified_seesaw_geometry_and_dynamics",
+    "missing_verified_lift_geometry_and_settled_feedback",
+    "missing_verified_vehicle_geometry_and_motor_calibration",
+    "official_metric_layer_model_and_vehicle_calibration_not_verified"
+  ],
+  "required_consecutive_completions": 5,
+  "executed_official_runs": 0,
+  "consecutive_completions": 0,
+  "passed": false,
+  "attempts": [],
+  "available_experimental_tools": [
+    "run_course.py",
+    "audit_course_run.py"
+  ],
+  "note": "No trials were run; this is a preflight report, not five failed or successful laps."
+}

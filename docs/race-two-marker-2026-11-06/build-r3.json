@@ -1,0 +1,53 @@
+{
+  "version": "2026-11-06 R3",
+  "slow_exit_enabled": false,
+  "hardware_acceptance": false,
+  "adc_prescaler": 128,
+  "adc_clock_hz": 125000,
+  "theoretical_five_channel_conversion_us": 520,
+  "measured_maximum_stable_scan_hz": null,
+  "telemetry_hz": 50,
+  "telemetry_baud": 115200,
+  "telemetry_frame_bytes": 48,
+  "agent_model": [
+    "claude-opus-5-5"
+  ],
+  "agent_effort_requested": "medium",
+  "agent_permission_denials": [],
+  "builds": [
+    {
+      "source_hashes": {
+        "motion_core.h": "dc7d52e120382e89a6d968c3390a28445ec82c44b010a4fd1da29bd7a1caf814",
+        "exit_motion.h": "7d9a3827040ec8c0f4c96066e645c93133d0deca50a47d542d8b16760bb99f91",
+        "controller.h": "f186c6e73b36013e0aa0678061e95b6f674161321df55c10b514708c32af7a41",
+        "race_two_marker.ino": "38deecd5c2f56c25b5978ad1c38d494002ec248c001e1e60fb7377a24c3cbbdf"
+      },
+      "ino_sha256": "57d34cfa7b18d62281f8a1eaae205f3476bcf8a1fd1d33df21d6c86a68b2004c",
+      "dependencies": [],
+      "uploaded": false,
+      "name": "race_two_marker",
+      "flash_bytes": 8738,
+      "global_ram_bytes": 294,
+      "download_url": "https://hina-tw.ddns.net/downloads/files/tirt-two-marker-20261106-r3/race_two_marker.ino"
+    },
+    {
+      "source_hashes": {
+        "motion_core.h": "dc7d52e120382e89a6d968c3390a28445ec82c44b010a4fd1da29bd7a1caf814",
+        "exit_motion.h": "7d9a3827040ec8c0f4c96066e645c93133d0deca50a47d542d8b16760bb99f91",
+        "controller.h": "f186c6e73b36013e0aa0678061e95b6f674161321df55c10b514708c32af7a41",
+        "telemetry.h": "af70710c44f77561af4fb457f0d6f8770509ed23de5765dd233d45e8e1f6bd5f",
+        "race_two_marker.ino": "38deecd5c2f56c25b5978ad1c38d494002ec248c001e1e60fb7377a24c3cbbdf"
+      },
+      "ino_sha256": "4369525128c0f46a284a3e8e57d483718fa0ea2ddf8116558743fed7a6e24023",
+      "dependencies": [],
+      "uploaded": false,
+      "name": "race_capture",
+      "flash_bytes": 10678,
+      "global_ram_bytes": 491,
+      "download_url": "https://hina-tw.ddns.net/downloads/files/tirt-two-marker-20261106-r3/race_capture.ino"
+    }
+  ],
+  "total_host_tests": 194,
+  "https_download_hashes_verified": true,
+  "web_image": "sha256:1d6f61b77e51c06a108b6aaa876013e34361beffb9def65c8d49b949eaf95c80"
+}

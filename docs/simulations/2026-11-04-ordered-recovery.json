@@ -1,0 +1,279 @@
+{
+  "date": "2026-11-04",
+  "status": "partial_progress_experiment_not_promoted",
+  "official_qualification_passed": false,
+  "official_verified_runs": 0,
+  "diagnostic_completions": 0,
+  "diagnostic_attempts": 2,
+  "unseen_validation_runs": 0,
+  "reserved_unseen_seeds": [
+    2026110741,
+    2026110742,
+    2026110743,
+    2026110744,
+    2026110745
+  ],
+  "python_tests_passed": 87,
+  "native_cpp_contracts_passed": true,
+  "profile_revalidated_training_prefixes": 5,
+  "profile_sha256": "f39791d5c08cdab780e011d85969ffb8c9390c3b3d541440dc49d535796d7afa",
+  "experiment_source_sha256": "34a36dab7740584bfee0e63e652200d4d2578cef5da0aeb5583b51b97ab2b4fe",
+  "unprofiled_avr": {
+    "flash": 8360,
+    "global_ram": 191
+  },
+  "profiled_avr": {
+    "flash": 9312,
+    "global_ram": 229
+  },
+  "uploaded": false,
+  "default_and_original_candidate_changed": false,
+  "physical_model_changed": false,
+  "judge_correction": "Vertex tangent bisector; frozen incoming-plane results retained separately",
+  "historical_baseline714_physical_trace_unchanged": true,
+  "historical_baseline714_incoming_gate_count": 194,
+  "records": {
+    "baseline711": {
+      "directory": "build-output\\preview-recovery\\baseline-711",
+      "manifest_sha256": "32369ffb4e0d73df34b8e4682ee0c275e7bc997ae7c7fde950de9bcdd7dfc397",
+      "results_sha256": "e72e0224b70f96fd4913eb3f082917ff3e11bee28e33e402f1e1b74e3aacedd8",
+      "source_sha256": "334e2a37a9bb84474ea1cdb6f8dccfbb8bc398cfcc6dd520106466bd5abd6895",
+      "course_sha256": "6bad3c73beaebb58d6b12c9a3d2973072f0f23d3a5bf7da2419b39381a551566",
+      "candidate_profile_sha256": "53143e345a3c17f9201d73dd1b1f68f3179b187f710e35be9fed842d0dba3335",
+      "diagnostic_limit_s": 210.0,
+      "plant_overrides": {
+        "max_accel_mps2": 6.0
+      },
+      "attempts": [
+        {
+          "seed": 2026110711,
+          "outcome": "controller_fault",
+          "simulation_seconds": 189.63,
+          "gates_crossed": 192,
+          "gates_required": 209,
+          "trace_sha256": "2e3f0de1c3b12d44d4eb19d5058b6d7d2ace6d47f7083842a5bcea1afdc5f1a6",
+          "first_violation": "reverse_or_wrong_branch_travel",
+          "first_violation_ms": 186660.0,
+          "independent_checks": {
+            "start_crossing": true,
+            "ordered_gate_checks": false,
+            "body_line_coverage": true,
+            "wheel_road_coverage_with_V_exception": true,
+            "direction_and_layer": false,
+            "shortcut_boundary": true,
+            "seesaw_crossing": true,
+            "lift_stop_and_settled_exit": true,
+            "finish_crossing": false,
+            "no_fault_or_intervention": false
+          },
+          "native_trace_replay_verified": true,
+          "physical_sensor_origin_verified": true
+        }
+      ],
+      "corrected_audit_sha256": "1c6cf3a2f9d1d9edf3ce70110ab7c7ba3ee697a2648e3888438953334e20208d",
+      "corrected_auditor_sha256": {
+        "course_world.py": "a4cd0e102d7ba7c6d948385ba2cb805a287ce0035b27c8462698b721f1fd58a4",
+        "course_referee.py": "8a5825ec9fe563e3df09eb0b524c7914de357cb1810a3f0a0f9aecb10202b6e1",
+        "simulation_model.py": "753fd97446490d9d7abf47c9b62aa10b141d9dc9fabaf41550121e86bc8a8b00",
+        "course_qualification.py": "2421214bdfffcf69cad38ecc93039e8fb6958f9dd9d2465d91351707cc6e60d0",
+        "sim_native.py": "66c70aee8d261fc81146573fc097c9c9a8c9a6705acb1e6740d68331b0531a3f",
+        "audit_course_run.py": "ae056fc9dc14b14a59427444e17a3578f2ca7aaec4a9c0381bb9802e7337225a"
+      },
+      "corrected_attempts": [
+        {
+          "seed": 2026110711,
+          "gates_crossed": 195,
+          "gates_required": 209,
+          "first_violation": "controller_fault_or_intervention",
+          "first_violation_ms": 189630.0,
+          "independent_checks": {
+            "start_crossing": true,
+            "ordered_gate_checks": false,
+            "body_line_coverage": true,
+            "wheel_road_coverage_with_V_exception": true,
+            "direction_and_layer": false,
+            "shortcut_boundary": true,
+            "seesaw_crossing": true,
+            "lift_stop_and_settled_exit": true,
+            "finish_crossing": false,
+            "no_fault_or_intervention": false
+          }
+        }
+      ]
+    },
+    "ordered711": {
+      "directory": "build-output\\ordered-recovery\\seed-711",
+      "manifest_sha256": "d91be9af5ffb4f3dd3004b11798f2238b67c4087481f532ea797632bfbbe17c9",
+      "results_sha256": "7ba6d0b7fe67ab4b5eabd4d14b9585a8b3b1d224cec7f9f007bb643aec275a67",
+      "source_sha256": "34a36dab7740584bfee0e63e652200d4d2578cef5da0aeb5583b51b97ab2b4fe",
+      "course_sha256": "6bad3c73beaebb58d6b12c9a3d2973072f0f23d3a5bf7da2419b39381a551566",
+      "candidate_profile_sha256": "f39791d5c08cdab780e011d85969ffb8c9390c3b3d541440dc49d535796d7afa",
+      "diagnostic_limit_s": 240.0,
+      "plant_overrides": {
+        "max_accel_mps2": 6.0
+      },
+      "attempts": [
+        {
+          "seed": 2026110711,
+          "outcome": "wheel_left_road",
+          "simulation_seconds": 195.29,
+          "gates_crossed": 194,
+          "gates_required": 209,
+          "trace_sha256": "15c8a986c4dab118826dc9e1524e87eece624b220353d9e739fcb76f0721f28b",
+          "first_violation": "reverse_or_wrong_branch_travel",
+          "first_violation_ms": 191880.0,
+          "independent_checks": {
+            "start_crossing": true,
+            "ordered_gate_checks": false,
+            "body_line_coverage": true,
+            "wheel_road_coverage_with_V_exception": false,
+            "direction_and_layer": false,
+            "shortcut_boundary": true,
+            "seesaw_crossing": true,
+            "lift_stop_and_settled_exit": true,
+            "finish_crossing": false,
+            "no_fault_or_intervention": true
+          },
+          "native_trace_replay_verified": true,
+          "physical_sensor_origin_verified": true
+        }
+      ],
+      "corrected_audit_sha256": "2343c1e2383ae5b61f17425010003f73c22456e11f955393317196248acad231",
+      "corrected_auditor_sha256": {
+        "course_world.py": "a4cd0e102d7ba7c6d948385ba2cb805a287ce0035b27c8462698b721f1fd58a4",
+        "course_referee.py": "8a5825ec9fe563e3df09eb0b524c7914de357cb1810a3f0a0f9aecb10202b6e1",
+        "simulation_model.py": "753fd97446490d9d7abf47c9b62aa10b141d9dc9fabaf41550121e86bc8a8b00",
+        "course_qualification.py": "2421214bdfffcf69cad38ecc93039e8fb6958f9dd9d2465d91351707cc6e60d0",
+        "sim_native.py": "66c70aee8d261fc81146573fc097c9c9a8c9a6705acb1e6740d68331b0531a3f",
+        "audit_course_run.py": "ae056fc9dc14b14a59427444e17a3578f2ca7aaec4a9c0381bb9802e7337225a"
+      },
+      "corrected_attempts": [
+        {
+          "seed": 2026110711,
+          "gates_crossed": 198,
+          "gates_required": 209,
+          "first_violation": "wheel_left_road",
+          "first_violation_ms": 195290.0,
+          "independent_checks": {
+            "start_crossing": true,
+            "ordered_gate_checks": false,
+            "body_line_coverage": true,
+            "wheel_road_coverage_with_V_exception": false,
+            "direction_and_layer": false,
+            "shortcut_boundary": true,
+            "seesaw_crossing": true,
+            "lift_stop_and_settled_exit": true,
+            "finish_crossing": false,
+            "no_fault_or_intervention": true
+          }
+        }
+      ]
+    },
+    "ordered714": {
+      "directory": "build-output\\ordered-recovery\\seed-714",
+      "manifest_sha256": "4bd4e1efbb2c9f1ba931c53152c775786df6eb4716e3aa229cdd8cd8203a5081",
+      "results_sha256": "7963526840374b7908c89f1bd4cff5b89b067ed4e8a43695a6e3bb58a782b7b6",
+      "source_sha256": "34a36dab7740584bfee0e63e652200d4d2578cef5da0aeb5583b51b97ab2b4fe",
+      "course_sha256": "6bad3c73beaebb58d6b12c9a3d2973072f0f23d3a5bf7da2419b39381a551566",
+      "candidate_profile_sha256": "f39791d5c08cdab780e011d85969ffb8c9390c3b3d541440dc49d535796d7afa",
+      "diagnostic_limit_s": 240.0,
+      "plant_overrides": {
+        "max_accel_mps2": 6.0
+      },
+      "attempts": [
+        {
+          "seed": 2026110714,
+          "outcome": "wheel_left_road",
+          "simulation_seconds": 196.915,
+          "gates_crossed": 194,
+          "gates_required": 209,
+          "trace_sha256": "ce6e7cdd71980c71fb5542de460289b6462b1153382af610b37d1a30b41f3209",
+          "first_violation": "reverse_or_wrong_branch_travel",
+          "first_violation_ms": 193480.0,
+          "independent_checks": {
+            "start_crossing": true,
+            "ordered_gate_checks": false,
+            "body_line_coverage": true,
+            "wheel_road_coverage_with_V_exception": false,
+            "direction_and_layer": false,
+            "shortcut_boundary": true,
+            "seesaw_crossing": true,
+            "lift_stop_and_settled_exit": true,
+            "finish_crossing": false,
+            "no_fault_or_intervention": true
+          },
+          "native_trace_replay_verified": true,
+          "physical_sensor_origin_verified": true
+        }
+      ],
+      "corrected_audit_sha256": "4b1bac738655bfe0c260e0f8af1675e7401da1af8921c4e2ae198c2b118b7737",
+      "corrected_auditor_sha256": {
+        "course_world.py": "a4cd0e102d7ba7c6d948385ba2cb805a287ce0035b27c8462698b721f1fd58a4",
+        "course_referee.py": "8a5825ec9fe563e3df09eb0b524c7914de357cb1810a3f0a0f9aecb10202b6e1",
+        "simulation_model.py": "753fd97446490d9d7abf47c9b62aa10b141d9dc9fabaf41550121e86bc8a8b00",
+        "course_qualification.py": "2421214bdfffcf69cad38ecc93039e8fb6958f9dd9d2465d91351707cc6e60d0",
+        "sim_native.py": "66c70aee8d261fc81146573fc097c9c9a8c9a6705acb1e6740d68331b0531a3f",
+        "audit_course_run.py": "ae056fc9dc14b14a59427444e17a3578f2ca7aaec4a9c0381bb9802e7337225a"
+      },
+      "corrected_attempts": [
+        {
+          "seed": 2026110714,
+          "gates_crossed": 198,
+          "gates_required": 209,
+          "first_violation": "wheel_left_road",
+          "first_violation_ms": 196915.0,
+          "independent_checks": {
+            "start_crossing": true,
+            "ordered_gate_checks": false,
+            "body_line_coverage": true,
+            "wheel_road_coverage_with_V_exception": false,
+            "direction_and_layer": false,
+            "shortcut_boundary": true,
+            "seesaw_crossing": true,
+            "lift_stop_and_settled_exit": true,
+            "finish_crossing": false,
+            "no_fault_or_intervention": true
+          }
+        }
+      ]
+    },
+    "baseline714": {
+      "directory": "build-output\\ordered-recovery\\baseline-714-corner-v1",
+      "manifest_sha256": "b0ee7170cbbdd4e89cfd3d658c6f578bb7914660eeee8a153ded7db96cbb6ea8",
+      "results_sha256": "e6ee0374745e37edcd2d42f848d1c454be84e4a71b67814e3ecb8de04ca5ba6c",
+      "source_sha256": "334e2a37a9bb84474ea1cdb6f8dccfbb8bc398cfcc6dd520106466bd5abd6895",
+      "course_sha256": "6bad3c73beaebb58d6b12c9a3d2973072f0f23d3a5bf7da2419b39381a551566",
+      "candidate_profile_sha256": "53143e345a3c17f9201d73dd1b1f68f3179b187f710e35be9fed842d0dba3335",
+      "diagnostic_limit_s": 240.0,
+      "plant_overrides": {
+        "max_accel_mps2": 6.0
+      },
+      "attempts": [
+        {
+          "seed": 2026110714,
+          "outcome": "wheel_left_road",
+          "simulation_seconds": 188.575,
+          "gates_crossed": 194,
+          "gates_required": 209,
+          "trace_sha256": "6bf6e11ea0c7094ed286378fb5cbc35892b1b75dab49361e82622bd0843bc917",
+          "first_violation": "reverse_or_wrong_branch_travel",
+          "first_violation_ms": 188450.0,
+          "independent_checks": {
+            "start_crossing": true,
+            "ordered_gate_checks": false,
+            "body_line_coverage": true,
+            "wheel_road_coverage_with_V_exception": false,
+            "direction_and_layer": false,
+            "shortcut_boundary": true,
+            "seesaw_crossing": true,
+            "lift_stop_and_settled_exit": true,
+            "finish_crossing": false,
+            "no_fault_or_intervention": true
+          },
+          "native_trace_replay_verified": true,
+          "physical_sensor_origin_verified": true
+        }
+      ]
+    }
+  }
+}

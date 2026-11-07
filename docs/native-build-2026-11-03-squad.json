@@ -1,0 +1,16 @@
+{
+  "date": "2026-11-03",
+  "target": "arduino:avr:nano:cpu=atmega328old",
+  "flash": 8776,
+  "global_ram": 203,
+  "tests_passed": 57,
+  "source_hashes": {
+    "firmware/native_car/native_car.ino": "4231cf707d51512d88040c23f3ef69c0fba2e1b7c3be2d9529367e2d3fc6ce35",
+    "firmware/native_car/controller.h": "8b5f7f81c2475f3bda7e338015b62434485cd2e8aa522214136b2512e2ecffcc"
+  },
+  "application_hex_sha256": "33db070e03eee5b995d51983641cfd9a9ca0a696d6e47acf90b07b891a7d4222",
+  "source_bundle_sha256": "19e5498a45576ba2c9b1e5721a9f234f446facc5175edad4d76c8590c804223f",
+  "uploaded": false,
+  "field_acceptance": false,
+  "note": "Default firmware only fixes the continuous capture-dropout timer. Experimental capture/lift/deadline settings were not adopted."
+}

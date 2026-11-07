@@ -1,85 +1,51 @@
-# TIRT autonomous-car practice
+# TIRT 自駕車專案
 
-祥儀 CAGEBOT 自駕車的隊友同步儲存庫。保留可編輯的 **CAGEBOT XML 與同源 Arduino**，
-以實際採集資料調整循跡策略。
+**11/7最後練習候選**：[兩次五白任務版](firmware/race_two_marker/README.md)、[32種排列與狀態優先序](docs/race-two-marker-2026-11-06/LOGIC.zh-TW.md)、[09:00–11:00驗證清單](docs/race-two-marker-2026-11-06/PRACTICE.zh-TW.md)。沿用native循線核心，首次五白停等27秒，確認離台後第二次五白鎖停；獨立候選，尚未實車驗收。單檔無NeoPixel依賴，Nano編譯8250/287bytes，161項測試通過；原可啟動版本保留。
 
-目前車上是先前燒錄的三顆感測器／PWM 100 版本。此儲存庫的新控制器已通過軟體測試，
-**尚未上車或完成賽道驗證**。三顆感測器不能保證把所有白色文字與白線區分開。
+**2026-11-05 起終點逐段分析與整圈實跑**：[210路段策略、十階段圖與結果](docs/start-finish-2026-11-05/REPORT.zh-TW.md)。相同已知診斷案例下，既有 junction_context 策略完成209/209、起終點218.880秒；新兩層空路線基準在103.305秒、82/209觸發Signal停車。實際C++與物理ADC重播通過；完整圈參考另經凍結來源獨立稽核。這是推定模型診斷，不是新版完賽或實車驗收。
 
-## 明天先做什麼
+**2026-11-05 兩層控制重整**：[獨立新版與使用界線](firmware/layered_car/README.md)。循線／PD 與路線任務分開，祥儀現場升降23350ms保留為明確設定，另有需機構就緒輸入的保守設定。新增29項核心／按鈕／期限測試；預設空路線只做循線練習，不冒充正賽任務。可啟動的 native_car 與回復XML不變，[來源回復快照](snapshots/2026-11-05-runnable-native/manifest.json)已保存；Hina Web 下載與車上程式未由本次重整更換。
 
-1. 下載本儲存庫 ZIP 並解壓縮。保持輪子架空，在 CAGEBOT 開啟
-   `firmware/stationary_capture/stationary_capture.xml` 並燒錄。
-   **這份採集程式不驅動馬達、不需要按啟動鈕。**
-2. 接 USB，關閉其他序列監控器，雙擊 `Start-Capture.cmd`，選 USB 的 COM 埠、115200。
-   若改用已測通的藍牙，主機端選 9600；車上 UART 仍為 115200。一次只連一台電腦。
-3. 以實際車身高度分別量白線 `LINE`、黑底 `BACKGROUND`、白色文字 `TEXT`。
-   先把感測器列**沿著白線方向**擺放，讓五顆都在白線上，再取黑底；每種至少 30 筆。
-   不要把「一顆在線、四顆在黑底」標成五顆白線校正。
-4. 產生校正建議、檢查範圍後，啟用測試設定並重新產生跑圖 XML，步驟見
-   [明天測試單](docs/FIELD_TEST.zh-TW.md)。未校正的預設跑圖檔**不會啟動馬達**。
-5. 架空確認左右方向、啟動／停止按鈕，再落地依序測直線、彎道、短文字、長文字及失線。
+**最新地面支撐與 squad 診斷**：[模型分離、701因果與交接](docs/GROUND_SUPPORT_2026-11-04.zh-TW.md)。物理承重與道路合法性已分開；701仍195/209，短暫右提示未成熟後方向被普通追線覆寫。未放寬裁判、未修改控制器，原模型及候選保留。
 
-記錄工具的 `Q` 只結束收資料，**不會讓車停車**。跑圖時按車上按鈕停止；必要時關閉電源。
+**最新路口前綴實驗**：[兩次已知模型診斷完整通過與交接](docs/JUNCTION_CONTEXT_2026-11-04.zh-TW.md)。711／714皆209/209，模型起終點計時218.880／220.755s，100項測試通過。這不是五連跑或實車驗收；原候選未升版，新種子仍保留，701支撐邊界待核對。
 
-## 策略改了什麼
+**前次有序收線與尖角判定修正**：[對照、裁判缺陷與交接](docs/ORDERED_RECOVERY_2026-11-04.zh-TW.md)。新實驗在同一修正裁判下兩次198/209，舊候選195／194；兩次仍車輪出界、完賽0/2，未取代原候選。87項測試通過，未燒錄，預留新種子尚未執行。
 
-- 仍只用中間 **A4、A3、A2** 控制；A5、A1 只記錄，不影響決策。
-- 每顆依自己的黑底／白線讀值正規化，使用濾波和遲滯，不只比單一門檻。
-- 以連續強度估計偏移，PD 修正左右輪；PWM 上限 100，彎道降速、加速有斜率限制。
-- 全亮、分裂、低對比和跳邊屬於「需要時間確認的觀測」，不直接指定固定輪速。
-- 短干擾期間沿先前確認的方向降速；持續不確定達 120 ms 停車並鎖定，需重新按鈕啟動。
-- 路口、文字、升降台、終點**不能只用相同的亮線圖樣辨識**。本版沒有虛構正式路線動作。
+**最新預視／收線實驗未採用**：[結果與失敗分析](docs/PREVIEW_RECOVERY_2026-11-03.zh-TW.md)。新增四項定向回歸、五份訓練前綴重驗與兩個已知種子診斷；合法完成0/2，714檢查點退步。實驗另行封存，原候選與主程式保持。沒有新實車驗收。
 
-[更新後的 00000～11111 對照及時間策略](docs/CONTROL_POLICY.zh-TW.md) ·
-[資料欄位](docs/TELEMETRY.md) · [測試證據](docs/VERIFICATION.md)
+**策略知識庫**：[來源、失敗對應與下一輪實驗](docs/knowledge/README.zh-TW.md)／[可追溯來源索引](docs/knowledge/sources.json)。已讀官方範例、作者資料及技術社群，將外部原理、待驗證設計與本車證據分開記錄。
 
-## 檔案與修改方式
+**最新控制與物理修正**：[候選架構、保留五跑與交接](docs/CONTROL_RECOVERY_2026-11-03.zh-TW.md)。獨立連續控制候選通過76項軟體測試及Nano編譯9066／226 bytes；保留驗證0／5、最遠194／209且仍有方向違規，未採用為主程式。官方已核實完整賽道試驗0次，未燒錄。
 
-| 檔案 | 用途 |
-|---|---|
-| `build.py` | 控制策略來源，僅使用可匯入 CAGEBOT 的積木 |
-| `blockly_codegen.py` | 同一份 XML → Arduino，未知積木會拒絕匯出 |
-| `config.json` | 暫定端點、速度與時間參數；預設未校正、未啟用驅動 |
-| `firmware/practice_controller/` | 新跑圖 XML＋Arduino；預設不會啟動 |
-| `firmware/stationary_capture/` | 馬達關閉的資料採集 XML＋Arduino |
-| `legacy/` | 修改前程式，方便回退；不代表正式賽已驗證 |
-| `tools/` | 接收、標記、校正建議、分析工具 |
-| `tests/` | 控制回歸、CAGEBOT 匯入驗證與資料處理測試 |
+**最新squad賽道建置與測試**：[結果、模型與限制](docs/SQUAD_COURSE_2026-11-03.zh-TW.md)。已建立官方圖面完整路線草稿、2.5D機構／感測世界、軌跡裁判與離線回放；三組共15次比較皆未完賽，尚未達成五連跑。57項軟體測試通過，原生掉線計時已修正，Nano編譯8776 bytes Flash／203 bytes全域RAM，未燒錄。比例、方向／橋接及實車性能仍未核實，不能作官方驗收。
 
-Python 3.10+，產生檔案不需第三方 Python 套件：
+**前次官方完整賽道前置**：[架構與驗收前置](docs/OFFICIAL_COURSE_ARCHITECTURE_2026-11-03.zh-TW.md)。當時只拆分模型與執行器、39項測試通過，尚無可執行完整圖面世界；後續實作以上述squad報告為準。官方核實試驗仍0次。
 
-```powershell
-python build.py
-python build.py --profile capture --out firmware/stationary_capture
-python -m unittest discover -s tests -v
-```
+**既有短情境模擬環境**：[執行與回放](simulation/README.md)／[當時測試修正報告](docs/SIMULATION_ENV_2026-11-03.zh-TW.md)。84次壓力情境、33項測試；原生版已修正800 ms已確認回線被逾時搶停的邊界。當時Nano編譯8772 bytes Flash／203 bytes全域RAM，尚未燒錄。
 
-修改行為請改 `build.py`，修改參數請改設定 JSON，再同步產生、提交 XML 與 `.ino`。
-若直接在 CAGEBOT 修改積木，請先保存 XML，再使用 `--from-xml` 匯出相同來源的 Arduino：
+**最新：2026-11-03原生Arduino移植完成**。新程式合計422行，Nano Old Bootloader目標編譯Flash8662 bytes／全域RAM203 bytes；原參考版17982／801 bytes。速度與控制行為保持，29項測試通過，未燒錄或實車驗收。[完整移植與對照報告](docs/NATIVE_MIGRATION_2026-11-03.zh-TW.md)。
 
-```powershell
-python build.py --from-xml saved.xml --out build-output/edited
-```
+**前次工作：2026-11-02物理情境模擬與缺口交接修正**：[模型、規則依據、結果與限制](docs/PHYSICS_SIMULATION_2026-11-02.zh-TW.md)。實際主程式已修正「有效線返回仍先被120 ms缺口期限鎖停」；原速度保留。離線模型比較132組，到達出口92→94、故障7→5，仍有失敗，不能當作實車成功率。10項模型／實際程式重播檢查通過，未編譯Arduino目標、燒錄或實車驗收。
 
-這不是任意 C++ 轉積木工具；禁止只改 `.ino` 後宣稱 XML 已同步。
+根目錄參考版為 **2026-11-02 控制流程精簡候選**；後續已完成Arduino目標編譯，但尚未燒錄或通過實車驗收。[本次變更、停止條件及限制](docs/SIMPLIFICATION_2026-11-02.zh-TW.md)。
 
-Arduino CLI 編譯目標為已確認的 ATmega328P 舊 bootloader Nano，USB bootloader 為 57600：
+- 有側線就前進循跡；只有F0且有合格方向才搜尋，刪除六條側線提前反轉入口及150 ms未獲支持鎖停。
+- 刪除一般寬白900 ms鎖停。升降與終點共用寬白出口判斷，F14期間不直接判標記停車。全程180秒等故障停止仍有效。
+- 終點改在寬白後直接回中央F4才停；終點後若沒有中央線，不會依此判定完成。
+- 修正舊候選重用、收線備援錯側及方向／回線資格順序，重複備援積木合併為loss_fallback函式。
+- 速度保留：直道100／150／190／230、一般彎174／15或87、搜尋150／反轉114、收線100。PWM不是實測車速。
 
-```powershell
-arduino-cli compile --fqbn arduino:avr:nano:cpu=atmega328old firmware/practice_controller
-arduino-cli compile --fqbn arduino:avr:nano:cpu=atmega328old firmware/stationary_capture
-```
+## 主程式與維護
 
-新程式不需 NeoPixel 等外加函式庫。`legacy` 的原始匯出可能需要 CAGEBOT Motoshare。
-工具不會自動燒錄。先確認板子、COM 埠與輪子架空。
+主要維護入口已改為[原生Arduino程式](firmware/native_car/native_car.ino)與同資料夾controller.h；[開啟與編譯步驟](firmware/native_car/README.md)。不依靠CAGEBOT產生器或moto函式庫，狀態燈使用公開Adafruit NeoPixel1.15.3。
 
-## 隊友同步
+根目錄car.xml／car.ino保留f3501be參考版及可編輯積木，不由原生版反向產生。tools/rewrite_car.py及export_car.mjs僅維護此參考版。build.py／config.json／firmware下其餘保留候選不變。
 
-`git pull --ff-only` 後先閱讀設定及 manifest，再燒錄，請勿將車上版本與最新來源混為一談。
-每次測試記下 Git commit、設定 JSON、車上韌體、賽道位置、電池與感測器高度。
-`captures/` 預設不進 Git；分享資料前另行確認內容，保留原始 BIN、CSV、接收收據及測試註記。
+正常F由A4/A3/A2形成，A5/A1輔助判向。F14代表中間三顆ADC均低於70，不能只憑物理顏色推定。中間三顆的觀測不能唯一區分白字、彎道與關卡。
 
-MIT，沿用原專案 contributors 授權。原廠編輯器、JavaScript、驅動與教案不隨本庫散布。
-連續加權位置與逐顆校正的原理可參考
-[Pololu QTR 方法文件](https://www.pololu.com/docs/0J19/3)；本車不是 Pololu 硬體，仍需自己的量測。
+## 歷史與驗證
+
+[v0.4.0發布說明](docs/RELEASE_v0.4.0.zh-TW.md)、[10月25日版本對比](docs/CURRENT_STATE_2026-10-25.zh-TW.md)、[10月26日交接](docs/PROJECT_SUMMARY_2026-10-26.zh-TW.md)與既有快照保留為歷史。本次未發布Release或合併PR。先前審查確認的三項實作缺陷本次已修來源，車上版本仍未知。
+
+前次完成原廠Blockly匯入父接點檢查、Arduino同步匯出及離線物理情境模擬；本次另完成原生移植、Arduino目標編譯及逐步比對，仍不能宣稱60／90度彎或整圈已通過。升降等待23.35秒及缺少機構停止回授的限制仍在，不能宣稱合規。

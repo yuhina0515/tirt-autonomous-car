@@ -1,0 +1,23 @@
+<!doctype html><meta charset="utf-8"><title>TIRT simulation replay</title>
+<style>body{font:16px system-ui;background:#101827;color:#e5edf8;margin:24px}select,button{font:inherit;padding:8px;margin:5px}canvas{background:#f3f6fa;border-radius:12px;max-width:100%}input{width:80%}pre{white-space:pre-wrap}.note{color:#f5c86c}</style>
+<h1>TIRT 模擬回放</h1><p class="note">假設的平面模型，非實車量測；文字與道路圖形皆為合成。到達出口不代表合法完賽。</p>
+<select id="cases"></select><button id="play">播放／暫停</button><button id="reset">回到起點</button>
+<p><input id="time" type="range" min="0" value="0"><span id="stamp"></span></p>
+<canvas id="view" width="1000" height="500"></canvas><pre id="state"></pre>
+<script>
+const data=/*DATA*/[];const select=document.querySelector('#cases'),slider=document.querySelector('#time'),canvas=document.querySelector('canvas'),ctx=canvas.getContext('2d');
+let playing=false,previous=0;
+data.forEach((d,i)=>select.add(new Option(d.label+' · '+d.outcome,i)));
+function draw(){let d=data[+select.value];if(!d)return;slider.max=d.rows.length-1;let index=Math.min(+slider.value,d.rows.length-1),r=d.rows[index];
+ const points=d.path.concat(d.rows.map(v=>[v.x,v.y]));let xs=points.map(p=>p[0]),ys=points.map(p=>p[1]),minx=Math.min(...xs)-.15,miny=Math.min(...ys)-.15;
+ let scale=Math.min(900/(Math.max(...xs)-minx+.15),400/(Math.max(...ys)-miny+.15));const X=x=>50+(x-minx)*scale,Y=y=>450-(y-miny)*scale;
+ ctx.clearRect(0,0,1000,500);ctx.lineJoin='round';ctx.beginPath();d.path.forEach(([x,y],i)=>i?ctx.lineTo(X(x),Y(y)):ctx.moveTo(X(x),Y(y)));ctx.strokeStyle='#374151';ctx.lineWidth=d.plant.road_width_m*scale;ctx.stroke();ctx.strokeStyle='white';ctx.lineWidth=d.plant.line_width_m*scale;ctx.stroke();
+ if(d.patch){ctx.beginPath();ctx.arc(X(1.2),Y(0),d.patch*scale,0,2*Math.PI);ctx.fillStyle='white';ctx.fill()}
+ d.features.forEach(f=>{ctx.fillStyle=f.on?'#fff':'#374151';ctx.fillRect(X(f.x0),Y(f.y1),(f.x1-f.x0)*scale,(f.y1-f.y0)*scale)});
+ ctx.beginPath();d.rows.slice(0,index+1).forEach((v,i)=>i?ctx.lineTo(X(v.x),Y(v.y)):ctx.moveTo(X(v.x),Y(v.y)));ctx.strokeStyle='#e99b28';ctx.lineWidth=2;ctx.stroke();
+ ctx.save();ctx.translate(X(r.x),Y(r.y));ctx.rotate(-r.heading);ctx.fillStyle=r.turnFault?'#dc2626':'#2563eb';ctx.fillRect(-.045*scale,-.045*scale,.09*scale,.09*scale);ctx.fillStyle='#fff';ctx.fillRect(.03*scale,-3,12,6);ctx.restore();
+ document.querySelector('#stamp').textContent=(r.ms/1000).toFixed(2)+' s';document.querySelector('#state').textContent=`結果：${d.outcome}　F=${r.sensorF}　PWM 左=${r.left} 右=${r.right}\n搜尋=${r.turnActive} 缺口=${r.gapActive} 寬白恢復=${r.cornerWideRecovery} 升降=${r.liftState} 故障=${r.turnFault}\n模型速度：左=${r.vl.toFixed(3)} 右=${r.vr.toFixed(3)} m/s　偏線=${r.error.toFixed(3)} m`;
+}
+select.onchange=()=>{slider.value=0;playing=false;draw()};slider.oninput=draw;document.querySelector('#play').onclick=()=>playing=!playing;document.querySelector('#reset').onclick=()=>{slider.value=0;draw()};
+function frame(t){if(playing&&t-previous>=30){slider.value=Math.min(+slider.max,+slider.value+1);previous=t;draw();if(slider.value===slider.max)playing=false}requestAnimationFrame(frame)}draw();requestAnimationFrame(frame);
+</script>

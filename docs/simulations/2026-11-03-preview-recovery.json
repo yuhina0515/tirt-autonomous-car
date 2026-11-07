@@ -1,0 +1,170 @@
+{
+  "status": "rejected_experiment_default_and_candidate_restored",
+  "official_qualification_passed": false,
+  "new_unseen_validation_runs": 0,
+  "diagnostic_completions": 0,
+  "diagnostic_attempts": 2,
+  "profile_sha256": "66ed3582104ad2543d5dcf5f2e4e9f15f445ad1e8e652419c6dae0b86959a0c7",
+  "profile_revalidated_training_prefixes": 5,
+  "experiment_source_sha256": "f29b9fe14492c5824d79d418a67acf63d2b26a54425a8f364a54bf2f13b5577a",
+  "unprofiled_avr": {
+    "flash": 8312,
+    "global_ram": 188
+  },
+  "profiled_avr": {
+    "flash": 9226,
+    "global_ram": 226
+  },
+  "uploaded": false,
+  "records": {
+    "baseline-711": {
+      "directory": "build-output\\preview-recovery\\baseline-711",
+      "manifest_sha256": "32369ffb4e0d73df34b8e4682ee0c275e7bc997ae7c7fde950de9bcdd7dfc397",
+      "results_sha256": "e72e0224b70f96fd4913eb3f082917ff3e11bee28e33e402f1e1b74e3aacedd8",
+      "source_sha256": "334e2a37a9bb84474ea1cdb6f8dccfbb8bc398cfcc6dd520106466bd5abd6895",
+      "course_sha256": "6bad3c73beaebb58d6b12c9a3d2973072f0f23d3a5bf7da2419b39381a551566",
+      "diagnostic_limit_s": 210.0,
+      "plant_overrides": {
+        "max_accel_mps2": 6.0
+      },
+      "attempts": [
+        {
+          "seed": 2026110711,
+          "outcome": "controller_fault",
+          "simulation_seconds": 189.63,
+          "gates_crossed": 192,
+          "gates_required": 209,
+          "trace_sha256": "2e3f0de1c3b12d44d4eb19d5058b6d7d2ace6d47f7083842a5bcea1afdc5f1a6",
+          "first_violation": "reverse_or_wrong_branch_travel",
+          "first_violation_ms": 186660.0,
+          "independent_checks": {
+            "start_crossing": true,
+            "ordered_gate_checks": false,
+            "body_line_coverage": true,
+            "wheel_road_coverage_with_V_exception": true,
+            "direction_and_layer": false,
+            "shortcut_boundary": true,
+            "seesaw_crossing": true,
+            "lift_stop_and_settled_exit": true,
+            "finish_crossing": false,
+            "no_fault_or_intervention": false
+          },
+          "native_trace_replay_verified": true,
+          "physical_sensor_origin_verified": true
+        }
+      ]
+    },
+    "candidate-711": {
+      "directory": "build-output\\preview-recovery\\candidate-711",
+      "manifest_sha256": "b06d21b62aed9d5f7906f93e75a303cc2566c437086e72e977212583a73bde0b",
+      "results_sha256": "1a1eaa258f1f842e27725db0da2788f826fc813774b0d1f847d4b3b8e2495ad1",
+      "source_sha256": "f29b9fe14492c5824d79d418a67acf63d2b26a54425a8f364a54bf2f13b5577a",
+      "course_sha256": "6bad3c73beaebb58d6b12c9a3d2973072f0f23d3a5bf7da2419b39381a551566",
+      "diagnostic_limit_s": 240.0,
+      "plant_overrides": {
+        "max_accel_mps2": 6.0
+      },
+      "attempts": [
+        {
+          "seed": 2026110711,
+          "outcome": "unsupported_surface_or_ceiling",
+          "simulation_seconds": 189.31,
+          "gates_crossed": 192,
+          "gates_required": 209,
+          "trace_sha256": "e7950c3ef54c51c73b14c4473ed3c52d476e1df40992d59c91b262d92ec20c6f",
+          "first_violation": "reverse_or_wrong_branch_travel",
+          "first_violation_ms": 186760.0,
+          "independent_checks": {
+            "start_crossing": true,
+            "ordered_gate_checks": false,
+            "body_line_coverage": true,
+            "wheel_road_coverage_with_V_exception": true,
+            "direction_and_layer": false,
+            "shortcut_boundary": true,
+            "seesaw_crossing": true,
+            "lift_stop_and_settled_exit": true,
+            "finish_crossing": false,
+            "no_fault_or_intervention": true
+          },
+          "native_trace_replay_verified": true,
+          "physical_sensor_origin_verified": true
+        }
+      ]
+    },
+    "candidate-714": {
+      "directory": "build-output\\preview-recovery\\candidate-714",
+      "manifest_sha256": "e4cf0d9284edf923ba94de72ad9be918e36fb759a61d365930d61c8788bc1a7f",
+      "results_sha256": "ebb46a7f70d7dc5e87cff6ee57d54deab7d5eb8fce9a27cc803a87637ffa8299",
+      "source_sha256": "f29b9fe14492c5824d79d418a67acf63d2b26a54425a8f364a54bf2f13b5577a",
+      "course_sha256": "6bad3c73beaebb58d6b12c9a3d2973072f0f23d3a5bf7da2419b39381a551566",
+      "diagnostic_limit_s": 240.0,
+      "plant_overrides": {
+        "max_accel_mps2": 6.0
+      },
+      "attempts": [
+        {
+          "seed": 2026110714,
+          "outcome": "controller_fault",
+          "simulation_seconds": 188.535,
+          "gates_crossed": 192,
+          "gates_required": 209,
+          "trace_sha256": "ee0b6873e84439fed23f0ffe5c0e1dd4677fd5f54f3861057d341d59c34d037c",
+          "first_violation": "reverse_or_wrong_branch_travel",
+          "first_violation_ms": 188295.0,
+          "independent_checks": {
+            "start_crossing": true,
+            "ordered_gate_checks": false,
+            "body_line_coverage": true,
+            "wheel_road_coverage_with_V_exception": true,
+            "direction_and_layer": false,
+            "shortcut_boundary": true,
+            "seesaw_crossing": true,
+            "lift_stop_and_settled_exit": true,
+            "finish_crossing": false,
+            "no_fault_or_intervention": false
+          },
+          "native_trace_replay_verified": true,
+          "physical_sensor_origin_verified": true
+        }
+      ]
+    },
+    "historical-baseline-714": {
+      "directory": "C:\\Users\\Yuhina\\Documents\\Codex\\2026-10-24\\tirt\\team-repo\\build-output\\control-recovery\\heldout-final",
+      "manifest_sha256": "9bf8d4f07dacf948b046e55523e6a1f189cf133ab2c949b4b9b5fe04c7dec289",
+      "results_sha256": "6bb7a80d7ed1c9752939cc585da14fcfd18bfb8c52a7d7edc8cae16bf2b13525",
+      "source_sha256": "334e2a37a9bb84474ea1cdb6f8dccfbb8bc398cfcc6dd520106466bd5abd6895",
+      "course_sha256": "6bad3c73beaebb58d6b12c9a3d2973072f0f23d3a5bf7da2419b39381a551566",
+      "diagnostic_limit_s": null,
+      "plant_overrides": {
+        "max_accel_mps2": 6.0
+      },
+      "attempts": [
+        {
+          "seed": 2026110714,
+          "outcome": "wheel_left_road",
+          "simulation_seconds": 188.575,
+          "gates_crossed": 194,
+          "gates_required": 209,
+          "trace_sha256": "6bf6e11ea0c7094ed286378fb5cbc35892b1b75dab49361e82622bd0843bc917",
+          "first_violation": "reverse_or_wrong_branch_travel",
+          "first_violation_ms": 188450.0,
+          "independent_checks": {
+            "start_crossing": true,
+            "ordered_gate_checks": false,
+            "body_line_coverage": true,
+            "wheel_road_coverage_with_V_exception": false,
+            "direction_and_layer": false,
+            "shortcut_boundary": true,
+            "seesaw_crossing": true,
+            "lift_stop_and_settled_exit": true,
+            "finish_crossing": false,
+            "no_fault_or_intervention": true
+          },
+          "native_trace_replay_verified": true,
+          "physical_sensor_origin_verified": true
+        }
+      ]
+    }
+  },
+  "python_tests_passed": 80
+}

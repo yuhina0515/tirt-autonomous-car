@@ -1,0 +1,68 @@
+> 歷史封存：2026-10-25現況整理前的累積說明，含已被取代設定；不得當作目前參數。相對連結沿用原位置，請改由目前文件索引查找。
+
+# Project working rules
+
+## Active baseline after user-directed rollback (2026-10-25)
+
+- Latest clarification: wide surface clears while side line stays visible. F14 plus qualified direction now marks wide recovery and drives forward100/50 (or mirror), no F14 pivot. Side patterns during that recovery use ordinary curve and skip early reverse entry; actual F0 retains existing search. Remove prior90ms F14 pivot. Active-turn pre-capture F14 also drives forward. Centered80ms clears recovery; ordinary no-direction lift cross unchanged. Read docs/WIDE_VISIBLE_LINE_2026-10-25.zh-TW.md.
+
+- Latest wide-corner entry: retain qualified center direction through F14 unless pending opposite candidate conflicts; retain prior outer confirmation until original120ms expiry without new F14 evidence. F14 plus valid outer/recent center direction starts pivot once per recovery event. Before capture, F14 may pivot only within first90ms of total turn event, then forward correction; never reverse after capture. Read docs/WIDE_CORNER_ENTRY_2026-10-25.zh-TW.md. No angle or field acceptance claim.
+
+- Latest: CORNER_WIDE_STOP_ENABLED0 lets turn/capture/gap F14 failures use low-speed fallback. That sets cornerWideRecovery, suppressing lift candidate, finish and normal wide timeout for the same recovery event until centered F4 stable80ms outside turn/gap. Normal marker logic outside recovery and180s overall stop remain. Read docs/CORNER_WIDE_FALLBACK_2026-10-25.zh-TW.md; no field acceptance.
+
+- Latest loss fallback retains qualified gapDirection: right45/15, left15/45, unknown/expired45/45. GAP_DIRECTION_MS120; repeated gap renewal never refreshes direction time. Fresh outer evidence uses outerSeenAt, actual side returns update direction. LOSS_STOP_ENABLED0 retained. Read docs/DIRECTIONAL_LOSS_RECOVERY_2026-10-25.zh-TW.md; overrides unconditional45/45 fallback. No hardware acceptance.
+
+- User temporarily disables F0 loss-triggered fault latching: LOSS_STOP_ENABLED=0. Turn/capture/gap/probe failure while F0 falls back to forward45/45 gap mode, clears reverse/old direction; persistent F0 renews gap. Restore1 for prior behavior. Other faults/lift/finish/180s limit remain; initial probe zero-output wait remains. Read docs/LOSS_STOP_DISABLED_2026-10-25.zh-TW.md.
+
+- Latest lift sequence: F14 continuous30ms only arms marker. First non-F14 must be F4 with no outer candidate/ready to count crossing and stop immediately that loop. Side/loss/split or active turn/gap cancels candidate; later F4 cannot consume it. Stable narrow100ms re-arms marker latch. Wait23350ms/exit45 unchanged. Read docs/LIFT_CROSS_EXIT_2026-10-25.zh-TW.md; overrides stop-on-F14 rules. No geometry/unique-marker/hardware acceptance claim.
+
+- Active-turn F14 now shares fixed60ms forward-only uncertainty event with post-capture F0; no immediate post-capture F14 fault or pre-capture reverse on F14. Initialize correction side from selected turn. Normal lift/finish F14 handling remains. Color polarity is not established by legacy labels; do not equate physical white with F0/F14 without ADC evidence. Read docs/CORNER_WIDE_2026-10-25.zh-TW.md.
+
+- CAGEBOT import fix: never compare a Boolean block with numeric0; use integer turnCaptureVisible set by conditional first. export_car.mjs now waits for Blockly onchange and checks every XML parent connection before writing Arduino. Old XML detached two comparison inputs; fixed XML passes. Read docs/CAGEBOT_CONNECTION_FIX_2026-10-25.zh-TW.md. No vehicle tests/upload.
+
+- Latest Taiwan stop fix:150ms unsupported-search cutoff only before valid capture;800ms total remains. After capture, either single edge steers forward; F0 has one fixed60ms forward-only dropout budget (30/60 or45/45), never restart reverse. F10 is zero-output confirmed20ms, with15ms stable valid clearing; repeated blips share deadline. Read docs/TAIWAN_CORNER_STOP_2026-10-25.zh-TW.md; overrides earlier immediate F10 and post-capture stop rules. No field verification.
+
+- Latest: mild trim expiry retains stage/time, uses curve output until centered30ms; brief trims retain stage throughout. Candidate-only outer warning freezes stage and limits output, confirmed outer/strong side/loss resets. Matching outer candidate plus F2/F8 may enter source0 provisional turn immediately, bounded150ms until outer confirmation. Read docs/STRAIGHT_HOLD_CORNER_ENTRY_2026-10-25.zh-TW.md. Overrides earlier reset-on-trim-expiry rules.
+
+- Latest corner fix: center candidate confirmed15ms with matching F2/F8 and no outer candidate/ready may enter early (source0,150ms bound). After actual F0, matching single edge initiates forward capture. TURN_CAPTURE_PWM100, inner20/50. Once capture starts, invalid readings stop instead of resuming reverse. Exit requires F4/6/12 plus15ms valid capture. Read docs/CORNER_CAPTURE_2026-10-25.zh-TW.md; overrides shared174 capture.
+
+- Latest user request raises ordinary low-speed curve PWM45 percent: base/gain174, inner15/87. Sharp forward capture shares base174; pivot search150/-114 and straight stages/ceiling230 remain. Read docs/CURVE_SPEED_45_2026-10-25.zh-TW.md. Earlier speed values are historical.
+
+- Latest section14/15 fix: confirmed outer plus matching single center edge F2(right)/F8(left) starts pivot before F0. Straight trim allowed30ms (was80); centered recovery30ms with total60ms event bound. Read docs/EARLY_CORNER_2026-10-25.zh-TW.md; overrides older trigger/trim timing. No field acceptance.
+
+- Latest override: brief F6/F12 straight trim retains the stage, outer at stage PWM and inner minus30, shared80ms event cleared by30ms centered. Freeze stage accumulation during trim/recovery. Strong side/loss/outer hints reset. Curve120/gain120/minimum10 (actual10/60), sharp150/-114. Stage1 stays100, ceiling230. Read docs/STRAIGHT_TRIM_2026-10-25.zh-TW.md; earlier speed/reset notes below are historical. No extra tests or upload.
+
+- User explicitly authorized A5/A1 sharp-turn assistance after repeated section14 wrong-left turns. Read docs/OUTER_TURN_ASSIST.zh-TW.md. General F/PD remains center-only, but raw outers select corner direction after20ms confirmation, inhibit straight acceleration, and may correct center-sourced search once within150ms. Center-only search without outer support stops at150ms. This overrides earlier "outer logged-only" rules for this assistance; thresholds are provisional and unmeasured.
+- Latest user change uses straight stages100/150/190/230 after continuous centered F4 for0/200/500/900ms; any noncentered/other state resets them. Read docs/STRAIGHT_STAGES.zh-TW.md; it replaces the prior +5 per20ms ramp. Curve100/inner8-50 and other states remain.
+- Latest first-corner feedback on c9e7c9d led to curve base100/gain100 (inner8/50), straight start100 then centered200ms and +5 PWM per20ms up to230. Sharp search125/-95 remains; forward capture base100. Read docs/FIRST_CORNER_2026-10-25.zh-TW.md; it overrides prior curve125 and ramp80ms/+10 per10ms notes. No field acceptance.
+- After the section4 push/runaway report, docs/RUNAWAY_FIX_2026-10-25.zh-TW.md is authoritative: confirmation restored15ms; only explicit F4 ramps from125 to230 after80ms centered, steps10 per10ms. F10/unexpected normal patterns latch stop; use F-based turn conditions instead of strict >70 ADC branches. No-direction gaps are45/max120ms. These override earlier1ms/gap70 notes below; no field acceptance claim.
+- For reported detection lag, root car.xml now defaults DEBUG_SERIAL=0; optional telemetry period50ms, LEDs update only on state transitions, and turn/gap reacquisition uses continuous1ms instead of3 loops. Read docs/CONTROL_LOOP.zh-TW.md. No measured sampling-rate claim or new hardware acceptance is available.
+- Straight PWM230 remains user-authorized. After the user reported excessive turning, active root car.xml reduces curve base to125, TURN_KP100, minimum inner8 (actual25/75), sharp outer125/reverse inner95; see docs/SPEED_SETTINGS.zh-TW.md. This overrides the default100 cap for these commands. Gap70 and wide/lift-exit45 remain. Preserve published v0.4.0 assets/tag; do not claim new field acceptance.
+- The appended lift candidate is documented in docs/LIFT.zh-TW.md. User tentatively reports no prior crossings: LIFT_ENABLED=1, crossing index1. The user requested reducing the wait from28350ms to23350ms for v0.4.0; it is below the published27s +/-5% timing. These are assumptions, not measured descent completion; do not claim compliance or unique recognition. Disable lift for the prior practice mat without it.
+- Before competition-strategy changes, read docs/TIRT_RULES_2026.zh-TW.md and distinguish official requirements from practice-mat assumptions and local controller parameters. The documented rules do not imply that the current firmware completes the official course.
+- Root car.xml and car.ino are the active rewrite of the three-center-sensor PWM100 baseline from self-driving_car. Read README.md, car.md and docs/SENSOR_TRUTH_TABLE.zh-TW.md before strategy changes. tools/rewrite_car.py rebuilds XML from the preserved legacy source; tools/export_car.mjs exports it with local vendor generators. Legacy files remain unchanged.
+- Later user-authorized additions are documented in docs/SHARP_TURNS.zh-TW.md and docs/ONE_LAP.zh-TW.md. Start is the narrow line left of the large finish patch, not the patch itself. Minimum runtime/wide-duration finish detection is a candidate, not proof of a full lap; no new tests or upload have been performed.
+- The user requested removal of today's controller experiments and restoration of the original strategy. Preserve its behavior until a concrete strategy change is specified.
+- For this baseline edit CAGEBOT XML and export Arduino from that XML. build.py/config.json only own the retained temporal candidate under firmware/, not root car.xml.
+- The user requested no additional testing for this rollback. No tests or upload were run; do not imply new hardware acceptance.
+- The temporal-controller rules below apply to that retained candidate.
+
+- Use Traditional Chinese for teammate guidance; code, logs and commits use English.
+- Change behavior in build.py and parameters in config JSON; regenerate XML and
+  Arduino together. Both must describe the same program. Never promise arbitrary
+  handwritten C++ can be reverse-converted into CAGEBOT blocks.
+- Center A4/A3/A2 control only. A5/A1 are recorded but excluded from control unless
+  the user explicitly changes the experiment. Keep PWM <=100 by default.
+- Preserve existing hardware baseline in legacy. New source is not proof of a
+  hardware upload; record actual upload/version and test status separately.
+- Do not replace temporal confidence with a static F-to-PWM truth table. Unknown
+  observations share one bounded uncertainty timer; valid blips must not reset it.
+- Keep capture mode motor-off, uncalibrated track mode unarmed, held-at-boot button
+  unable to start, and fault recovery manual. Do not imply PWM=0 is active braking.
+- Never claim perfect white-text rejection, measured geometry, race readiness, or
+  immunity based solely on unit tests or simulated sensor sequences.
+- Run unit tests and native track/capture regressions for controller changes.
+  Compile both profiles for Nano old bootloader. For export changes additionally
+  compare actual CAGEBOT vendor output traces and XML-resave roundtrips.
+- Do not publish credentials, raw personal logs, device addresses, registration
+  details, editor installers, or proprietary vendor files. captures/ stays ignored.

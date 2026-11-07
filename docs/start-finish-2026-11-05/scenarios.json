@@ -1,0 +1,6429 @@
+{
+  "status": "inferred_route_analysis_not_official_layout",
+  "vertices": 211,
+  "segments": 210,
+  "gates": 209,
+  "model_length_m": 67.18709843489314,
+  "phases": [
+    {
+      "start": 0,
+      "end": 18,
+      "name": "Start and central approach"
+    },
+    {
+      "start": 18,
+      "end": 33,
+      "name": "Raised crossing 1"
+    },
+    {
+      "start": 33,
+      "end": 75,
+      "name": "Central and left serpentine"
+    },
+    {
+      "start": 75,
+      "end": 95,
+      "name": "Raised crossing 2"
+    },
+    {
+      "start": 95,
+      "end": 105,
+      "name": "Left circular approach"
+    },
+    {
+      "start": 105,
+      "end": 119,
+      "name": "Raised crossing 3 and seesaw"
+    },
+    {
+      "start": 119,
+      "end": 142,
+      "name": "Upper-right loops"
+    },
+    {
+      "start": 142,
+      "end": 165,
+      "name": "Raised crossing 4 and lift"
+    },
+    {
+      "start": 165,
+      "end": 191,
+      "name": "Post-lift return"
+    },
+    {
+      "start": 191,
+      "end": 210,
+      "name": "TAIWAN sharp turns and finish"
+    }
+  ],
+  "segments_analysis": [
+    {
+      "segment": 0,
+      "vertices": [
+        0,
+        1
+      ],
+      "phase": "Start and central approach",
+      "from_px": [
+        1053,
+        655
+      ],
+      "to_px": [
+        1053,
+        630
+      ],
+      "model_start_m": 0.0,
+      "model_end_m": 0.125,
+      "turn_deg": 0,
+      "tags": [
+        "straight",
+        "start"
+      ],
+      "strategies": [
+        "centered PD with bounded PWM and acceleration",
+        "physical start crossing starts referee clock"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 1,
+      "vertices": [
+        1,
+        2
+      ],
+      "phase": "Start and central approach",
+      "from_px": [
+        1053,
+        630
+      ],
+      "to_px": [
+        1053,
+        558
+      ],
+      "model_start_m": 0.125,
+      "model_end_m": 0.485,
+      "turn_deg": 0.0,
+      "tags": [
+        "straight"
+      ],
+      "strategies": [
+        "centered PD with bounded PWM and acceleration"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 2,
+      "vertices": [
+        2,
+        3
+      ],
+      "phase": "Start and central approach",
+      "from_px": [
+        1053,
+        558
+      ],
+      "to_px": [
+        1040,
+        522
+      ],
+      "model_start_m": 0.485,
+      "model_end_m": 0.6764,
+      "turn_deg": 19.86,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 3,
+      "vertices": [
+        3,
+        4
+      ],
+      "phase": "Start and central approach",
+      "from_px": [
+        1040,
+        522
+      ],
+      "to_px": [
+        1010,
+        495
+      ],
+      "model_start_m": 0.6764,
+      "model_end_m": 0.8782,
+      "turn_deg": 28.16,
+      "tags": [
+        "curve",
+        "overlap"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error",
+        "world resolves height; firmware must use observable context for any branch"
+      ],
+      "overlaps": [
+        {
+          "segment": 154,
+          "kind": "separate_layer"
+        }
+      ],
+      "extra_paint": []
+    },
+    {
+      "segment": 4,
+      "vertices": [
+        4,
+        5
+      ],
+      "phase": "Start and central approach",
+      "from_px": [
+        1010,
+        495
+      ],
+      "to_px": [
+        980,
+        488
+      ],
+      "model_start_m": 0.8782,
+      "model_end_m": 1.0322,
+      "turn_deg": 28.85,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 5,
+      "vertices": [
+        5,
+        6
+      ],
+      "phase": "Start and central approach",
+      "from_px": [
+        980,
+        488
+      ],
+      "to_px": [
+        900,
+        488
+      ],
+      "model_start_m": 1.0322,
+      "model_end_m": 1.4322,
+      "turn_deg": 13.13,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 6,
+      "vertices": [
+        6,
+        7
+      ],
+      "phase": "Start and central approach",
+      "from_px": [
+        900,
+        488
+      ],
+      "to_px": [
+        870,
+        500
+      ],
+      "model_start_m": 1.4322,
+      "model_end_m": 1.5938,
+      "turn_deg": 21.8,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 7,
+      "vertices": [
+        7,
+        8
+      ],
+      "phase": "Start and central approach",
+      "from_px": [
+        870,
+        500
+      ],
+      "to_px": [
+        850,
+        530
+      ],
+      "model_start_m": 1.5938,
+      "model_end_m": 1.774,
+      "turn_deg": 34.51,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 8,
+      "vertices": [
+        8,
+        9
+      ],
+      "phase": "Start and central approach",
+      "from_px": [
+        850,
+        530
+      ],
+      "to_px": [
+        846,
+        642
+      ],
+      "model_start_m": 1.774,
+      "model_end_m": 2.3344,
+      "turn_deg": 31.64,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 9,
+      "vertices": [
+        9,
+        10
+      ],
+      "phase": "Start and central approach",
+      "from_px": [
+        846,
+        642
+      ],
+      "to_px": [
+        830,
+        675
+      ],
+      "model_start_m": 2.3344,
+      "model_end_m": 2.5178,
+      "turn_deg": -23.82,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 10,
+      "vertices": [
+        10,
+        11
+      ],
+      "phase": "Start and central approach",
+      "from_px": [
+        830,
+        675
+      ],
+      "to_px": [
+        798,
+        692
+      ],
+      "model_start_m": 2.5178,
+      "model_end_m": 2.6989,
+      "turn_deg": -36.15,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 11,
+      "vertices": [
+        11,
+        12
+      ],
+      "phase": "Start and central approach",
+      "from_px": [
+        798,
+        692
+      ],
+      "to_px": [
+        616,
+        692
+      ],
+      "model_start_m": 2.6989,
+      "model_end_m": 3.6089,
+      "turn_deg": -27.98,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 12,
+      "vertices": [
+        12,
+        13
+      ],
+      "phase": "Start and central approach",
+      "from_px": [
+        616,
+        692
+      ],
+      "to_px": [
+        390,
+        692
+      ],
+      "model_start_m": 3.6089,
+      "model_end_m": 4.7389,
+      "turn_deg": 0.0,
+      "tags": [
+        "straight",
+        "overlap"
+      ],
+      "strategies": [
+        "centered PD with bounded PWM and acceleration",
+        "world resolves height; firmware must use observable context for any branch"
+      ],
+      "overlaps": [
+        {
+          "segment": 23,
+          "kind": "separate_layer"
+        },
+        {
+          "segment": 24,
+          "kind": "shared_or_endpoint_geometry"
+        },
+        {
+          "segment": 25,
+          "kind": "separate_layer"
+        },
+        {
+          "segment": 86,
+          "kind": "separate_layer"
+        }
+      ],
+      "extra_paint": []
+    },
+    {
+      "segment": 13,
+      "vertices": [
+        13,
+        14
+      ],
+      "phase": "Start and central approach",
+      "from_px": [
+        390,
+        692
+      ],
+      "to_px": [
+        355,
+        678
+      ],
+      "model_start_m": 4.7389,
+      "model_end_m": 4.9274,
+      "turn_deg": -21.8,
+      "tags": [
+        "curve",
+        "overlap"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error",
+        "world resolves height; firmware must use observable context for any branch"
+      ],
+      "overlaps": [
+        {
+          "segment": 24,
+          "kind": "separate_layer"
+        },
+        {
+          "segment": 25,
+          "kind": "shared_or_endpoint_geometry"
+        },
+        {
+          "segment": 26,
+          "kind": "separate_layer"
+        }
+      ],
+      "extra_paint": []
+    },
+    {
+      "segment": 14,
+      "vertices": [
+        14,
+        15
+      ],
+      "phase": "Start and central approach",
+      "from_px": [
+        355,
+        678
+      ],
+      "to_px": [
+        335,
+        650
+      ],
+      "model_start_m": 4.9274,
+      "model_end_m": 5.0995,
+      "turn_deg": -32.66,
+      "tags": [
+        "curve",
+        "overlap"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error",
+        "world resolves height; firmware must use observable context for any branch"
+      ],
+      "overlaps": [
+        {
+          "segment": 25,
+          "kind": "separate_layer"
+        },
+        {
+          "segment": 26,
+          "kind": "shared_or_endpoint_geometry"
+        },
+        {
+          "segment": 27,
+          "kind": "separate_layer"
+        }
+      ],
+      "extra_paint": []
+    },
+    {
+      "segment": 15,
+      "vertices": [
+        15,
+        16
+      ],
+      "phase": "Start and central approach",
+      "from_px": [
+        335,
+        650
+      ],
+      "to_px": [
+        335,
+        618
+      ],
+      "model_start_m": 5.0995,
+      "model_end_m": 5.2595,
+      "turn_deg": -35.54,
+      "tags": [
+        "curve",
+        "overlap"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error",
+        "world resolves height; firmware must use observable context for any branch"
+      ],
+      "overlaps": [
+        {
+          "segment": 26,
+          "kind": "separate_layer"
+        },
+        {
+          "segment": 27,
+          "kind": "shared_or_endpoint_geometry"
+        }
+      ],
+      "extra_paint": []
+    },
+    {
+      "segment": 16,
+      "vertices": [
+        16,
+        17
+      ],
+      "phase": "Start and central approach",
+      "from_px": [
+        335,
+        618
+      ],
+      "to_px": [
+        350,
+        590
+      ],
+      "model_start_m": 5.2595,
+      "model_end_m": 5.4183,
+      "turn_deg": -28.18,
+      "tags": [
+        "curve",
+        "overlap"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error",
+        "world resolves height; firmware must use observable context for any branch"
+      ],
+      "overlaps": [
+        {
+          "segment": 27,
+          "kind": "separate_layer"
+        }
+      ],
+      "extra_paint": []
+    },
+    {
+      "segment": 17,
+      "vertices": [
+        17,
+        18
+      ],
+      "phase": "Start and central approach",
+      "from_px": [
+        350,
+        590
+      ],
+      "to_px": [
+        385,
+        577
+      ],
+      "model_start_m": 5.4183,
+      "model_end_m": 5.605,
+      "turn_deg": -41.44,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 18,
+      "vertices": [
+        18,
+        19
+      ],
+      "phase": "Raised crossing 1",
+      "from_px": [
+        385,
+        577
+      ],
+      "to_px": [
+        566,
+        577
+      ],
+      "model_start_m": 5.605,
+      "model_end_m": 6.51,
+      "turn_deg": -20.38,
+      "tags": [
+        "curve",
+        "grade_transition",
+        "raised_occurrence"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error",
+        "same observed-line control; traction/height remain physical constraints"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 19,
+      "vertices": [
+        19,
+        20
+      ],
+      "phase": "Raised crossing 1",
+      "from_px": [
+        566,
+        577
+      ],
+      "to_px": [
+        605,
+        590
+      ],
+      "model_start_m": 6.51,
+      "model_end_m": 6.7155,
+      "turn_deg": -18.43,
+      "tags": [
+        "curve",
+        "raised_occurrence",
+        "overlap"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error",
+        "world resolves height; firmware must use observable context for any branch"
+      ],
+      "overlaps": [
+        {
+          "segment": 86,
+          "kind": "same_layer_crossing"
+        }
+      ],
+      "extra_paint": []
+    },
+    {
+      "segment": 20,
+      "vertices": [
+        20,
+        21
+      ],
+      "phase": "Raised crossing 1",
+      "from_px": [
+        605,
+        590
+      ],
+      "to_px": [
+        625,
+        620
+      ],
+      "model_start_m": 6.7155,
+      "model_end_m": 6.8958,
+      "turn_deg": -37.87,
+      "tags": [
+        "curve",
+        "raised_occurrence"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 21,
+      "vertices": [
+        21,
+        22
+      ],
+      "phase": "Raised crossing 1",
+      "from_px": [
+        625,
+        620
+      ],
+      "to_px": [
+        625,
+        645
+      ],
+      "model_start_m": 6.8958,
+      "model_end_m": 7.0208,
+      "turn_deg": -33.69,
+      "tags": [
+        "curve",
+        "raised_occurrence"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 22,
+      "vertices": [
+        22,
+        23
+      ],
+      "phase": "Raised crossing 1",
+      "from_px": [
+        625,
+        645
+      ],
+      "to_px": [
+        605,
+        678
+      ],
+      "model_start_m": 7.0208,
+      "model_end_m": 7.2137,
+      "turn_deg": -31.22,
+      "tags": [
+        "curve",
+        "raised_occurrence"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 23,
+      "vertices": [
+        23,
+        24
+      ],
+      "phase": "Raised crossing 1",
+      "from_px": [
+        605,
+        678
+      ],
+      "to_px": [
+        585,
+        692
+      ],
+      "model_start_m": 7.2137,
+      "model_end_m": 7.3358,
+      "turn_deg": -23.79,
+      "tags": [
+        "curve",
+        "raised_occurrence",
+        "overlap"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error",
+        "world resolves height; firmware must use observable context for any branch"
+      ],
+      "overlaps": [
+        {
+          "segment": 12,
+          "kind": "separate_layer"
+        },
+        {
+          "segment": 86,
+          "kind": "same_layer_crossing"
+        }
+      ],
+      "extra_paint": []
+    },
+    {
+      "segment": 24,
+      "vertices": [
+        24,
+        25
+      ],
+      "phase": "Raised crossing 1",
+      "from_px": [
+        585,
+        692
+      ],
+      "to_px": [
+        390,
+        692
+      ],
+      "model_start_m": 7.3358,
+      "model_end_m": 8.3108,
+      "turn_deg": -34.99,
+      "tags": [
+        "curve",
+        "raised_occurrence",
+        "overlap"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error",
+        "world resolves height; firmware must use observable context for any branch"
+      ],
+      "overlaps": [
+        {
+          "segment": 12,
+          "kind": "shared_or_endpoint_geometry"
+        },
+        {
+          "segment": 13,
+          "kind": "separate_layer"
+        },
+        {
+          "segment": 86,
+          "kind": "same_layer_crossing"
+        }
+      ],
+      "extra_paint": []
+    },
+    {
+      "segment": 25,
+      "vertices": [
+        25,
+        26
+      ],
+      "phase": "Raised crossing 1",
+      "from_px": [
+        390,
+        692
+      ],
+      "to_px": [
+        355,
+        678
+      ],
+      "model_start_m": 8.3108,
+      "model_end_m": 8.4993,
+      "turn_deg": -21.8,
+      "tags": [
+        "curve",
+        "raised_occurrence",
+        "overlap"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error",
+        "world resolves height; firmware must use observable context for any branch"
+      ],
+      "overlaps": [
+        {
+          "segment": 12,
+          "kind": "separate_layer"
+        },
+        {
+          "segment": 13,
+          "kind": "shared_or_endpoint_geometry"
+        },
+        {
+          "segment": 14,
+          "kind": "separate_layer"
+        }
+      ],
+      "extra_paint": []
+    },
+    {
+      "segment": 26,
+      "vertices": [
+        26,
+        27
+      ],
+      "phase": "Raised crossing 1",
+      "from_px": [
+        355,
+        678
+      ],
+      "to_px": [
+        335,
+        650
+      ],
+      "model_start_m": 8.4993,
+      "model_end_m": 8.6713,
+      "turn_deg": -32.66,
+      "tags": [
+        "curve",
+        "raised_occurrence",
+        "overlap"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error",
+        "world resolves height; firmware must use observable context for any branch"
+      ],
+      "overlaps": [
+        {
+          "segment": 13,
+          "kind": "separate_layer"
+        },
+        {
+          "segment": 14,
+          "kind": "shared_or_endpoint_geometry"
+        },
+        {
+          "segment": 15,
+          "kind": "separate_layer"
+        }
+      ],
+      "extra_paint": []
+    },
+    {
+      "segment": 27,
+      "vertices": [
+        27,
+        28
+      ],
+      "phase": "Raised crossing 1",
+      "from_px": [
+        335,
+        650
+      ],
+      "to_px": [
+        335,
+        536
+      ],
+      "model_start_m": 8.6713,
+      "model_end_m": 9.2413,
+      "turn_deg": -35.54,
+      "tags": [
+        "curve",
+        "raised_occurrence",
+        "overlap"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error",
+        "world resolves height; firmware must use observable context for any branch"
+      ],
+      "overlaps": [
+        {
+          "segment": 14,
+          "kind": "separate_layer"
+        },
+        {
+          "segment": 15,
+          "kind": "shared_or_endpoint_geometry"
+        },
+        {
+          "segment": 16,
+          "kind": "separate_layer"
+        }
+      ],
+      "extra_paint": []
+    },
+    {
+      "segment": 28,
+      "vertices": [
+        28,
+        29
+      ],
+      "phase": "Raised crossing 1",
+      "from_px": [
+        335,
+        536
+      ],
+      "to_px": [
+        345,
+        511
+      ],
+      "model_start_m": 9.2413,
+      "model_end_m": 9.376,
+      "turn_deg": -21.8,
+      "tags": [
+        "curve",
+        "raised_occurrence"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 29,
+      "vertices": [
+        29,
+        30
+      ],
+      "phase": "Raised crossing 1",
+      "from_px": [
+        345,
+        511
+      ],
+      "to_px": [
+        365,
+        495
+      ],
+      "model_start_m": 9.376,
+      "model_end_m": 9.504,
+      "turn_deg": -29.54,
+      "tags": [
+        "curve",
+        "raised_occurrence"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 30,
+      "vertices": [
+        30,
+        31
+      ],
+      "phase": "Raised crossing 1",
+      "from_px": [
+        365,
+        495
+      ],
+      "to_px": [
+        390,
+        488
+      ],
+      "model_start_m": 9.504,
+      "model_end_m": 9.6338,
+      "turn_deg": -23.02,
+      "tags": [
+        "curve",
+        "raised_occurrence"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 31,
+      "vertices": [
+        31,
+        32
+      ],
+      "phase": "Raised crossing 1",
+      "from_px": [
+        390,
+        488
+      ],
+      "to_px": [
+        606,
+        488
+      ],
+      "model_start_m": 9.6338,
+      "model_end_m": 10.7138,
+      "turn_deg": -15.64,
+      "tags": [
+        "curve",
+        "grade_transition",
+        "raised_occurrence",
+        "overlap"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error",
+        "same observed-line control; traction/height remain physical constraints",
+        "world resolves height; firmware must use observable context for any branch"
+      ],
+      "overlaps": [
+        {
+          "segment": 86,
+          "kind": "separate_layer"
+        }
+      ],
+      "extra_paint": []
+    },
+    {
+      "segment": 32,
+      "vertices": [
+        32,
+        33
+      ],
+      "phase": "Raised crossing 1",
+      "from_px": [
+        606,
+        488
+      ],
+      "to_px": [
+        764,
+        488
+      ],
+      "model_start_m": 10.7138,
+      "model_end_m": 11.5038,
+      "turn_deg": 0.0,
+      "tags": [
+        "straight",
+        "overlap"
+      ],
+      "strategies": [
+        "centered PD with bounded PWM and acceleration",
+        "world resolves height; firmware must use observable context for any branch"
+      ],
+      "overlaps": [
+        {
+          "segment": 41,
+          "kind": "same_layer_crossing"
+        }
+      ],
+      "extra_paint": []
+    },
+    {
+      "segment": 33,
+      "vertices": [
+        33,
+        34
+      ],
+      "phase": "Central and left serpentine",
+      "from_px": [
+        764,
+        488
+      ],
+      "to_px": [
+        790,
+        499
+      ],
+      "model_start_m": 11.5038,
+      "model_end_m": 11.645,
+      "turn_deg": -22.93,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 34,
+      "vertices": [
+        34,
+        35
+      ],
+      "phase": "Central and left serpentine",
+      "from_px": [
+        790,
+        499
+      ],
+      "to_px": [
+        810,
+        525
+      ],
+      "model_start_m": 11.645,
+      "model_end_m": 11.809,
+      "turn_deg": -29.5,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 35,
+      "vertices": [
+        35,
+        36
+      ],
+      "phase": "Central and left serpentine",
+      "from_px": [
+        810,
+        525
+      ],
+      "to_px": [
+        815,
+        553
+      ],
+      "model_start_m": 11.809,
+      "model_end_m": 11.9512,
+      "turn_deg": -27.44,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 36,
+      "vertices": [
+        36,
+        37
+      ],
+      "phase": "Central and left serpentine",
+      "from_px": [
+        815,
+        553
+      ],
+      "to_px": [
+        803,
+        580
+      ],
+      "model_start_m": 11.9512,
+      "model_end_m": 12.099,
+      "turn_deg": -34.09,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 37,
+      "vertices": [
+        37,
+        38
+      ],
+      "phase": "Central and left serpentine",
+      "from_px": [
+        803,
+        580
+      ],
+      "to_px": [
+        775,
+        600
+      ],
+      "model_start_m": 12.099,
+      "model_end_m": 12.271,
+      "turn_deg": -30.5,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 38,
+      "vertices": [
+        38,
+        39
+      ],
+      "phase": "Central and left serpentine",
+      "from_px": [
+        775,
+        600
+      ],
+      "to_px": [
+        746,
+        602
+      ],
+      "model_start_m": 12.271,
+      "model_end_m": 12.4163,
+      "turn_deg": -31.59,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 39,
+      "vertices": [
+        39,
+        40
+      ],
+      "phase": "Central and left serpentine",
+      "from_px": [
+        746,
+        602
+      ],
+      "to_px": [
+        720,
+        588
+      ],
+      "model_start_m": 12.4163,
+      "model_end_m": 12.564,
+      "turn_deg": -32.25,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 40,
+      "vertices": [
+        40,
+        41
+      ],
+      "phase": "Central and left serpentine",
+      "from_px": [
+        720,
+        588
+      ],
+      "to_px": [
+        704,
+        562
+      ],
+      "model_start_m": 12.564,
+      "model_end_m": 12.7166,
+      "turn_deg": -30.09,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 41,
+      "vertices": [
+        41,
+        42
+      ],
+      "phase": "Central and left serpentine",
+      "from_px": [
+        704,
+        562
+      ],
+      "to_px": [
+        700,
+        358
+      ],
+      "model_start_m": 12.7166,
+      "model_end_m": 13.7368,
+      "turn_deg": -30.48,
+      "tags": [
+        "curve",
+        "overlap"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error",
+        "world resolves height; firmware must use observable context for any branch"
+      ],
+      "overlaps": [
+        {
+          "segment": 32,
+          "kind": "same_layer_crossing"
+        }
+      ],
+      "extra_paint": []
+    },
+    {
+      "segment": 42,
+      "vertices": [
+        42,
+        43
+      ],
+      "phase": "Central and left serpentine",
+      "from_px": [
+        700,
+        358
+      ],
+      "to_px": [
+        688,
+        332
+      ],
+      "model_start_m": 13.7368,
+      "model_end_m": 13.88,
+      "turn_deg": 23.65,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 43,
+      "vertices": [
+        43,
+        44
+      ],
+      "phase": "Central and left serpentine",
+      "from_px": [
+        688,
+        332
+      ],
+      "to_px": [
+        660,
+        314
+      ],
+      "model_start_m": 13.88,
+      "model_end_m": 14.0464,
+      "turn_deg": 32.49,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 44,
+      "vertices": [
+        44,
+        45
+      ],
+      "phase": "Central and left serpentine",
+      "from_px": [
+        660,
+        314
+      ],
+      "to_px": [
+        633,
+        312
+      ],
+      "model_start_m": 14.0464,
+      "model_end_m": 14.1818,
+      "turn_deg": 28.5,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 45,
+      "vertices": [
+        45,
+        46
+      ],
+      "phase": "Central and left serpentine",
+      "from_px": [
+        633,
+        312
+      ],
+      "to_px": [
+        606,
+        327
+      ],
+      "model_start_m": 14.1818,
+      "model_end_m": 14.3362,
+      "turn_deg": 33.29,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 46,
+      "vertices": [
+        46,
+        47
+      ],
+      "phase": "Central and left serpentine",
+      "from_px": [
+        606,
+        327
+      ],
+      "to_px": [
+        587,
+        350
+      ],
+      "model_start_m": 14.3362,
+      "model_end_m": 14.4854,
+      "turn_deg": 21.39,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 47,
+      "vertices": [
+        47,
+        48
+      ],
+      "phase": "Central and left serpentine",
+      "from_px": [
+        587,
+        350
+      ],
+      "to_px": [
+        585,
+        374
+      ],
+      "model_start_m": 14.4854,
+      "model_end_m": 14.6058,
+      "turn_deg": 34.8,
+      "tags": [
+        "curve",
+        "overlap"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error",
+        "world resolves height; firmware must use observable context for any branch"
+      ],
+      "overlaps": [
+        {
+          "segment": 86,
+          "kind": "separate_layer"
+        }
+      ],
+      "extra_paint": []
+    },
+    {
+      "segment": 48,
+      "vertices": [
+        48,
+        49
+      ],
+      "phase": "Central and left serpentine",
+      "from_px": [
+        585,
+        374
+      ],
+      "to_px": [
+        567,
+        410
+      ],
+      "model_start_m": 14.6058,
+      "model_end_m": 14.8071,
+      "turn_deg": -21.8,
+      "tags": [
+        "curve",
+        "overlap"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error",
+        "world resolves height; firmware must use observable context for any branch"
+      ],
+      "overlaps": [
+        {
+          "segment": 86,
+          "kind": "separate_layer"
+        }
+      ],
+      "extra_paint": []
+    },
+    {
+      "segment": 49,
+      "vertices": [
+        49,
+        50
+      ],
+      "phase": "Central and left serpentine",
+      "from_px": [
+        567,
+        410
+      ],
+      "to_px": [
+        540,
+        425
+      ],
+      "model_start_m": 14.8071,
+      "model_end_m": 14.9615,
+      "turn_deg": -34.38,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 50,
+      "vertices": [
+        50,
+        51
+      ],
+      "phase": "Central and left serpentine",
+      "from_px": [
+        540,
+        425
+      ],
+      "to_px": [
+        515,
+        426
+      ],
+      "model_start_m": 14.9615,
+      "model_end_m": 15.0866,
+      "turn_deg": -26.76,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 51,
+      "vertices": [
+        51,
+        52
+      ],
+      "phase": "Central and left serpentine",
+      "from_px": [
+        515,
+        426
+      ],
+      "to_px": [
+        490,
+        412
+      ],
+      "model_start_m": 15.0866,
+      "model_end_m": 15.2299,
+      "turn_deg": -31.54,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 52,
+      "vertices": [
+        52,
+        53
+      ],
+      "phase": "Central and left serpentine",
+      "from_px": [
+        490,
+        412
+      ],
+      "to_px": [
+        472,
+        382
+      ],
+      "model_start_m": 15.2299,
+      "model_end_m": 15.4048,
+      "turn_deg": -29.79,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 53,
+      "vertices": [
+        53,
+        54
+      ],
+      "phase": "Central and left serpentine",
+      "from_px": [
+        472,
+        382
+      ],
+      "to_px": [
+        471,
+        270
+      ],
+      "model_start_m": 15.4048,
+      "model_end_m": 15.9648,
+      "turn_deg": -30.45,
+      "tags": [
+        "curve",
+        "overlap"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error",
+        "world resolves height; firmware must use observable context for any branch"
+      ],
+      "overlaps": [
+        {
+          "segment": 79,
+          "kind": "separate_layer"
+        }
+      ],
+      "extra_paint": []
+    },
+    {
+      "segment": 54,
+      "vertices": [
+        54,
+        55
+      ],
+      "phase": "Central and left serpentine",
+      "from_px": [
+        471,
+        270
+      ],
+      "to_px": [
+        452,
+        242
+      ],
+      "model_start_m": 15.9648,
+      "model_end_m": 16.134,
+      "turn_deg": 33.65,
+      "tags": [
+        "curve",
+        "overlap"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error",
+        "world resolves height; firmware must use observable context for any branch"
+      ],
+      "overlaps": [
+        {
+          "segment": 79,
+          "kind": "separate_layer"
+        }
+      ],
+      "extra_paint": []
+    },
+    {
+      "segment": 55,
+      "vertices": [
+        55,
+        56
+      ],
+      "phase": "Central and left serpentine",
+      "from_px": [
+        452,
+        242
+      ],
+      "to_px": [
+        423,
+        223
+      ],
+      "model_start_m": 16.134,
+      "model_end_m": 16.3074,
+      "turn_deg": 22.61,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 56,
+      "vertices": [
+        56,
+        57
+      ],
+      "phase": "Central and left serpentine",
+      "from_px": [
+        423,
+        223
+      ],
+      "to_px": [
+        316,
+        223
+      ],
+      "model_start_m": 16.3074,
+      "model_end_m": 16.8424,
+      "turn_deg": 33.23,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 57,
+      "vertices": [
+        57,
+        58
+      ],
+      "phase": "Central and left serpentine",
+      "from_px": [
+        316,
+        223
+      ],
+      "to_px": [
+        285,
+        239
+      ],
+      "model_start_m": 16.8424,
+      "model_end_m": 17.0168,
+      "turn_deg": 27.3,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 58,
+      "vertices": [
+        58,
+        59
+      ],
+      "phase": "Central and left serpentine",
+      "from_px": [
+        285,
+        239
+      ],
+      "to_px": [
+        268,
+        269
+      ],
+      "model_start_m": 17.0168,
+      "model_end_m": 17.1892,
+      "turn_deg": 33.16,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 59,
+      "vertices": [
+        59,
+        60
+      ],
+      "phase": "Central and left serpentine",
+      "from_px": [
+        268,
+        269
+      ],
+      "to_px": [
+        267,
+        373
+      ],
+      "model_start_m": 17.1892,
+      "model_end_m": 17.7092,
+      "turn_deg": 28.99,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 60,
+      "vertices": [
+        60,
+        61
+      ],
+      "phase": "Central and left serpentine",
+      "from_px": [
+        267,
+        373
+      ],
+      "to_px": [
+        250,
+        411
+      ],
+      "model_start_m": 17.7092,
+      "model_end_m": 17.9174,
+      "turn_deg": -23.55,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 61,
+      "vertices": [
+        61,
+        62
+      ],
+      "phase": "Central and left serpentine",
+      "from_px": [
+        250,
+        411
+      ],
+      "to_px": [
+        229,
+        424
+      ],
+      "model_start_m": 17.9174,
+      "model_end_m": 18.0409,
+      "turn_deg": -34.14,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 62,
+      "vertices": [
+        62,
+        63
+      ],
+      "phase": "Central and left serpentine",
+      "from_px": [
+        229,
+        424
+      ],
+      "to_px": [
+        194,
+        428
+      ],
+      "model_start_m": 18.0409,
+      "model_end_m": 18.217,
+      "turn_deg": -25.24,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 63,
+      "vertices": [
+        63,
+        64
+      ],
+      "phase": "Central and left serpentine",
+      "from_px": [
+        194,
+        428
+      ],
+      "to_px": [
+        173,
+        440
+      ],
+      "model_start_m": 18.217,
+      "model_end_m": 18.3379,
+      "turn_deg": 23.23,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 64,
+      "vertices": [
+        64,
+        65
+      ],
+      "phase": "Central and left serpentine",
+      "from_px": [
+        173,
+        440
+      ],
+      "to_px": [
+        156,
+        463
+      ],
+      "model_start_m": 18.3379,
+      "model_end_m": 18.4809,
+      "turn_deg": 23.79,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 65,
+      "vertices": [
+        65,
+        66
+      ],
+      "phase": "Central and left serpentine",
+      "from_px": [
+        156,
+        463
+      ],
+      "to_px": [
+        152,
+        490
+      ],
+      "model_start_m": 18.4809,
+      "model_end_m": 18.6174,
+      "turn_deg": 28.04,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 66,
+      "vertices": [
+        66,
+        67
+      ],
+      "phase": "Central and left serpentine",
+      "from_px": [
+        152,
+        490
+      ],
+      "to_px": [
+        162,
+        517
+      ],
+      "model_start_m": 18.6174,
+      "model_end_m": 18.7614,
+      "turn_deg": 28.75,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 67,
+      "vertices": [
+        67,
+        68
+      ],
+      "phase": "Central and left serpentine",
+      "from_px": [
+        162,
+        517
+      ],
+      "to_px": [
+        180,
+        534
+      ],
+      "model_start_m": 18.7614,
+      "model_end_m": 18.8852,
+      "turn_deg": 26.31,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 68,
+      "vertices": [
+        68,
+        69
+      ],
+      "phase": "Central and left serpentine",
+      "from_px": [
+        180,
+        534
+      ],
+      "to_px": [
+        202,
+        541
+      ],
+      "model_start_m": 18.8852,
+      "model_end_m": 19.0006,
+      "turn_deg": 25.71,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 69,
+      "vertices": [
+        69,
+        70
+      ],
+      "phase": "Central and left serpentine",
+      "from_px": [
+        202,
+        541
+      ],
+      "to_px": [
+        228,
+        539
+      ],
+      "model_start_m": 19.0006,
+      "model_end_m": 19.131,
+      "turn_deg": 22.05,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 70,
+      "vertices": [
+        70,
+        71
+      ],
+      "phase": "Central and left serpentine",
+      "from_px": [
+        228,
+        539
+      ],
+      "to_px": [
+        254,
+        522
+      ],
+      "model_start_m": 19.131,
+      "model_end_m": 19.2863,
+      "turn_deg": 28.78,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 71,
+      "vertices": [
+        71,
+        72
+      ],
+      "phase": "Central and left serpentine",
+      "from_px": [
+        254,
+        522
+      ],
+      "to_px": [
+        265,
+        502
+      ],
+      "model_start_m": 19.2863,
+      "model_end_m": 19.4004,
+      "turn_deg": 28.01,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 72,
+      "vertices": [
+        72,
+        73
+      ],
+      "phase": "Central and left serpentine",
+      "from_px": [
+        265,
+        502
+      ],
+      "to_px": [
+        269,
+        466
+      ],
+      "model_start_m": 19.4004,
+      "model_end_m": 19.5815,
+      "turn_deg": 22.47,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 73,
+      "vertices": [
+        73,
+        74
+      ],
+      "phase": "Central and left serpentine",
+      "from_px": [
+        269,
+        466
+      ],
+      "to_px": [
+        284,
+        443
+      ],
+      "model_start_m": 19.5815,
+      "model_end_m": 19.7188,
+      "turn_deg": -26.77,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 74,
+      "vertices": [
+        74,
+        75
+      ],
+      "phase": "Central and left serpentine",
+      "from_px": [
+        284,
+        443
+      ],
+      "to_px": [
+        315,
+        427
+      ],
+      "model_start_m": 19.7188,
+      "model_end_m": 19.8933,
+      "turn_deg": -29.59,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 75,
+      "vertices": [
+        75,
+        76
+      ],
+      "phase": "Raised crossing 2",
+      "from_px": [
+        315,
+        427
+      ],
+      "to_px": [
+        419,
+        427
+      ],
+      "model_start_m": 19.8933,
+      "model_end_m": 20.4133,
+      "turn_deg": -27.3,
+      "tags": [
+        "curve",
+        "grade_transition",
+        "raised_occurrence"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error",
+        "same observed-line control; traction/height remain physical constraints"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 76,
+      "vertices": [
+        76,
+        77
+      ],
+      "phase": "Raised crossing 2",
+      "from_px": [
+        419,
+        427
+      ],
+      "to_px": [
+        449,
+        415
+      ],
+      "model_start_m": 20.4133,
+      "model_end_m": 20.5748,
+      "turn_deg": 21.8,
+      "tags": [
+        "curve",
+        "grade_transition",
+        "raised_occurrence"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error",
+        "same observed-line control; traction/height remain physical constraints"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 77,
+      "vertices": [
+        77,
+        78
+      ],
+      "phase": "Raised crossing 2",
+      "from_px": [
+        449,
+        415
+      ],
+      "to_px": [
+        462,
+        401
+      ],
+      "model_start_m": 20.5748,
+      "model_end_m": 20.6703,
+      "turn_deg": 25.32,
+      "tags": [
+        "curve",
+        "raised_occurrence"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 78,
+      "vertices": [
+        78,
+        79
+      ],
+      "phase": "Raised crossing 2",
+      "from_px": [
+        462,
+        401
+      ],
+      "to_px": [
+        471,
+        373
+      ],
+      "model_start_m": 20.6703,
+      "model_end_m": 20.8174,
+      "turn_deg": 25.06,
+      "tags": [
+        "curve",
+        "raised_occurrence"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 79,
+      "vertices": [
+        79,
+        80
+      ],
+      "phase": "Raised crossing 2",
+      "from_px": [
+        471,
+        373
+      ],
+      "to_px": [
+        471,
+        182
+      ],
+      "model_start_m": 20.8174,
+      "model_end_m": 21.7724,
+      "turn_deg": 17.82,
+      "tags": [
+        "curve",
+        "raised_occurrence",
+        "overlap"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error",
+        "world resolves height; firmware must use observable context for any branch"
+      ],
+      "overlaps": [
+        {
+          "segment": 53,
+          "kind": "separate_layer"
+        },
+        {
+          "segment": 54,
+          "kind": "separate_layer"
+        }
+      ],
+      "extra_paint": []
+    },
+    {
+      "segment": 80,
+      "vertices": [
+        80,
+        81
+      ],
+      "phase": "Raised crossing 2",
+      "from_px": [
+        471,
+        182
+      ],
+      "to_px": [
+        485,
+        154
+      ],
+      "model_start_m": 21.7724,
+      "model_end_m": 21.9289,
+      "turn_deg": -26.57,
+      "tags": [
+        "curve",
+        "raised_occurrence"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 81,
+      "vertices": [
+        81,
+        82
+      ],
+      "phase": "Raised crossing 2",
+      "from_px": [
+        485,
+        154
+      ],
+      "to_px": [
+        517,
+        135
+      ],
+      "model_start_m": 21.9289,
+      "model_end_m": 22.115,
+      "turn_deg": -32.74,
+      "tags": [
+        "curve",
+        "raised_occurrence"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 82,
+      "vertices": [
+        82,
+        83
+      ],
+      "phase": "Raised crossing 2",
+      "from_px": [
+        517,
+        135
+      ],
+      "to_px": [
+        540,
+        135
+      ],
+      "model_start_m": 22.115,
+      "model_end_m": 22.23,
+      "turn_deg": -30.7,
+      "tags": [
+        "curve",
+        "raised_occurrence"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 83,
+      "vertices": [
+        83,
+        84
+      ],
+      "phase": "Raised crossing 2",
+      "from_px": [
+        540,
+        135
+      ],
+      "to_px": [
+        562,
+        145
+      ],
+      "model_start_m": 22.23,
+      "model_end_m": 22.3508,
+      "turn_deg": -24.44,
+      "tags": [
+        "curve",
+        "raised_occurrence"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 84,
+      "vertices": [
+        84,
+        85
+      ],
+      "phase": "Raised crossing 2",
+      "from_px": [
+        562,
+        145
+      ],
+      "to_px": [
+        578,
+        162
+      ],
+      "model_start_m": 22.3508,
+      "model_end_m": 22.4676,
+      "turn_deg": -22.29,
+      "tags": [
+        "curve",
+        "raised_occurrence"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 85,
+      "vertices": [
+        85,
+        86
+      ],
+      "phase": "Raised crossing 2",
+      "from_px": [
+        578,
+        162
+      ],
+      "to_px": [
+        585,
+        181
+      ],
+      "model_start_m": 22.4676,
+      "model_end_m": 22.5688,
+      "turn_deg": -23.04,
+      "tags": [
+        "curve",
+        "raised_occurrence"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 86,
+      "vertices": [
+        86,
+        87
+      ],
+      "phase": "Raised crossing 2",
+      "from_px": [
+        585,
+        181
+      ],
+      "to_px": [
+        585,
+        734
+      ],
+      "model_start_m": 22.5688,
+      "model_end_m": 25.3338,
+      "turn_deg": -20.22,
+      "tags": [
+        "curve",
+        "raised_occurrence",
+        "overlap"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error",
+        "world resolves height; firmware must use observable context for any branch"
+      ],
+      "overlaps": [
+        {
+          "segment": 12,
+          "kind": "separate_layer"
+        },
+        {
+          "segment": 19,
+          "kind": "same_layer_crossing"
+        },
+        {
+          "segment": 23,
+          "kind": "same_layer_crossing"
+        },
+        {
+          "segment": 24,
+          "kind": "same_layer_crossing"
+        },
+        {
+          "segment": 31,
+          "kind": "separate_layer"
+        },
+        {
+          "segment": 47,
+          "kind": "separate_layer"
+        },
+        {
+          "segment": 48,
+          "kind": "separate_layer"
+        }
+      ],
+      "extra_paint": []
+    },
+    {
+      "segment": 87,
+      "vertices": [
+        87,
+        88
+      ],
+      "phase": "Raised crossing 2",
+      "from_px": [
+        585,
+        734
+      ],
+      "to_px": [
+        581,
+        748
+      ],
+      "model_start_m": 25.3338,
+      "model_end_m": 25.4066,
+      "turn_deg": -15.95,
+      "tags": [
+        "curve",
+        "raised_occurrence"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 88,
+      "vertices": [
+        88,
+        89
+      ],
+      "phase": "Raised crossing 2",
+      "from_px": [
+        581,
+        748
+      ],
+      "to_px": [
+        565,
+        768
+      ],
+      "model_start_m": 25.4066,
+      "model_end_m": 25.5347,
+      "turn_deg": -22.71,
+      "tags": [
+        "curve",
+        "raised_occurrence"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 89,
+      "vertices": [
+        89,
+        90
+      ],
+      "phase": "Raised crossing 2",
+      "from_px": [
+        565,
+        768
+      ],
+      "to_px": [
+        550,
+        777
+      ],
+      "model_start_m": 25.5347,
+      "model_end_m": 25.6221,
+      "turn_deg": -20.38,
+      "tags": [
+        "curve",
+        "raised_occurrence"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 90,
+      "vertices": [
+        90,
+        91
+      ],
+      "phase": "Raised crossing 2",
+      "from_px": [
+        550,
+        777
+      ],
+      "to_px": [
+        529,
+        781
+      ],
+      "model_start_m": 25.6221,
+      "model_end_m": 25.729,
+      "turn_deg": -20.18,
+      "tags": [
+        "curve",
+        "raised_occurrence"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 91,
+      "vertices": [
+        91,
+        92
+      ],
+      "phase": "Raised crossing 2",
+      "from_px": [
+        529,
+        781
+      ],
+      "to_px": [
+        174,
+        781
+      ],
+      "model_start_m": 25.729,
+      "model_end_m": 27.504,
+      "turn_deg": -10.78,
+      "tags": [
+        "curve",
+        "grade_transition",
+        "raised_occurrence",
+        "overlap"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error",
+        "same observed-line control; traction/height remain physical constraints",
+        "world resolves height; firmware must use observable context for any branch"
+      ],
+      "overlaps": [
+        {
+          "segment": 176,
+          "kind": "separate_layer"
+        },
+        {
+          "segment": 177,
+          "kind": "separate_layer"
+        },
+        {
+          "segment": 190,
+          "kind": "separate_layer"
+        }
+      ],
+      "extra_paint": []
+    },
+    {
+      "segment": 92,
+      "vertices": [
+        92,
+        93
+      ],
+      "phase": "Raised crossing 2",
+      "from_px": [
+        174,
+        781
+      ],
+      "to_px": [
+        153,
+        777
+      ],
+      "model_start_m": 27.504,
+      "model_end_m": 27.6109,
+      "turn_deg": -10.78,
+      "tags": [
+        "curve",
+        "grade_transition",
+        "raised_occurrence"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error",
+        "same observed-line control; traction/height remain physical constraints"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 93,
+      "vertices": [
+        93,
+        94
+      ],
+      "phase": "Raised crossing 2",
+      "from_px": [
+        153,
+        777
+      ],
+      "to_px": [
+        129,
+        759
+      ],
+      "model_start_m": 27.6109,
+      "model_end_m": 27.7609,
+      "turn_deg": -26.09,
+      "tags": [
+        "curve",
+        "grade_transition",
+        "raised_occurrence"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error",
+        "same observed-line control; traction/height remain physical constraints"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 94,
+      "vertices": [
+        94,
+        95
+      ],
+      "phase": "Raised crossing 2",
+      "from_px": [
+        129,
+        759
+      ],
+      "to_px": [
+        117,
+        732
+      ],
+      "model_start_m": 27.7609,
+      "model_end_m": 27.9086,
+      "turn_deg": -29.17,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 95,
+      "vertices": [
+        95,
+        96
+      ],
+      "phase": "Left circular approach",
+      "from_px": [
+        117,
+        732
+      ],
+      "to_px": [
+        117,
+        184
+      ],
+      "model_start_m": 27.9086,
+      "model_end_m": 30.6486,
+      "turn_deg": -23.96,
+      "tags": [
+        "curve",
+        "overlap"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error",
+        "world resolves height; firmware must use observable context for any branch"
+      ],
+      "overlaps": [
+        {
+          "segment": 109,
+          "kind": "separate_layer"
+        },
+        {
+          "segment": 110,
+          "kind": "shared_or_endpoint_geometry"
+        },
+        {
+          "segment": 111,
+          "kind": "separate_layer"
+        }
+      ],
+      "extra_paint": []
+    },
+    {
+      "segment": 96,
+      "vertices": [
+        96,
+        97
+      ],
+      "phase": "Left circular approach",
+      "from_px": [
+        117,
+        184
+      ],
+      "to_px": [
+        127,
+        159
+      ],
+      "model_start_m": 30.6486,
+      "model_end_m": 30.7833,
+      "turn_deg": -21.8,
+      "tags": [
+        "curve",
+        "overlap"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error",
+        "world resolves height; firmware must use observable context for any branch"
+      ],
+      "overlaps": [
+        {
+          "segment": 110,
+          "kind": "separate_layer"
+        },
+        {
+          "segment": 111,
+          "kind": "shared_or_endpoint_geometry"
+        },
+        {
+          "segment": 112,
+          "kind": "separate_layer"
+        }
+      ],
+      "extra_paint": []
+    },
+    {
+      "segment": 97,
+      "vertices": [
+        97,
+        98
+      ],
+      "phase": "Left circular approach",
+      "from_px": [
+        127,
+        159
+      ],
+      "to_px": [
+        145,
+        142
+      ],
+      "model_start_m": 30.7833,
+      "model_end_m": 30.9071,
+      "turn_deg": -24.84,
+      "tags": [
+        "curve",
+        "overlap"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error",
+        "world resolves height; firmware must use observable context for any branch"
+      ],
+      "overlaps": [
+        {
+          "segment": 111,
+          "kind": "separate_layer"
+        },
+        {
+          "segment": 112,
+          "kind": "shared_or_endpoint_geometry"
+        },
+        {
+          "segment": 113,
+          "kind": "separate_layer"
+        }
+      ],
+      "extra_paint": []
+    },
+    {
+      "segment": 98,
+      "vertices": [
+        98,
+        99
+      ],
+      "phase": "Left circular approach",
+      "from_px": [
+        145,
+        142
+      ],
+      "to_px": [
+        163,
+        135
+      ],
+      "model_start_m": 30.9071,
+      "model_end_m": 31.0036,
+      "turn_deg": -22.11,
+      "tags": [
+        "curve",
+        "overlap"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error",
+        "world resolves height; firmware must use observable context for any branch"
+      ],
+      "overlaps": [
+        {
+          "segment": 112,
+          "kind": "separate_layer"
+        },
+        {
+          "segment": 113,
+          "kind": "shared_or_endpoint_geometry"
+        },
+        {
+          "segment": 114,
+          "kind": "separate_layer"
+        }
+      ],
+      "extra_paint": []
+    },
+    {
+      "segment": 99,
+      "vertices": [
+        99,
+        100
+      ],
+      "phase": "Left circular approach",
+      "from_px": [
+        163,
+        135
+      ],
+      "to_px": [
+        185,
+        135
+      ],
+      "model_start_m": 31.0036,
+      "model_end_m": 31.1136,
+      "turn_deg": -21.25,
+      "tags": [
+        "curve",
+        "overlap"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error",
+        "world resolves height; firmware must use observable context for any branch"
+      ],
+      "overlaps": [
+        {
+          "segment": 113,
+          "kind": "separate_layer"
+        },
+        {
+          "segment": 114,
+          "kind": "separate_layer"
+        }
+      ],
+      "extra_paint": []
+    },
+    {
+      "segment": 100,
+      "vertices": [
+        100,
+        101
+      ],
+      "phase": "Left circular approach",
+      "from_px": [
+        185,
+        135
+      ],
+      "to_px": [
+        208,
+        145
+      ],
+      "model_start_m": 31.1136,
+      "model_end_m": 31.239,
+      "turn_deg": -23.5,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 101,
+      "vertices": [
+        101,
+        102
+      ],
+      "phase": "Left circular approach",
+      "from_px": [
+        208,
+        145
+      ],
+      "to_px": [
+        221,
+        158
+      ],
+      "model_start_m": 31.239,
+      "model_end_m": 31.3309,
+      "turn_deg": -21.5,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 102,
+      "vertices": [
+        102,
+        103
+      ],
+      "phase": "Left circular approach",
+      "from_px": [
+        221,
+        158
+      ],
+      "to_px": [
+        229,
+        173
+      ],
+      "model_start_m": 31.3309,
+      "model_end_m": 31.4159,
+      "turn_deg": -16.93,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 103,
+      "vertices": [
+        103,
+        104
+      ],
+      "phase": "Left circular approach",
+      "from_px": [
+        229,
+        173
+      ],
+      "to_px": [
+        232,
+        199
+      ],
+      "model_start_m": 31.4159,
+      "model_end_m": 31.5468,
+      "turn_deg": -21.49,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 104,
+      "vertices": [
+        104,
+        105
+      ],
+      "phase": "Left circular approach",
+      "from_px": [
+        232,
+        199
+      ],
+      "to_px": [
+        221,
+        227
+      ],
+      "model_start_m": 31.5468,
+      "model_end_m": 31.6972,
+      "turn_deg": -28.03,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 105,
+      "vertices": [
+        105,
+        106
+      ],
+      "phase": "Raised crossing 3 and seesaw",
+      "from_px": [
+        221,
+        227
+      ],
+      "to_px": [
+        197,
+        246
+      ],
+      "model_start_m": 31.6972,
+      "model_end_m": 31.8503,
+      "turn_deg": -30.18,
+      "tags": [
+        "curve",
+        "grade_transition",
+        "raised_occurrence"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error",
+        "same observed-line control; traction/height remain physical constraints"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 106,
+      "vertices": [
+        106,
+        107
+      ],
+      "phase": "Raised crossing 3 and seesaw",
+      "from_px": [
+        197,
+        246
+      ],
+      "to_px": [
+        162,
+        249
+      ],
+      "model_start_m": 31.8503,
+      "model_end_m": 32.0259,
+      "turn_deg": -33.47,
+      "tags": [
+        "curve",
+        "grade_transition",
+        "raised_occurrence"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error",
+        "same observed-line control; traction/height remain physical constraints"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 107,
+      "vertices": [
+        107,
+        108
+      ],
+      "phase": "Raised crossing 3 and seesaw",
+      "from_px": [
+        162,
+        249
+      ],
+      "to_px": [
+        137,
+        235
+      ],
+      "model_start_m": 32.0259,
+      "model_end_m": 32.1692,
+      "turn_deg": -34.15,
+      "tags": [
+        "curve",
+        "grade_transition",
+        "raised_occurrence"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error",
+        "same observed-line control; traction/height remain physical constraints"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 108,
+      "vertices": [
+        108,
+        109
+      ],
+      "phase": "Raised crossing 3 and seesaw",
+      "from_px": [
+        137,
+        235
+      ],
+      "to_px": [
+        121,
+        216
+      ],
+      "model_start_m": 32.1692,
+      "model_end_m": 32.2934,
+      "turn_deg": -20.65,
+      "tags": [
+        "curve",
+        "grade_transition",
+        "raised_occurrence"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error",
+        "same observed-line control; traction/height remain physical constraints"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 109,
+      "vertices": [
+        109,
+        110
+      ],
+      "phase": "Raised crossing 3 and seesaw",
+      "from_px": [
+        121,
+        216
+      ],
+      "to_px": [
+        117,
+        196
+      ],
+      "model_start_m": 32.2934,
+      "model_end_m": 32.3954,
+      "turn_deg": -28.79,
+      "tags": [
+        "curve",
+        "raised_occurrence",
+        "overlap"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error",
+        "world resolves height; firmware must use observable context for any branch"
+      ],
+      "overlaps": [
+        {
+          "segment": 95,
+          "kind": "separate_layer"
+        }
+      ],
+      "extra_paint": []
+    },
+    {
+      "segment": 110,
+      "vertices": [
+        110,
+        111
+      ],
+      "phase": "Raised crossing 3 and seesaw",
+      "from_px": [
+        117,
+        196
+      ],
+      "to_px": [
+        117,
+        184
+      ],
+      "model_start_m": 32.3954,
+      "model_end_m": 32.4554,
+      "turn_deg": -11.31,
+      "tags": [
+        "curve",
+        "raised_occurrence",
+        "overlap"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error",
+        "world resolves height; firmware must use observable context for any branch"
+      ],
+      "overlaps": [
+        {
+          "segment": 95,
+          "kind": "shared_or_endpoint_geometry"
+        },
+        {
+          "segment": 96,
+          "kind": "separate_layer"
+        }
+      ],
+      "extra_paint": []
+    },
+    {
+      "segment": 111,
+      "vertices": [
+        111,
+        112
+      ],
+      "phase": "Raised crossing 3 and seesaw",
+      "from_px": [
+        117,
+        184
+      ],
+      "to_px": [
+        127,
+        159
+      ],
+      "model_start_m": 32.4554,
+      "model_end_m": 32.59,
+      "turn_deg": -21.8,
+      "tags": [
+        "curve",
+        "raised_occurrence",
+        "overlap"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error",
+        "world resolves height; firmware must use observable context for any branch"
+      ],
+      "overlaps": [
+        {
+          "segment": 95,
+          "kind": "separate_layer"
+        },
+        {
+          "segment": 96,
+          "kind": "shared_or_endpoint_geometry"
+        },
+        {
+          "segment": 97,
+          "kind": "separate_layer"
+        }
+      ],
+      "extra_paint": []
+    },
+    {
+      "segment": 112,
+      "vertices": [
+        112,
+        113
+      ],
+      "phase": "Raised crossing 3 and seesaw",
+      "from_px": [
+        127,
+        159
+      ],
+      "to_px": [
+        145,
+        142
+      ],
+      "model_start_m": 32.59,
+      "model_end_m": 32.7138,
+      "turn_deg": -24.84,
+      "tags": [
+        "curve",
+        "raised_occurrence",
+        "overlap"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error",
+        "world resolves height; firmware must use observable context for any branch"
+      ],
+      "overlaps": [
+        {
+          "segment": 96,
+          "kind": "separate_layer"
+        },
+        {
+          "segment": 97,
+          "kind": "shared_or_endpoint_geometry"
+        },
+        {
+          "segment": 98,
+          "kind": "separate_layer"
+        }
+      ],
+      "extra_paint": []
+    },
+    {
+      "segment": 113,
+      "vertices": [
+        113,
+        114
+      ],
+      "phase": "Raised crossing 3 and seesaw",
+      "from_px": [
+        145,
+        142
+      ],
+      "to_px": [
+        163,
+        135
+      ],
+      "model_start_m": 32.7138,
+      "model_end_m": 32.8104,
+      "turn_deg": -22.11,
+      "tags": [
+        "curve",
+        "raised_occurrence",
+        "overlap"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error",
+        "world resolves height; firmware must use observable context for any branch"
+      ],
+      "overlaps": [
+        {
+          "segment": 97,
+          "kind": "separate_layer"
+        },
+        {
+          "segment": 98,
+          "kind": "shared_or_endpoint_geometry"
+        },
+        {
+          "segment": 99,
+          "kind": "separate_layer"
+        }
+      ],
+      "extra_paint": []
+    },
+    {
+      "segment": 114,
+      "vertices": [
+        114,
+        115
+      ],
+      "phase": "Raised crossing 3 and seesaw",
+      "from_px": [
+        163,
+        135
+      ],
+      "to_px": [
+        221,
+        133
+      ],
+      "model_start_m": 32.8104,
+      "model_end_m": 33.1005,
+      "turn_deg": -19.28,
+      "tags": [
+        "curve",
+        "raised_occurrence",
+        "overlap"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error",
+        "world resolves height; firmware must use observable context for any branch"
+      ],
+      "overlaps": [
+        {
+          "segment": 98,
+          "kind": "separate_layer"
+        },
+        {
+          "segment": 99,
+          "kind": "separate_layer"
+        }
+      ],
+      "extra_paint": []
+    },
+    {
+      "segment": 115,
+      "vertices": [
+        115,
+        116
+      ],
+      "phase": "Raised crossing 3 and seesaw",
+      "from_px": [
+        221,
+        133
+      ],
+      "to_px": [
+        481,
+        134
+      ],
+      "model_start_m": 33.1005,
+      "model_end_m": 34.4005,
+      "turn_deg": -2.2,
+      "tags": [
+        "straight",
+        "raised_occurrence",
+        "seesaw"
+      ],
+      "strategies": [
+        "centered PD with bounded PWM and acceleration",
+        "PD through load change; no measured rollback/tipping feedback"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 116,
+      "vertices": [
+        116,
+        117
+      ],
+      "phase": "Raised crossing 3 and seesaw",
+      "from_px": [
+        481,
+        134
+      ],
+      "to_px": [
+        575,
+        132
+      ],
+      "model_start_m": 34.4005,
+      "model_end_m": 34.8706,
+      "turn_deg": 1.44,
+      "tags": [
+        "straight",
+        "raised_occurrence"
+      ],
+      "strategies": [
+        "centered PD with bounded PWM and acceleration"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 117,
+      "vertices": [
+        117,
+        118
+      ],
+      "phase": "Raised crossing 3 and seesaw",
+      "from_px": [
+        575,
+        132
+      ],
+      "to_px": [
+        809,
+        132
+      ],
+      "model_start_m": 34.8706,
+      "model_end_m": 36.0406,
+      "turn_deg": -1.22,
+      "tags": [
+        "straight",
+        "grade_transition",
+        "raised_occurrence"
+      ],
+      "strategies": [
+        "centered PD with bounded PWM and acceleration",
+        "same observed-line control; traction/height remain physical constraints"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 118,
+      "vertices": [
+        118,
+        119
+      ],
+      "phase": "Raised crossing 3 and seesaw",
+      "from_px": [
+        809,
+        132
+      ],
+      "to_px": [
+        903,
+        133
+      ],
+      "model_start_m": 36.0406,
+      "model_end_m": 36.5107,
+      "turn_deg": -0.61,
+      "tags": [
+        "straight"
+      ],
+      "strategies": [
+        "centered PD with bounded PWM and acceleration"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 119,
+      "vertices": [
+        119,
+        120
+      ],
+      "phase": "Upper-right loops",
+      "from_px": [
+        903,
+        133
+      ],
+      "to_px": [
+        981,
+        135
+      ],
+      "model_start_m": 36.5107,
+      "model_end_m": 36.9008,
+      "turn_deg": -0.86,
+      "tags": [
+        "straight"
+      ],
+      "strategies": [
+        "centered PD with bounded PWM and acceleration"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 120,
+      "vertices": [
+        120,
+        121
+      ],
+      "phase": "Upper-right loops",
+      "from_px": [
+        981,
+        135
+      ],
+      "to_px": [
+        1004,
+        145
+      ],
+      "model_start_m": 36.9008,
+      "model_end_m": 37.0262,
+      "turn_deg": -22.03,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 121,
+      "vertices": [
+        121,
+        122
+      ],
+      "phase": "Upper-right loops",
+      "from_px": [
+        1004,
+        145
+      ],
+      "to_px": [
+        1015,
+        155
+      ],
+      "model_start_m": 37.0262,
+      "model_end_m": 37.1005,
+      "turn_deg": -18.78,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 122,
+      "vertices": [
+        122,
+        123
+      ],
+      "phase": "Upper-right loops",
+      "from_px": [
+        1015,
+        155
+      ],
+      "to_px": [
+        1026,
+        176
+      ],
+      "model_start_m": 37.1005,
+      "model_end_m": 37.2191,
+      "turn_deg": -20.08,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 123,
+      "vertices": [
+        123,
+        124
+      ],
+      "phase": "Upper-right loops",
+      "from_px": [
+        1026,
+        176
+      ],
+      "to_px": [
+        1029,
+        231
+      ],
+      "model_start_m": 37.2191,
+      "model_end_m": 37.4945,
+      "turn_deg": -24.52,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 124,
+      "vertices": [
+        124,
+        125
+      ],
+      "phase": "Upper-right loops",
+      "from_px": [
+        1029,
+        231
+      ],
+      "to_px": [
+        1029,
+        373
+      ],
+      "model_start_m": 37.4945,
+      "model_end_m": 38.2045,
+      "turn_deg": -3.12,
+      "tags": [
+        "straight"
+      ],
+      "strategies": [
+        "centered PD with bounded PWM and acceleration"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 125,
+      "vertices": [
+        125,
+        126
+      ],
+      "phase": "Upper-right loops",
+      "from_px": [
+        1029,
+        373
+      ],
+      "to_px": [
+        1009,
+        410
+      ],
+      "model_start_m": 38.2045,
+      "model_end_m": 38.4148,
+      "turn_deg": -28.39,
+      "tags": [
+        "curve",
+        "overlap"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error",
+        "world resolves height; firmware must use observable context for any branch"
+      ],
+      "overlaps": [
+        {
+          "segment": 154,
+          "kind": "separate_layer"
+        }
+      ],
+      "extra_paint": []
+    },
+    {
+      "segment": 126,
+      "vertices": [
+        126,
+        127
+      ],
+      "phase": "Upper-right loops",
+      "from_px": [
+        1009,
+        410
+      ],
+      "to_px": [
+        990,
+        424
+      ],
+      "model_start_m": 38.4148,
+      "model_end_m": 38.5328,
+      "turn_deg": -25.22,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 127,
+      "vertices": [
+        127,
+        128
+      ],
+      "phase": "Upper-right loops",
+      "from_px": [
+        990,
+        424
+      ],
+      "to_px": [
+        965,
+        427
+      ],
+      "model_start_m": 38.5328,
+      "model_end_m": 38.6587,
+      "turn_deg": -29.54,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 128,
+      "vertices": [
+        128,
+        129
+      ],
+      "phase": "Upper-right loops",
+      "from_px": [
+        965,
+        427
+      ],
+      "to_px": [
+        941,
+        419
+      ],
+      "model_start_m": 38.6587,
+      "model_end_m": 38.7852,
+      "turn_deg": -25.28,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 129,
+      "vertices": [
+        129,
+        130
+      ],
+      "phase": "Upper-right loops",
+      "from_px": [
+        941,
+        419
+      ],
+      "to_px": [
+        926,
+        404
+      ],
+      "model_start_m": 38.7852,
+      "model_end_m": 38.8912,
+      "turn_deg": -26.57,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 130,
+      "vertices": [
+        130,
+        131
+      ],
+      "phase": "Upper-right loops",
+      "from_px": [
+        926,
+        404
+      ],
+      "to_px": [
+        912,
+        373
+      ],
+      "model_start_m": 38.8912,
+      "model_end_m": 39.0613,
+      "turn_deg": -20.7,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 131,
+      "vertices": [
+        131,
+        132
+      ],
+      "phase": "Upper-right loops",
+      "from_px": [
+        912,
+        373
+      ],
+      "to_px": [
+        912,
+        231
+      ],
+      "model_start_m": 39.0613,
+      "model_end_m": 39.7713,
+      "turn_deg": -24.3,
+      "tags": [
+        "curve",
+        "overlap"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error",
+        "world resolves height; firmware must use observable context for any branch"
+      ],
+      "overlaps": [
+        {
+          "segment": 147,
+          "kind": "separate_layer"
+        },
+        {
+          "segment": 148,
+          "kind": "separate_layer"
+        }
+      ],
+      "extra_paint": []
+    },
+    {
+      "segment": 132,
+      "vertices": [
+        132,
+        133
+      ],
+      "phase": "Upper-right loops",
+      "from_px": [
+        912,
+        231
+      ],
+      "to_px": [
+        911,
+        176
+      ],
+      "model_start_m": 39.7713,
+      "model_end_m": 40.0463,
+      "turn_deg": 1.04,
+      "tags": [
+        "straight"
+      ],
+      "strategies": [
+        "centered PD with bounded PWM and acceleration"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 133,
+      "vertices": [
+        133,
+        134
+      ],
+      "phase": "Upper-right loops",
+      "from_px": [
+        911,
+        176
+      ],
+      "to_px": [
+        902,
+        157
+      ],
+      "model_start_m": 40.0463,
+      "model_end_m": 40.1515,
+      "turn_deg": 24.3,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 134,
+      "vertices": [
+        134,
+        135
+      ],
+      "phase": "Upper-right loops",
+      "from_px": [
+        902,
+        157
+      ],
+      "to_px": [
+        885,
+        142
+      ],
+      "model_start_m": 40.1515,
+      "model_end_m": 40.2648,
+      "turn_deg": 23.23,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 135,
+      "vertices": [
+        135,
+        136
+      ],
+      "phase": "Upper-right loops",
+      "from_px": [
+        885,
+        142
+      ],
+      "to_px": [
+        867,
+        135
+      ],
+      "model_start_m": 40.2648,
+      "model_end_m": 40.3614,
+      "turn_deg": 20.17,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 136,
+      "vertices": [
+        136,
+        137
+      ],
+      "phase": "Upper-right loops",
+      "from_px": [
+        867,
+        135
+      ],
+      "to_px": [
+        844,
+        135
+      ],
+      "model_start_m": 40.3614,
+      "model_end_m": 40.4764,
+      "turn_deg": 21.25,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 137,
+      "vertices": [
+        137,
+        138
+      ],
+      "phase": "Upper-right loops",
+      "from_px": [
+        844,
+        135
+      ],
+      "to_px": [
+        826,
+        142
+      ],
+      "model_start_m": 40.4764,
+      "model_end_m": 40.573,
+      "turn_deg": 21.25,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 138,
+      "vertices": [
+        138,
+        139
+      ],
+      "phase": "Upper-right loops",
+      "from_px": [
+        826,
+        142
+      ],
+      "to_px": [
+        809,
+        158
+      ],
+      "model_start_m": 40.573,
+      "model_end_m": 40.6897,
+      "turn_deg": 22.01,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 139,
+      "vertices": [
+        139,
+        140
+      ],
+      "phase": "Upper-right loops",
+      "from_px": [
+        809,
+        158
+      ],
+      "to_px": [
+        797,
+        190
+      ],
+      "model_start_m": 40.6897,
+      "model_end_m": 40.8606,
+      "turn_deg": 26.18,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 140,
+      "vertices": [
+        140,
+        141
+      ],
+      "phase": "Upper-right loops",
+      "from_px": [
+        797,
+        190
+      ],
+      "to_px": [
+        797,
+        371
+      ],
+      "model_start_m": 40.8606,
+      "model_end_m": 41.7656,
+      "turn_deg": 20.56,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 141,
+      "vertices": [
+        141,
+        142
+      ],
+      "phase": "Upper-right loops",
+      "from_px": [
+        797,
+        371
+      ],
+      "to_px": [
+        806,
+        399
+      ],
+      "model_start_m": 41.7656,
+      "model_end_m": 41.9126,
+      "turn_deg": 17.82,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 142,
+      "vertices": [
+        142,
+        143
+      ],
+      "phase": "Raised crossing 4 and lift",
+      "from_px": [
+        806,
+        399
+      ],
+      "to_px": [
+        826,
+        419
+      ],
+      "model_start_m": 41.9126,
+      "model_end_m": 42.054,
+      "turn_deg": 27.18,
+      "tags": [
+        "curve",
+        "grade_transition",
+        "raised_occurrence"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error",
+        "same observed-line control; traction/height remain physical constraints"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 143,
+      "vertices": [
+        143,
+        144
+      ],
+      "phase": "Raised crossing 4 and lift",
+      "from_px": [
+        826,
+        419
+      ],
+      "to_px": [
+        861,
+        427
+      ],
+      "model_start_m": 42.054,
+      "model_end_m": 42.2335,
+      "turn_deg": 32.12,
+      "tags": [
+        "curve",
+        "grade_transition",
+        "raised_occurrence"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error",
+        "same observed-line control; traction/height remain physical constraints"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 144,
+      "vertices": [
+        144,
+        145
+      ],
+      "phase": "Raised crossing 4 and lift",
+      "from_px": [
+        861,
+        427
+      ],
+      "to_px": [
+        887,
+        418
+      ],
+      "model_start_m": 42.2335,
+      "model_end_m": 42.3711,
+      "turn_deg": 31.97,
+      "tags": [
+        "curve",
+        "grade_transition",
+        "raised_occurrence"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error",
+        "same observed-line control; traction/height remain physical constraints"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 145,
+      "vertices": [
+        145,
+        146
+      ],
+      "phase": "Raised crossing 4 and lift",
+      "from_px": [
+        887,
+        418
+      ],
+      "to_px": [
+        903,
+        403
+      ],
+      "model_start_m": 42.3711,
+      "model_end_m": 42.4808,
+      "turn_deg": 24.06,
+      "tags": [
+        "curve",
+        "grade_transition",
+        "raised_occurrence"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error",
+        "same observed-line control; traction/height remain physical constraints"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 146,
+      "vertices": [
+        146,
+        147
+      ],
+      "phase": "Raised crossing 4 and lift",
+      "from_px": [
+        903,
+        403
+      ],
+      "to_px": [
+        911,
+        386
+      ],
+      "model_start_m": 42.4808,
+      "model_end_m": 42.5747,
+      "turn_deg": 21.65,
+      "tags": [
+        "curve",
+        "grade_transition",
+        "raised_occurrence"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error",
+        "same observed-line control; traction/height remain physical constraints"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 147,
+      "vertices": [
+        147,
+        148
+      ],
+      "phase": "Raised crossing 4 and lift",
+      "from_px": [
+        911,
+        386
+      ],
+      "to_px": [
+        912,
+        280
+      ],
+      "model_start_m": 42.5747,
+      "model_end_m": 43.1047,
+      "turn_deg": 24.66,
+      "tags": [
+        "curve",
+        "raised_occurrence",
+        "overlap"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error",
+        "world resolves height; firmware must use observable context for any branch"
+      ],
+      "overlaps": [
+        {
+          "segment": 131,
+          "kind": "separate_layer"
+        }
+      ],
+      "extra_paint": []
+    },
+    {
+      "segment": 148,
+      "vertices": [
+        148,
+        149
+      ],
+      "phase": "Raised crossing 4 and lift",
+      "from_px": [
+        912,
+        280
+      ],
+      "to_px": [
+        921,
+        251
+      ],
+      "model_start_m": 43.1047,
+      "model_end_m": 43.2566,
+      "turn_deg": -16.7,
+      "tags": [
+        "curve",
+        "raised_occurrence",
+        "overlap"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error",
+        "world resolves height; firmware must use observable context for any branch"
+      ],
+      "overlaps": [
+        {
+          "segment": 131,
+          "kind": "separate_layer"
+        }
+      ],
+      "extra_paint": []
+    },
+    {
+      "segment": 149,
+      "vertices": [
+        149,
+        150
+      ],
+      "phase": "Raised crossing 4 and lift",
+      "from_px": [
+        921,
+        251
+      ],
+      "to_px": [
+        944,
+        229
+      ],
+      "model_start_m": 43.2566,
+      "model_end_m": 43.4157,
+      "turn_deg": -29.03,
+      "tags": [
+        "curve",
+        "raised_occurrence"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 150,
+      "vertices": [
+        150,
+        151
+      ],
+      "phase": "Raised crossing 4 and lift",
+      "from_px": [
+        944,
+        229
+      ],
+      "to_px": [
+        962,
+        223
+      ],
+      "model_start_m": 43.4157,
+      "model_end_m": 43.5106,
+      "turn_deg": -25.29,
+      "tags": [
+        "curve",
+        "raised_occurrence"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 151,
+      "vertices": [
+        151,
+        152
+      ],
+      "phase": "Raised crossing 4 and lift",
+      "from_px": [
+        962,
+        223
+      ],
+      "to_px": [
+        990,
+        226
+      ],
+      "model_start_m": 43.5106,
+      "model_end_m": 43.6514,
+      "turn_deg": -24.55,
+      "tags": [
+        "curve",
+        "raised_occurrence"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 152,
+      "vertices": [
+        152,
+        153
+      ],
+      "phase": "Raised crossing 4 and lift",
+      "from_px": [
+        990,
+        226
+      ],
+      "to_px": [
+        1015,
+        244
+      ],
+      "model_start_m": 43.6514,
+      "model_end_m": 43.8054,
+      "turn_deg": -29.64,
+      "tags": [
+        "curve",
+        "raised_occurrence"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 153,
+      "vertices": [
+        153,
+        154
+      ],
+      "phase": "Raised crossing 4 and lift",
+      "from_px": [
+        1015,
+        244
+      ],
+      "to_px": [
+        1028,
+        272
+      ],
+      "model_start_m": 43.8054,
+      "model_end_m": 43.9598,
+      "turn_deg": -29.34,
+      "tags": [
+        "curve",
+        "raised_occurrence"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 154,
+      "vertices": [
+        154,
+        155
+      ],
+      "phase": "Raised crossing 4 and lift",
+      "from_px": [
+        1028,
+        272
+      ],
+      "to_px": [
+        1028,
+        641
+      ],
+      "model_start_m": 43.9598,
+      "model_end_m": 45.8048,
+      "turn_deg": -24.9,
+      "tags": [
+        "curve",
+        "grade_transition",
+        "raised_occurrence",
+        "overlap",
+        "lift"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error",
+        "same observed-line control; traction/height remain physical constraints",
+        "world resolves height; firmware must use observable context for any branch",
+        "bound observed prefix; stop31s; narrow exit100ms within1500ms"
+      ],
+      "overlaps": [
+        {
+          "segment": 3,
+          "kind": "separate_layer"
+        },
+        {
+          "segment": 125,
+          "kind": "separate_layer"
+        },
+        {
+          "segment": 168,
+          "kind": "separate_layer"
+        },
+        {
+          "segment": 169,
+          "kind": "separate_layer"
+        }
+      ],
+      "extra_paint": []
+    },
+    {
+      "segment": 155,
+      "vertices": [
+        155,
+        156
+      ],
+      "phase": "Raised crossing 4 and lift",
+      "from_px": [
+        1028,
+        641
+      ],
+      "to_px": [
+        1021,
+        664
+      ],
+      "model_start_m": 45.8048,
+      "model_end_m": 45.925,
+      "turn_deg": -16.93,
+      "tags": [
+        "curve",
+        "raised_occurrence",
+        "overlap"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error",
+        "world resolves height; firmware must use observable context for any branch"
+      ],
+      "overlaps": [
+        {
+          "segment": 168,
+          "kind": "separate_layer"
+        },
+        {
+          "segment": 169,
+          "kind": "separate_layer"
+        }
+      ],
+      "extra_paint": []
+    },
+    {
+      "segment": 156,
+      "vertices": [
+        156,
+        157
+      ],
+      "phase": "Raised crossing 4 and lift",
+      "from_px": [
+        1021,
+        664
+      ],
+      "to_px": [
+        996,
+        687
+      ],
+      "model_start_m": 45.925,
+      "model_end_m": 46.0948,
+      "turn_deg": -30.46,
+      "tags": [
+        "curve",
+        "raised_occurrence"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 157,
+      "vertices": [
+        157,
+        158
+      ],
+      "phase": "Raised crossing 4 and lift",
+      "from_px": [
+        996,
+        687
+      ],
+      "to_px": [
+        961,
+        692
+      ],
+      "model_start_m": 46.0948,
+      "model_end_m": 46.2716,
+      "turn_deg": -34.48,
+      "tags": [
+        "curve",
+        "grade_transition",
+        "raised_occurrence"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error",
+        "same observed-line control; traction/height remain physical constraints"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 158,
+      "vertices": [
+        158,
+        159
+      ],
+      "phase": "Raised crossing 4 and lift",
+      "from_px": [
+        961,
+        692
+      ],
+      "to_px": [
+        929,
+        675
+      ],
+      "model_start_m": 46.2716,
+      "model_end_m": 46.4528,
+      "turn_deg": -36.11,
+      "tags": [
+        "curve",
+        "grade_transition",
+        "raised_occurrence"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error",
+        "same observed-line control; traction/height remain physical constraints"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 159,
+      "vertices": [
+        159,
+        160
+      ],
+      "phase": "Raised crossing 4 and lift",
+      "from_px": [
+        929,
+        675
+      ],
+      "to_px": [
+        915,
+        653
+      ],
+      "model_start_m": 46.4528,
+      "model_end_m": 46.5831,
+      "turn_deg": -29.55,
+      "tags": [
+        "curve",
+        "grade_transition",
+        "raised_occurrence"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error",
+        "same observed-line control; traction/height remain physical constraints"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 160,
+      "vertices": [
+        160,
+        161
+      ],
+      "phase": "Raised crossing 4 and lift",
+      "from_px": [
+        915,
+        653
+      ],
+      "to_px": [
+        913,
+        641
+      ],
+      "model_start_m": 46.5831,
+      "model_end_m": 46.644,
+      "turn_deg": -23.01,
+      "tags": [
+        "curve",
+        "grade_transition",
+        "raised_occurrence"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error",
+        "same observed-line control; traction/height remain physical constraints"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 161,
+      "vertices": [
+        161,
+        162
+      ],
+      "phase": "Raised crossing 4 and lift",
+      "from_px": [
+        913,
+        641
+      ],
+      "to_px": [
+        915,
+        617
+      ],
+      "model_start_m": 46.644,
+      "model_end_m": 46.7644,
+      "turn_deg": -14.23,
+      "tags": [
+        "curve",
+        "grade_transition",
+        "raised_occurrence"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error",
+        "same observed-line control; traction/height remain physical constraints"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 162,
+      "vertices": [
+        162,
+        163
+      ],
+      "phase": "Raised crossing 4 and lift",
+      "from_px": [
+        915,
+        617
+      ],
+      "to_px": [
+        929,
+        595
+      ],
+      "model_start_m": 46.7644,
+      "model_end_m": 46.8948,
+      "turn_deg": -27.71,
+      "tags": [
+        "curve",
+        "raised_occurrence"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 163,
+      "vertices": [
+        163,
+        164
+      ],
+      "phase": "Raised crossing 4 and lift",
+      "from_px": [
+        929,
+        595
+      ],
+      "to_px": [
+        946,
+        582
+      ],
+      "model_start_m": 46.8948,
+      "model_end_m": 47.0018,
+      "turn_deg": -20.12,
+      "tags": [
+        "curve",
+        "grade_transition",
+        "raised_occurrence"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error",
+        "same observed-line control; traction/height remain physical constraints"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 164,
+      "vertices": [
+        164,
+        165
+      ],
+      "phase": "Raised crossing 4 and lift",
+      "from_px": [
+        946,
+        582
+      ],
+      "to_px": [
+        975,
+        577
+      ],
+      "model_start_m": 47.0018,
+      "model_end_m": 47.1489,
+      "turn_deg": -27.62,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 165,
+      "vertices": [
+        165,
+        166
+      ],
+      "phase": "Post-lift return",
+      "from_px": [
+        975,
+        577
+      ],
+      "to_px": [
+        995,
+        582
+      ],
+      "model_start_m": 47.1489,
+      "model_end_m": 47.252,
+      "turn_deg": -23.82,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 166,
+      "vertices": [
+        166,
+        167
+      ],
+      "phase": "Post-lift return",
+      "from_px": [
+        995,
+        582
+      ],
+      "to_px": [
+        1009,
+        593
+      ],
+      "model_start_m": 47.252,
+      "model_end_m": 47.341,
+      "turn_deg": -24.12,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 167,
+      "vertices": [
+        167,
+        168
+      ],
+      "phase": "Post-lift return",
+      "from_px": [
+        1009,
+        593
+      ],
+      "to_px": [
+        1020,
+        620
+      ],
+      "model_start_m": 47.341,
+      "model_end_m": 47.4868,
+      "turn_deg": -29.68,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 168,
+      "vertices": [
+        168,
+        169
+      ],
+      "phase": "Post-lift return",
+      "from_px": [
+        1020,
+        620
+      ],
+      "to_px": [
+        1028,
+        641
+      ],
+      "model_start_m": 47.4868,
+      "model_end_m": 47.5992,
+      "turn_deg": -1.31,
+      "tags": [
+        "straight",
+        "overlap"
+      ],
+      "strategies": [
+        "centered PD with bounded PWM and acceleration",
+        "world resolves height; firmware must use observable context for any branch"
+      ],
+      "overlaps": [
+        {
+          "segment": 154,
+          "kind": "separate_layer"
+        },
+        {
+          "segment": 155,
+          "kind": "separate_layer"
+        }
+      ],
+      "extra_paint": []
+    },
+    {
+      "segment": 169,
+      "vertices": [
+        169,
+        170
+      ],
+      "phase": "Post-lift return",
+      "from_px": [
+        1028,
+        641
+      ],
+      "to_px": [
+        1029,
+        685
+      ],
+      "model_start_m": 47.5992,
+      "model_end_m": 47.8192,
+      "turn_deg": -19.55,
+      "tags": [
+        "curve",
+        "overlap"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error",
+        "world resolves height; firmware must use observable context for any branch"
+      ],
+      "overlaps": [
+        {
+          "segment": 154,
+          "kind": "separate_layer"
+        },
+        {
+          "segment": 155,
+          "kind": "separate_layer"
+        }
+      ],
+      "extra_paint": []
+    },
+    {
+      "segment": 170,
+      "vertices": [
+        170,
+        171
+      ],
+      "phase": "Post-lift return",
+      "from_px": [
+        1029,
+        685
+      ],
+      "to_px": [
+        1028,
+        731
+      ],
+      "model_start_m": 47.8192,
+      "model_end_m": 48.0493,
+      "turn_deg": -2.55,
+      "tags": [
+        "straight"
+      ],
+      "strategies": [
+        "centered PD with bounded PWM and acceleration"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 171,
+      "vertices": [
+        171,
+        172
+      ],
+      "phase": "Post-lift return",
+      "from_px": [
+        1028,
+        731
+      ],
+      "to_px": [
+        1023,
+        748
+      ],
+      "model_start_m": 48.0493,
+      "model_end_m": 48.1379,
+      "turn_deg": -15.14,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 172,
+      "vertices": [
+        172,
+        173
+      ],
+      "phase": "Post-lift return",
+      "from_px": [
+        1023,
+        748
+      ],
+      "to_px": [
+        1006,
+        769
+      ],
+      "model_start_m": 48.1379,
+      "model_end_m": 48.273,
+      "turn_deg": -22.6,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 173,
+      "vertices": [
+        173,
+        174
+      ],
+      "phase": "Post-lift return",
+      "from_px": [
+        1006,
+        769
+      ],
+      "to_px": [
+        989,
+        778
+      ],
+      "model_start_m": 48.273,
+      "model_end_m": 48.3691,
+      "turn_deg": -23.11,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 174,
+      "vertices": [
+        174,
+        175
+      ],
+      "phase": "Post-lift return",
+      "from_px": [
+        989,
+        778
+      ],
+      "to_px": [
+        707,
+        781
+      ],
+      "model_start_m": 48.3691,
+      "model_end_m": 49.7792,
+      "turn_deg": -27.29,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 175,
+      "vertices": [
+        175,
+        176
+      ],
+      "phase": "Post-lift return",
+      "from_px": [
+        707,
+        781
+      ],
+      "to_px": [
+        579,
+        782
+      ],
+      "model_start_m": 49.7792,
+      "model_end_m": 50.4192,
+      "turn_deg": -0.16,
+      "tags": [
+        "straight"
+      ],
+      "strategies": [
+        "centered PD with bounded PWM and acceleration"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 176,
+      "vertices": [
+        176,
+        177
+      ],
+      "phase": "Post-lift return",
+      "from_px": [
+        579,
+        782
+      ],
+      "to_px": [
+        350,
+        781
+      ],
+      "model_start_m": 50.4192,
+      "model_end_m": 51.5642,
+      "turn_deg": -0.7,
+      "tags": [
+        "straight",
+        "overlap"
+      ],
+      "strategies": [
+        "centered PD with bounded PWM and acceleration",
+        "world resolves height; firmware must use observable context for any branch"
+      ],
+      "overlaps": [
+        {
+          "segment": 91,
+          "kind": "separate_layer"
+        }
+      ],
+      "extra_paint": []
+    },
+    {
+      "segment": 177,
+      "vertices": [
+        177,
+        178
+      ],
+      "phase": "Post-lift return",
+      "from_px": [
+        350,
+        781
+      ],
+      "to_px": [
+        330,
+        777
+      ],
+      "model_start_m": 51.5642,
+      "model_end_m": 51.6662,
+      "turn_deg": -11.06,
+      "tags": [
+        "curve",
+        "overlap"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error",
+        "world resolves height; firmware must use observable context for any branch"
+      ],
+      "overlaps": [
+        {
+          "segment": 91,
+          "kind": "separate_layer"
+        }
+      ],
+      "extra_paint": []
+    },
+    {
+      "segment": 178,
+      "vertices": [
+        178,
+        179
+      ],
+      "phase": "Post-lift return",
+      "from_px": [
+        330,
+        777
+      ],
+      "to_px": [
+        311,
+        762
+      ],
+      "model_start_m": 51.6662,
+      "model_end_m": 51.7873,
+      "turn_deg": -26.98,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 179,
+      "vertices": [
+        179,
+        180
+      ],
+      "phase": "Post-lift return",
+      "from_px": [
+        311,
+        762
+      ],
+      "to_px": [
+        300,
+        750
+      ],
+      "model_start_m": 51.7873,
+      "model_end_m": 51.8687,
+      "turn_deg": -9.2,
+      "tags": [
+        "straight"
+      ],
+      "strategies": [
+        "centered PD with bounded PWM and acceleration"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 180,
+      "vertices": [
+        180,
+        181
+      ],
+      "phase": "Post-lift return",
+      "from_px": [
+        300,
+        750
+      ],
+      "to_px": [
+        293,
+        726
+      ],
+      "model_start_m": 51.8687,
+      "model_end_m": 51.9937,
+      "turn_deg": -26.25,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 181,
+      "vertices": [
+        181,
+        182
+      ],
+      "phase": "Post-lift return",
+      "from_px": [
+        293,
+        726
+      ],
+      "to_px": [
+        292,
+        618
+      ],
+      "model_start_m": 51.9937,
+      "model_end_m": 52.5337,
+      "turn_deg": -15.73,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 182,
+      "vertices": [
+        182,
+        183
+      ],
+      "phase": "Post-lift return",
+      "from_px": [
+        292,
+        618
+      ],
+      "to_px": [
+        283,
+        600
+      ],
+      "model_start_m": 52.5337,
+      "model_end_m": 52.6343,
+      "turn_deg": 26.03,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 183,
+      "vertices": [
+        183,
+        184
+      ],
+      "phase": "Post-lift return",
+      "from_px": [
+        283,
+        600
+      ],
+      "to_px": [
+        261,
+        582
+      ],
+      "model_start_m": 52.6343,
+      "model_end_m": 52.7764,
+      "turn_deg": 24.15,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 184,
+      "vertices": [
+        184,
+        185
+      ],
+      "phase": "Post-lift return",
+      "from_px": [
+        261,
+        582
+      ],
+      "to_px": [
+        241,
+        577
+      ],
+      "model_start_m": 52.7764,
+      "model_end_m": 52.8795,
+      "turn_deg": 25.25,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 185,
+      "vertices": [
+        185,
+        186
+      ],
+      "phase": "Post-lift return",
+      "from_px": [
+        241,
+        577
+      ],
+      "to_px": [
+        220,
+        579
+      ],
+      "model_start_m": 52.8795,
+      "model_end_m": 52.985,
+      "turn_deg": 19.48,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 186,
+      "vertices": [
+        186,
+        187
+      ],
+      "phase": "Post-lift return",
+      "from_px": [
+        220,
+        579
+      ],
+      "to_px": [
+        198,
+        591
+      ],
+      "model_start_m": 52.985,
+      "model_end_m": 53.1103,
+      "turn_deg": 23.17,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 187,
+      "vertices": [
+        187,
+        188
+      ],
+      "phase": "Post-lift return",
+      "from_px": [
+        198,
+        591
+      ],
+      "to_px": [
+        184,
+        610
+      ],
+      "model_start_m": 53.1103,
+      "model_end_m": 53.2283,
+      "turn_deg": 25.01,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 188,
+      "vertices": [
+        188,
+        189
+      ],
+      "phase": "Post-lift return",
+      "from_px": [
+        184,
+        610
+      ],
+      "to_px": [
+        178,
+        633
+      ],
+      "model_start_m": 53.2283,
+      "model_end_m": 53.3471,
+      "turn_deg": 21.76,
+      "tags": [
+        "curve"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 189,
+      "vertices": [
+        189,
+        190
+      ],
+      "phase": "Post-lift return",
+      "from_px": [
+        178,
+        633
+      ],
+      "to_px": [
+        178,
+        760
+      ],
+      "model_start_m": 53.3471,
+      "model_end_m": 53.9821,
+      "turn_deg": 14.62,
+      "tags": [
+        "curve",
+        "grade_transition"
+      ],
+      "strategies": [
+        "continuous position PD; lower speed with increasing error",
+        "same observed-line control; traction/height remain physical constraints"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 190,
+      "vertices": [
+        190,
+        191
+      ],
+      "phase": "Post-lift return",
+      "from_px": [
+        178,
+        760
+      ],
+      "to_px": [
+        179,
+        800
+      ],
+      "model_start_m": 53.9821,
+      "model_end_m": 54.1822,
+      "turn_deg": 1.43,
+      "tags": [
+        "straight",
+        "grade_transition",
+        "overlap"
+      ],
+      "strategies": [
+        "centered PD with bounded PWM and acceleration",
+        "same observed-line control; traction/height remain physical constraints",
+        "world resolves height; firmware must use observable context for any branch"
+      ],
+      "overlaps": [
+        {
+          "segment": 91,
+          "kind": "separate_layer"
+        }
+      ],
+      "extra_paint": []
+    },
+    {
+      "segment": 191,
+      "vertices": [
+        191,
+        192
+      ],
+      "phase": "TAIWAN sharp turns and finish",
+      "from_px": [
+        179,
+        800
+      ],
+      "to_px": [
+        179,
+        855
+      ],
+      "model_start_m": 54.1822,
+      "model_end_m": 54.4572,
+      "turn_deg": -1.43,
+      "tags": [
+        "straight",
+        "extra_paint"
+      ],
+      "strategies": [
+        "centered PD with bounded PWM and acceleration",
+        "bounded ambiguity; broad/split alone cannot identify mission"
+      ],
+      "overlaps": [],
+      "extra_paint": [
+        0
+      ]
+    },
+    {
+      "segment": 192,
+      "vertices": [
+        192,
+        193
+      ],
+      "phase": "TAIWAN sharp turns and finish",
+      "from_px": [
+        179,
+        855
+      ],
+      "to_px": [
+        179,
+        1032
+      ],
+      "model_start_m": 54.4572,
+      "model_end_m": 55.3422,
+      "turn_deg": 0.0,
+      "tags": [
+        "straight",
+        "extra_paint"
+      ],
+      "strategies": [
+        "centered PD with bounded PWM and acceleration",
+        "bounded ambiguity; broad/split alone cannot identify mission"
+      ],
+      "overlaps": [],
+      "extra_paint": [
+        0
+      ]
+    },
+    {
+      "segment": 193,
+      "vertices": [
+        193,
+        194
+      ],
+      "phase": "TAIWAN sharp turns and finish",
+      "from_px": [
+        179,
+        1032
+      ],
+      "to_px": [
+        250,
+        1032
+      ],
+      "model_start_m": 55.3422,
+      "model_end_m": 55.6972,
+      "turn_deg": 90.0,
+      "tags": [
+        "sharp_turn"
+      ],
+      "strategies": [
+        "reduce translation before bounded turn and confirmed return"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 194,
+      "vertices": [
+        194,
+        195
+      ],
+      "phase": "TAIWAN sharp turns and finish",
+      "from_px": [
+        250,
+        1032
+      ],
+      "to_px": [
+        310,
+        858
+      ],
+      "model_start_m": 55.6972,
+      "model_end_m": 56.6175,
+      "turn_deg": 70.97,
+      "tags": [
+        "sharp_turn"
+      ],
+      "strategies": [
+        "reduce translation before bounded turn and confirmed return"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 195,
+      "vertices": [
+        195,
+        196
+      ],
+      "phase": "TAIWAN sharp turns and finish",
+      "from_px": [
+        310,
+        858
+      ],
+      "to_px": [
+        367,
+        1032
+      ],
+      "model_start_m": 56.6175,
+      "model_end_m": 57.533,
+      "turn_deg": -142.84,
+      "tags": [
+        "acute_V"
+      ],
+      "strategies": [
+        "slow approach; ordered chosen-side capture; no early opposite-branch exit"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 196,
+      "vertices": [
+        196,
+        197
+      ],
+      "phase": "TAIWAN sharp turns and finish",
+      "from_px": [
+        367,
+        1032
+      ],
+      "to_px": [
+        440,
+        1032
+      ],
+      "model_start_m": 57.533,
+      "model_end_m": 57.898,
+      "turn_deg": 71.86,
+      "tags": [
+        "sharp_turn",
+        "extra_paint"
+      ],
+      "strategies": [
+        "reduce translation before bounded turn and confirmed return",
+        "bounded ambiguity; broad/split alone cannot identify mission"
+      ],
+      "overlaps": [],
+      "extra_paint": [
+        2
+      ]
+    },
+    {
+      "segment": 197,
+      "vertices": [
+        197,
+        198
+      ],
+      "phase": "TAIWAN sharp turns and finish",
+      "from_px": [
+        440,
+        1032
+      ],
+      "to_px": [
+        440,
+        855
+      ],
+      "model_start_m": 57.898,
+      "model_end_m": 58.783,
+      "turn_deg": 90.0,
+      "tags": [
+        "sharp_turn",
+        "extra_paint"
+      ],
+      "strategies": [
+        "reduce translation before bounded turn and confirmed return",
+        "bounded ambiguity; broad/split alone cannot identify mission"
+      ],
+      "overlaps": [],
+      "extra_paint": [
+        1,
+        2
+      ]
+    },
+    {
+      "segment": 198,
+      "vertices": [
+        198,
+        199
+      ],
+      "phase": "TAIWAN sharp turns and finish",
+      "from_px": [
+        440,
+        855
+      ],
+      "to_px": [
+        510,
+        855
+      ],
+      "model_start_m": 58.783,
+      "model_end_m": 59.133,
+      "turn_deg": -90.0,
+      "tags": [
+        "sharp_turn",
+        "extra_paint",
+        "contextual_right"
+      ],
+      "strategies": [
+        "reduce translation before bounded turn and confirmed return",
+        "bounded ambiguity; broad/split alone cannot identify mission",
+        "bound post-lift R L W L R L R L W selects R at terminal W only"
+      ],
+      "overlaps": [],
+      "extra_paint": [
+        1
+      ]
+    },
+    {
+      "segment": 199,
+      "vertices": [
+        199,
+        200
+      ],
+      "phase": "TAIWAN sharp turns and finish",
+      "from_px": [
+        510,
+        855
+      ],
+      "to_px": [
+        555,
+        1032
+      ],
+      "model_start_m": 59.133,
+      "model_end_m": 60.0461,
+      "turn_deg": -75.74,
+      "tags": [
+        "sharp_turn"
+      ],
+      "strategies": [
+        "reduce translation before bounded turn and confirmed return"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 200,
+      "vertices": [
+        200,
+        201
+      ],
+      "phase": "TAIWAN sharp turns and finish",
+      "from_px": [
+        555,
+        1032
+      ],
+      "to_px": [
+        602,
+        855
+      ],
+      "model_start_m": 60.0461,
+      "model_end_m": 60.9618,
+      "turn_deg": 150.86,
+      "tags": [
+        "acute_V"
+      ],
+      "strategies": [
+        "slow approach; ordered chosen-side capture; no early opposite-branch exit"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 201,
+      "vertices": [
+        201,
+        202
+      ],
+      "phase": "TAIWAN sharp turns and finish",
+      "from_px": [
+        602,
+        855
+      ],
+      "to_px": [
+        646,
+        1032
+      ],
+      "model_start_m": 60.9618,
+      "model_end_m": 61.8737,
+      "turn_deg": -151.17,
+      "tags": [
+        "acute_V"
+      ],
+      "strategies": [
+        "slow approach; ordered chosen-side capture; no early opposite-branch exit"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 202,
+      "vertices": [
+        202,
+        203
+      ],
+      "phase": "TAIWAN sharp turns and finish",
+      "from_px": [
+        646,
+        1032
+      ],
+      "to_px": [
+        696,
+        855
+      ],
+      "model_start_m": 61.8737,
+      "model_end_m": 62.7934,
+      "turn_deg": 150.27,
+      "tags": [
+        "acute_V"
+      ],
+      "strategies": [
+        "slow approach; ordered chosen-side capture; no early opposite-branch exit"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 203,
+      "vertices": [
+        203,
+        204
+      ],
+      "phase": "TAIWAN sharp turns and finish",
+      "from_px": [
+        696,
+        855
+      ],
+      "to_px": [
+        756,
+        855
+      ],
+      "model_start_m": 62.7934,
+      "model_end_m": 63.0934,
+      "turn_deg": -74.23,
+      "tags": [
+        "sharp_turn"
+      ],
+      "strategies": [
+        "reduce translation before bounded turn and confirmed return"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 204,
+      "vertices": [
+        204,
+        205
+      ],
+      "phase": "TAIWAN sharp turns and finish",
+      "from_px": [
+        756,
+        855
+      ],
+      "to_px": [
+        815,
+        1032
+      ],
+      "model_start_m": 63.0934,
+      "model_end_m": 64.0262,
+      "turn_deg": -71.57,
+      "tags": [
+        "sharp_turn"
+      ],
+      "strategies": [
+        "reduce translation before bounded turn and confirmed return"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 205,
+      "vertices": [
+        205,
+        206
+      ],
+      "phase": "TAIWAN sharp turns and finish",
+      "from_px": [
+        815,
+        1032
+      ],
+      "to_px": [
+        861,
+        1032
+      ],
+      "model_start_m": 64.0262,
+      "model_end_m": 64.2562,
+      "turn_deg": 71.57,
+      "tags": [
+        "sharp_turn"
+      ],
+      "strategies": [
+        "reduce translation before bounded turn and confirmed return"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 206,
+      "vertices": [
+        206,
+        207
+      ],
+      "phase": "TAIWAN sharp turns and finish",
+      "from_px": [
+        861,
+        1032
+      ],
+      "to_px": [
+        861,
+        855
+      ],
+      "model_start_m": 64.2562,
+      "model_end_m": 65.1412,
+      "turn_deg": 90.0,
+      "tags": [
+        "sharp_turn"
+      ],
+      "strategies": [
+        "reduce translation before bounded turn and confirmed return"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 207,
+      "vertices": [
+        207,
+        208
+      ],
+      "phase": "TAIWAN sharp turns and finish",
+      "from_px": [
+        861,
+        855
+      ],
+      "to_px": [
+        978,
+        1032
+      ],
+      "model_start_m": 65.1412,
+      "model_end_m": 66.2021,
+      "turn_deg": -146.53,
+      "tags": [
+        "acute_V"
+      ],
+      "strategies": [
+        "slow approach; ordered chosen-side capture; no early opposite-branch exit"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 208,
+      "vertices": [
+        208,
+        209
+      ],
+      "phase": "TAIWAN sharp turns and finish",
+      "from_px": [
+        978,
+        1032
+      ],
+      "to_px": [
+        978,
+        862
+      ],
+      "model_start_m": 66.2021,
+      "model_end_m": 67.0521,
+      "turn_deg": 146.53,
+      "tags": [
+        "acute_V"
+      ],
+      "strategies": [
+        "slow approach; ordered chosen-side capture; no early opposite-branch exit"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    },
+    {
+      "segment": 209,
+      "vertices": [
+        209,
+        210
+      ],
+      "phase": "TAIWAN sharp turns and finish",
+      "from_px": [
+        978,
+        862
+      ],
+      "to_px": [
+        978,
+        835
+      ],
+      "model_start_m": 67.0521,
+      "model_end_m": 67.1871,
+      "turn_deg": 0.0,
+      "tags": [
+        "straight",
+        "finish"
+      ],
+      "strategies": [
+        "centered PD with bounded PWM and acceleration",
+        "physical referee finish crossing; reference has no onboard finish stop"
+      ],
+      "overlaps": [],
+      "extra_paint": []
+    }
+  ],
+  "known_unmodelled": [
+    "arbitrary competition lettering",
+    "explicit dashed/gap intervals (not encoded in this route)",
+    "on-site mechanism placement variants",
+    "complete rigid-body/tipping/contact",
+    "measured tire slip/torque",
+    "actual shortcut action (disabled; full A apex followed)",
+    "verified F meaning and official exits",
+    "onboard physical finish crossing detection"
+  ],
+  "ambiguities": [
+    "central_x471",
+    "central_x585",
+    "left_circle_x117",
+    "right_x1029",
+    "central_y692",
+    "bottom_y781",
+    "F_task_undefined",
+    "T_V_exit_direction",
+    "on_site_seesaw_placement",
+    "lift_occurrence_and_connections",
+    "ground_backing_height_extent_material_unmeasured"
+  ],
+  "counts": {
+    "straight": 20,
+    "start": 1,
+    "curve": 174,
+    "overlap": 44,
+    "grade_transition": 26,
+    "raised_occurrence": 68,
+    "seesaw": 1,
+    "lift": 1,
+    "extra_paint": 5,
+    "sharp_turn": 10,
+    "acute_V": 6,
+    "contextual_right": 1,
+    "finish": 1
+  },
+  "course_sha256": "9e691481b0983e112756fd621137d045c7693e850453f187db0ad1f6d218104c"
+}

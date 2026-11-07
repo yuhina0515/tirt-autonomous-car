@@ -1,0 +1,20 @@
+{
+  "source_hashes": {
+    "motion_core.h": "dc7d52e120382e89a6d968c3390a28445ec82c44b010a4fd1da29bd7a1caf814",
+    "exit_motion.h": "7d9a3827040ec8c0f4c96066e645c93133d0deca50a47d542d8b16760bb99f91",
+    "controller.h": "f7ba2c7955a742da1688efedd7ee41058700f31602aacb68923d304359f389a8",
+    "race_two_marker.ino": "47e15359300d7f74e210207d2dfa02c5ea109fb68a2aa572f8990c26b81e05dd"
+  },
+  "ino_sha256": "8317d7bbc17cb36215cdac448c45a0eb011c8179c1f450ddcab714f014b499f6",
+  "dependencies": [],
+  "uploaded": false,
+  "version": "2026-11-06 R2",
+  "flash_bytes": 8670,
+  "global_ram_bytes": 293,
+  "target": "arduino:avr:nano:cpu=atmega328old",
+  "field_acceptance": false,
+  "download_url": "https://hina-tw.ddns.net/downloads/files/tirt-two-marker-20261106-r2/race_two_marker.ino",
+  "total_host_tests": 167,
+  "generated_sensor_sequences": 1000,
+  "https_download_hash_verified": true
+}

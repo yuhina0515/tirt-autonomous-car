@@ -1,0 +1,5 @@
+# Normal exit and running telemetry
+
+Baseline3eb0516. User requests reversible disabling of slow exit, ADC scan-rate research and Opus5.5 medium telemetry implementation. User clarification: capture replacement must drive normally after D12, adding telemetry, not motor-disabled observation. Preserve27s wait, marker rearm and stop controls. No ADC overclock without field evidence. Native rollback and R2 artifacts immutable.
+
+Lead owns controller, integration, tests and deployment. Requested Claude CLI model claude-opus-5-5 with medium effort; implementation finished; CLI modelUsage confirms claude-opus-5-5, requested medium effort, no permission denials. No model substitution. Implement separate telemetry build from same source. USB115200, bounded nonblocking binary output, host decoder and timing summary. Validate normal and retained slow mode, framing/CRC/backpressure, both Nano builds, full tests and versioned HTTPS delivery. Physical sensor bandwidth and stable maximum rate require actual captures.

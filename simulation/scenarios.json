@@ -1,0 +1,24 @@
+{
+  "seed": 20261103,
+  "plants": {
+    "nominal": {},
+    "low_battery": {"battery_factor": 0.7, "dead_pwm": 55, "right_gain": 0.90},
+    "delayed_slippery": {"sample_ms": 10, "latency_ms": 30, "friction_mu": 0.3, "motor_tau_s": 0.14}
+  },
+  "cases": [
+    {"name":"straight","route":"straight"},
+    {"name":"left60","route":"turn60_left"},
+    {"name":"right60","route":"turn60_right"},
+    {"name":"left90","route":"turn90_left"},
+    {"name":"right90","route":"turn90_right"},
+    {"name":"v60_left","route":"v60_left"},
+    {"name":"v60_right","route":"v60_right"},
+    {"name":"wide_v_left","route":"wide_v60_left"},
+    {"name":"wide_v_right","route":"wide_v60_right"},
+    {"name":"short_gap","route":"straight","features":[{"x0":0.6,"x1":0.62,"y0":-0.1,"y1":0.1,"on":false}]},
+    {"name":"long_gap","route":"straight","features":[{"x0":0.6,"x1":0.9,"y0":-0.1,"y1":0.1,"on":false}]},
+    {"name":"synthetic_T_text","route":"straight","features":[{"x0":0.6,"x1":0.615,"y0":-0.05,"y1":0.05,"on":true},{"x0":0.615,"x1":0.67,"y0":0.01,"y1":0.025,"on":true}]},
+    {"name":"narrow_line_noise","route":"straight","plant":{"line_width_m":0.014,"adc_noise":12}},
+    {"name":"opposite_adc_polarity","route":"straight","plant":{"line_adc":500,"background_adc":35}}
+  ]
+}

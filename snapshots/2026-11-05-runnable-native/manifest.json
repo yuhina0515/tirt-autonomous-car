@@ -1,0 +1,11 @@
+{
+  "baseline_revision": "0fc45e6",
+  "maintained_native_unchanged": true,
+  "published_standalone_sha256": "aa5956bd544004a5aff4b07066c63273052e8e0866dc5ee7f17ded4d9df37711",
+  "files": {
+    "controller.h": "8b5f7f81c2475f3bda7e338015b62434485cd2e8aa522214136b2512e2ecffcc",
+    "native_car.ino": "4231cf707d51512d88040c23f3ef69c0fba2e1b7c3be2d9529367e2d3fc6ce35"
+  },
+  "field_acceptance": false,
+  "note": "Runnable source rollback; device identity and upload remain separate evidence. Includes original 23350ms field lift setting."
+}

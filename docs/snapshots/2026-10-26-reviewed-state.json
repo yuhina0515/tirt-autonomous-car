@@ -1,0 +1,31 @@
+{
+  "date": "2026-10-26",
+  "timezone": "Asia/Taipei",
+  "data_baseline_commit": "7d1d3bf7665da89a1f3d12cab7a97adb02dbb10b",
+  "control_commit": "434af1d8569a463ea8331b34cf8388c20076c021",
+  "branch": "docs/legacy-sensor-truth-table",
+  "snapshot_tag": "snapshot/2026-10-26-reviewed-state",
+  "local_archive_directory": "snapshots/2026-10-26-7d1d3bf",
+  "formal_release": "v0.4.0",
+  "formal_release_commit": "e19e214153ae5a8a6e5e854c77888bad196f37cc",
+  "confirmed_bugs": {
+    "stale_turn_candidate": "unfixed",
+    "capture_fallback_uses_old_turn_direction": "unfixed",
+    "capture_qualification_before_direction_override": "unfixed; priority disputed"
+  },
+  "reviews": {
+    "squad": "completed; six departments",
+    "opus": "completed; claude-opus-5-5; explicit medium effort"
+  },
+  "controller_changed": false,
+  "new_tests_compilation_export_upload": false,
+  "current_device_firmware": "unverified",
+  "file_hashes": {
+    "car.xml": "09b3f3bce38722ca51b2d46a20ecc0ae6c7f71421204e5deb888d735ee40aced",
+    "car.ino": "f233291b21fc6a3f0cc862188baf16ed5e90c484320c7f9c1c768c356a56ce79",
+    "tools/rewrite_car.py": "ca6eee99a7a8e48b06a673efed7435efe3faa05ad57d1c859179b61357bac63a",
+    "tools/export_car.mjs": "d9ed30661c755c64905a752bcbbf314d5d3b0c9c32de6a8d3305fcedb203adb7",
+    "blockly_codegen.py": "e37f4e2f24e811f3b5cbc4aa59773ee2fa3b1cb78f86bb4ef50929e4450bf469",
+    "docs/audits/2026-10-25-opus-5-5-medium.zh-TW.md": "4fe9fb423ffc0b587b7435c4e46a27a3ac919b52b69ca756f674f5ad8fe2e4eb"
+  }
+}

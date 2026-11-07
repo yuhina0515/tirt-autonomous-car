@@ -1,0 +1,4 @@
+{
+  "purpose": "Held-out validation declared before experimental controller training; never combine training successes with these attempts.",
+  "seeds": [2026110711,2026110712,2026110713,2026110714,2026110715]
+}

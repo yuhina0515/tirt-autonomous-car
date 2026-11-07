@@ -1,0 +1,24 @@
+{
+  "title": "TIRT R3.2 行駛回傳版（20 秒練習版）",
+  "description": "首次五白確認後等待 20 秒。練習前複核：修正全白前後的計時殘留。會正常驅動馬達：D12 放開再按開始、再按停止。沿用 R3 控制，只增加 USB 二進位資料回傳；不是馬達關閉的舊採集版。",
+  "file": "tirt-two-marker-20261107-r3-2/race_capture.ino",
+  "size": "32,419 bytes",
+  "source": "最新 race_two_marker R3.2 + Opus 5.5 medium 回傳模組",
+  "sha256": "C6DED5623E023ADEF3CD3D3C51E363614F01EE3A6B2EC81384B431EB1CDF4147",
+  "steps": [
+    "下載 race_capture.ino，放在同名 race_capture 資料夾，以 Nano / ATmega328P (Old Bootloader) 燒錄；不需額外 Arduino 函式庫。",
+    "先接好 USB 並開啟記錄程式，再按 D12 啟動；不要在行進中開關序列埠，可能造成 Nano 重設。",
+    "USB 115200 baud、50 Hz 二進位封包；使用專案 tools/decode_race_telemetry.py 記錄與轉 CSV，不要用序列監控視窗讀成文字。",
+    "先架空檢查 D12 啟停、馬達方向與記錄，再實車測試；USB 線須避免拉扯車子。"
+  ],
+  "help": [
+    {
+      "summary": "回傳內容與效能",
+      "body": "五顆 ADC、位元、任務與故障、實際輪速命令、掃描時間、區間最慢迴圈、掃描數與丟包。緩衝區不足略過封包，不等待傳完；控制與回傳頻率分開。Nano Flash 10690 bytes、全域 RAM 491 bytes。"
+    },
+    {
+      "summary": "記錄工具",
+      "body": "TIRT 專案頁提供回傳操作文件與 Python 解碼工具。記錄需 pyserial；離線解碼只用 Python 標準函式庫。D0/D1 若接外部藍牙須核對是否與 USB 衝突。"
+    }
+  ]
+}

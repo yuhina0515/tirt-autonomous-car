@@ -1,0 +1,264 @@
+{
+  "baseline_commit": "20538be",
+  "known_diagnostic_seed": 2026110711,
+  "unseen_validation": false,
+  "official_qualification_passed": false,
+  "geometry": "inferred complete illustrated course, not verified official route",
+  "firmware_changed": false,
+  "hardware_operated": false,
+  "runs": {
+    "reference-711": {
+      "seed": 2026110711,
+      "outcome": "finished",
+      "simulation_seconds": 219.32,
+      "plant": {
+        "track_m": 0.115,
+        "sensor_ahead_m": 0.06,
+        "sensor_spacing_m": 0.014,
+        "sensor_radius_m": 0.002,
+        "line_width_m": 0.02,
+        "road_width_m": 0.2,
+        "max_wheel_mps": 0.65,
+        "dead_pwm": 40.321869715970536,
+        "motor_tau_s": 0.08,
+        "coast_tau_s": 0.24,
+        "max_accel_mps2": 6.0,
+        "left_gain": 1.0,
+        "right_gain": 0.9715715437604029,
+        "battery_factor": 0.9865372013561062,
+        "friction_mu": 0.5455519142883529,
+        "drive_normal_fraction": 1.0,
+        "sample_ms": 5,
+        "latency_ms": 5,
+        "adc_noise": 4,
+        "line_adc": 35,
+        "background_adc": 500,
+        "grade_deg": 0
+      },
+      "lift_duration_s": 26.671063909421388,
+      "trace_sha256": "16d452909240c9a910dcdacae15d77f561e2ebc377f40e4b08e4742036de4720",
+      "elapsed_s": 218.88,
+      "independent_checks": {
+        "start_crossing": true,
+        "ordered_gate_checks": true,
+        "body_line_coverage": true,
+        "wheel_road_coverage_with_V_exception": true,
+        "direction_and_layer": true,
+        "shortcut_boundary": true,
+        "seesaw_crossing": true,
+        "lift_stop_and_settled_exit": true,
+        "finish_crossing": true,
+        "no_fault_or_intervention": true
+      },
+      "gates_crossed": 209,
+      "gates_required": 209,
+      "first_violation": null,
+      "first_violation_ms": null,
+      "finished": true,
+      "mechanism_state": {
+        "lift_phase": 2,
+        "lift_height_m": 0.0,
+        "seesaw_deg": -25.0
+      },
+      "native_trace_replay_verified": true,
+      "physical_sensor_origin_verified": true,
+      "source_hash": "054e609023286c2b9955623ca1fd931e3a0a68d73cd3f524d133b221ddc25973",
+      "course_hash": "9e691481b0983e112756fd621137d045c7693e850453f187db0ad1f6d218104c",
+      "manifest_sha256": "6bfa0e58fdacdf165b38027424ab97a1eb46425681cb7e8357d271d83548af44",
+      "local_artifacts": "build-output/start-finish-20261105/reference-711",
+      "manifest_file_sha256": "6bfa0e58fdacdf165b38027424ab97a1eb46425681cb7e8357d271d83548af44",
+      "results_file_sha256": "ce8a816a2d32748ed0194892ce66922da469c41d0119bc5cbfc9773a860d74f4",
+      "source_provenance": {
+        "course_sha256": "9e691481b0983e112756fd621137d045c7693e850453f187db0ad1f6d218104c",
+        "source_hash": "054e609023286c2b9955623ca1fd931e3a0a68d73cd3f524d133b221ddc25973",
+        "model_files": {
+          "tools/course_world.py": "a4cd0e102d7ba7c6d948385ba2cb805a287ce0035b27c8462698b721f1fd58a4",
+          "tools/course_environment.py": "8e2edcd2348f8c9d522bf60e3e0513868e4dc2c69633d9f78ef028c6e1c79718",
+          "tools/ground_support.py": "fab404fac97b206b94fda43c652846287c8730cb5ee78241e7a7f6fdb1e0b2ef",
+          "tools/course_referee.py": "9fe43e7596a094b27d2d0c6b510c56fbf41bebb4edcb89d4272a3aa97bb52ea4",
+          "tools/run_course.py": "505b1f40606aa920ed309dc85d93f65f7780355e4cf0eaef14b815c6095cd1f3",
+          "tools/simulation_model.py": "753fd97446490d9d7abf47c9b62aa10b141d9dc9fabaf41550121e86bc8a8b00",
+          "tools/course_qualification.py": "b594bce9a911b2e2110fe0262987529b6f4c47b8199c4d05c8f82f4c9b405cc7",
+          "tools/sim_native.py": "66c70aee8d261fc81146573fc097c9c9a8c9a6705acb1e6740d68331b0531a3f",
+          "tools/learn_course_mission.py": "31d46e02012bf2ec4a1c61e9a15144b45ed4fd9d03470163236489d747ee1e11"
+        },
+        "expected_seeds": [
+          2026110711
+        ],
+        "official_geometry_verified": false,
+        "baseline": null,
+        "experiment": null,
+        "plant_overrides": {
+          "max_accel_mps2": 6.0
+        },
+        "diagnostic_limit_s": 360.0,
+        "seed_plan_sha256": null,
+        "candidate_profile_sha256": "03451101c49aeca9b4dee49b7ca363436734196cfb90fea9d885aec2e2133720",
+        "trials": [
+          {
+            "seed": 2026110711,
+            "plant": {
+              "track_m": 0.115,
+              "sensor_ahead_m": 0.06,
+              "sensor_spacing_m": 0.014,
+              "sensor_radius_m": 0.002,
+              "line_width_m": 0.02,
+              "road_width_m": 0.2,
+              "max_wheel_mps": 0.65,
+              "dead_pwm": 40.321869715970536,
+              "motor_tau_s": 0.08,
+              "coast_tau_s": 0.24,
+              "max_accel_mps2": 6.0,
+              "left_gain": 1.0,
+              "right_gain": 0.9715715437604029,
+              "battery_factor": 0.9865372013561062,
+              "friction_mu": 0.5455519142883529,
+              "drive_normal_fraction": 1.0,
+              "sample_ms": 5,
+              "latency_ms": 5,
+              "adc_noise": 4,
+              "line_adc": 35,
+              "background_adc": 500,
+              "grade_deg": 0
+            },
+            "lift_duration_s": 26.671063909421388
+          }
+        ]
+      },
+      "independent_audit": {
+        "hash_verified_traces": 1,
+        "native_trace_replays_verified": 1,
+        "physical_sensor_origins_verified": 1,
+        "current_referee_used": false,
+        "auditor_sha256": {},
+        "model_batch": {
+          "passed": false,
+          "required_runs": 5,
+          "attempts": [
+            {
+              "passed": true,
+              "reasons": []
+            }
+          ],
+          "longest_streak": 1,
+          "five_distinct_predeclared_seeds": false,
+          "diagnostic_only": true
+        },
+        "official_qualification_passed": false
+      },
+      "audit_sha256": "d9a149bceb21d3383606640a53d8d779da40467deadfcb85e21d6c27146cf77e"
+    },
+    "layered-711": {
+      "seed": 2026110711,
+      "outcome": "controller_fault",
+      "simulation_seconds": 103.305,
+      "plant": {
+        "track_m": 0.115,
+        "sensor_ahead_m": 0.06,
+        "sensor_spacing_m": 0.014,
+        "sensor_radius_m": 0.002,
+        "line_width_m": 0.02,
+        "road_width_m": 0.2,
+        "max_wheel_mps": 0.65,
+        "dead_pwm": 40.321869715970536,
+        "motor_tau_s": 0.08,
+        "coast_tau_s": 0.24,
+        "max_accel_mps2": 6.0,
+        "left_gain": 1.0,
+        "right_gain": 0.9715715437604029,
+        "battery_factor": 0.9865372013561062,
+        "friction_mu": 0.5455519142883529,
+        "drive_normal_fraction": 1.0,
+        "sample_ms": 5,
+        "latency_ms": 5,
+        "adc_noise": 4,
+        "line_adc": 35,
+        "background_adc": 500,
+        "grade_deg": 0
+      },
+      "lift_duration_s": 26.671063909421388,
+      "trace_sha256": "3cfd2860e150344ebc16d4e267488e63c4888ddbf934a0e51f77beea682c99d5",
+      "elapsed_s": 103.305,
+      "independent_checks": {
+        "start_crossing": true,
+        "ordered_gate_checks": false,
+        "body_line_coverage": true,
+        "wheel_road_coverage_with_V_exception": true,
+        "direction_and_layer": false,
+        "shortcut_boundary": true,
+        "seesaw_crossing": false,
+        "lift_stop_and_settled_exit": false,
+        "finish_crossing": false,
+        "no_fault_or_intervention": false
+      },
+      "gates_crossed": 82,
+      "gates_required": 209,
+      "first_violation": "controller_fault_or_intervention",
+      "first_violation_ms": 103305.0,
+      "finished": false,
+      "mechanism_state": {
+        "lift_phase": 0,
+        "lift_height_m": 0.38,
+        "seesaw_deg": 25.0
+      },
+      "native_trace_replay_verified": true,
+      "physical_sensor_origin_verified": true,
+      "core_fault_reason": 3,
+      "local_artifacts": "build-output/start-finish-20261105/layered-711",
+      "manifest_file_sha256": "bc38220a191f4331d1de631b0a5da154f6be24aa6eb267074a20a3f5fbcc2cb8",
+      "results_file_sha256": "ff8b23f3cf45ee01f295f9efd5ac03edd40ef5b35208ed372a7c992e76ab84c5",
+      "source_provenance": {
+        "kind": "actual_layered_core_no_route_baseline",
+        "source_sha256": {
+          "motion.h": "5f29b19a081682472d29e3ca68173db99ed3ab54498fdfecb971c655611e3604",
+          "mission.h": "c42561da627c60456ea00da6f3b742501cb910520e99007e6abc6c13c7880446",
+          "controller.h": "a1eb44c5a41cf4b416c83c6251d17bd5a3b9098b2d167dda50dc4d241ac552fa",
+          "layered_car.ino": "a372d5ca94833b5ecc242c03b8ebc9ed95a2ca01b5c4d824c3034f8729a31c5b"
+        },
+        "reference_manifest_sha256": "6bfa0e58fdacdf165b38027424ab97a1eb46425681cb7e8357d271d83548af44",
+        "trial": {
+          "seed": 2026110711,
+          "plant": {
+            "track_m": 0.115,
+            "sensor_ahead_m": 0.06,
+            "sensor_spacing_m": 0.014,
+            "sensor_radius_m": 0.002,
+            "line_width_m": 0.02,
+            "road_width_m": 0.2,
+            "max_wheel_mps": 0.65,
+            "dead_pwm": 40.321869715970536,
+            "motor_tau_s": 0.08,
+            "coast_tau_s": 0.24,
+            "max_accel_mps2": 6.0,
+            "left_gain": 1.0,
+            "right_gain": 0.9715715437604029,
+            "battery_factor": 0.9865372013561062,
+            "friction_mu": 0.5455519142883529,
+            "drive_normal_fraction": 1.0,
+            "sample_ms": 5,
+            "latency_ms": 5,
+            "adc_noise": 4,
+            "line_adc": 35,
+            "background_adc": 500,
+            "grade_deg": 0
+          },
+          "lift_duration_s": 26.671063909421388
+        },
+        "official_geometry_verified": false,
+        "route_configured": false,
+        "model_files": {
+          "tools/course_world.py": "a4cd0e102d7ba7c6d948385ba2cb805a287ce0035b27c8462698b721f1fd58a4",
+          "tools/course_environment.py": "8e2edcd2348f8c9d522bf60e3e0513868e4dc2c69633d9f78ef028c6e1c79718",
+          "tools/ground_support.py": "fab404fac97b206b94fda43c652846287c8730cb5ee78241e7a7f6fdb1e0b2ef",
+          "tools/course_referee.py": "9fe43e7596a094b27d2d0c6b510c56fbf41bebb4edcb89d4272a3aa97bb52ea4",
+          "tools/run_course.py": "505b1f40606aa920ed309dc85d93f65f7780355e4cf0eaef14b815c6095cd1f3",
+          "tools/simulation_model.py": "753fd97446490d9d7abf47c9b62aa10b141d9dc9fabaf41550121e86bc8a8b00",
+          "tools/course_qualification.py": "b594bce9a911b2e2110fe0262987529b6f4c47b8199c4d05c8f82f4c9b405cc7",
+          "tools/sim_native.py": "66c70aee8d261fc81146573fc097c9c9a8c9a6705acb1e6740d68331b0531a3f",
+          "tools/learn_course_mission.py": "31d46e02012bf2ec4a1c61e9a15144b45ed4fd9d03470163236489d747ee1e11"
+        },
+        "runner_sha256": "9ddbce88cd5d4a532ae1f8bbc8b542c65311ccdce0a707f36cfce53e4d754ef2"
+      }
+    }
+  }
+}

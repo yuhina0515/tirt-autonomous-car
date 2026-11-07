@@ -1,0 +1,10 @@
+{
+  "source": "firmware/native_car/controller.h",
+  "sha256": "8b5f7f81c2475f3bda7e338015b62434485cd2e8aa522214136b2512e2ecffcc",
+  "changes": [
+    "namespace rename",
+    "disable updateLap call",
+    "disable updateMarker call"
+  ],
+  "native_modified": false
+}

@@ -1,0 +1,21 @@
+services:
+  tirt-data:
+    build: .
+    container_name: hina-tirt-data
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8212:8212"
+    volumes:
+      - /srv/shared/tirt-data:/data
+      - ./config.json:/run/tirt-config.json:ro
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    pids_limit: 64
+    mem_limit: 192m
+    cpus: 0.5
+    logging:
+      driver: json-file
+      options:
+        max-size: "5m"
+        max-file: "2"

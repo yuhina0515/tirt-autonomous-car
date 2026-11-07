@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "checked_on": "2026-11-03",
+  "scope": "Primary-source strategy references, not vehicle acceptance",
+  "sources": [
+    {
+      "id": "CAGE_TR",
+      "url": "https://www.cagebot.com/website/product_detailed/66/154",
+      "kind": "manufacturer_product_specification",
+      "read_scope": "Complete CAGEBOT TR single-shaft wired motor product page, including specification text",
+      "findings": ["Listed rated voltage DC4.5V, applicable voltage DC3V to6V, reduction1/55 and rotational speed130rpm plus/minus10 percent"],
+      "transfer_limit": "The installed motor is not identified as this TR product. The page does not specify rotational-speed load conditions, step response, stopping time or torque curve. These values cannot replace vehicle measurements or set simulation acceleration/latency",
+      "followup": "Identify the installed motor and transmission, then measure wheel diameter, loaded wheel speed, reversal lag and battery voltage"
+    },
+    {
+      "id": "QTR",
+      "url": "https://github.com/pololu/qtr-sensors-arduino/blob/master/usage.md",
+      "kind": "manufacturer_documentation",
+      "read_scope": "Full usage.md via raw GitHub: calibration, line position and PD example",
+      "findings": ["Expose every sensor to both reflectance extremes", "Use monotonic line position for feedback", "Tune signs and gains at low speed before increasing motor commands"],
+      "transfer_limit": "QTR API and numerical gains are not calibrated for this vehicle; this controller uses different derivative scaling",
+      "local_evidence": "docs/CONTROL_RECOVERY_2026-11-03.zh-TW.md"
+    },
+    {
+      "id": "ZUMO",
+      "url": "https://github.com/pololu/zumo-shield-arduino-library/blob/master/examples/LineFollower/LineFollower.ino",
+      "kind": "manufacturer_example_source",
+      "read_scope": "Full 108-line example via raw GitHub",
+      "findings": ["Bound wheel commands after PD mixing", "Example explicitly limits its tested course and motor conditions"],
+      "transfer_limit": "Different motors, sensor array and PWM scale; do not adopt its powered calibration in stationary capture mode",
+      "local_evidence": "firmware/candidate_car/controller.h"
+    },
+    {
+      "id": "FORUM",
+      "url": "https://forum.pololu.com/t/pid-line-follower/2821",
+      "kind": "first_hand_technical_forum_reply",
+      "read_scope": "Ben replies on gain tuning, monotonic position, lost-line direction, calibration height and logging",
+      "findings": ["Keep last seen direction when detecting loss", "Inspect sensor data at failure", "Avoid lifting the robot during calibration"],
+      "transfer_limit": "2011 discussion on another robot; no present-vehicle performance guarantee",
+      "local_evidence": "docs/FIELD_TEST.zh-TW.md"
+    },
+    {
+      "id": "PAPER",
+      "url": "https://arxiv.org/abs/2111.04149",
+      "kind": "author_research_paper",
+      "read_scope": "Full arXiv v1 HTML, especially sections IV-C through IV-F and VII; figures and source code not reproduced",
+      "full_text_url": "https://arxiv.org/html/2111.04149v1",
+      "findings": ["Authors use a finite recent-error window for integral action", "A sharp turn can make the most recent positional error point opposite the intended exit", "Authors distinguish short loss from persistent loss and use outer-sensor history for recovery", "Authors report traction and sensor spacing as practical limits"],
+      "transfer_limit": "The paper concerns another platform and course. Its reading-count thresholds, PWM fractions, voltage choices and gains are not this vehicle's settings. No experiment reproduced; HTML equations require checking against PDF before reuse",
+      "followup": "Compare recovery direction history against actual sensor-order evidence; inspect source sample-time units before any port"
+    },
+    {
+      "id": "STM32",
+      "url": "https://github.com/sametoguten/STM32-Line-Follower-with-PID",
+      "kind": "author_repository_landing_page",
+      "read_scope": "Repository landing page and platform description only",
+      "findings": ["Companion implementation targets STM32F103C8 and QTR-8RC"],
+      "transfer_limit": "Code not audited, compiled or ported; library, platform and license must be checked before reuse",
+      "followup": "Inspect control source and sample-time units before considering implementation reuse"
+    }
+  ]
+}
