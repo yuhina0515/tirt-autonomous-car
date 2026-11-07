@@ -1,10 +1,10 @@
 {
-  "title": "TIRT 兩次全白 R3（2026-11-06・低速離台暫停）",
-  "description": "暫停專用低速離台，27 秒後全白用起步 PWM 100 前進，有線即正常循線；保留離台確認、防重複計數與 1.5 秒逾時。useSlowExit=true 可恢復 R2。尚須實車驗證。",
-  "file": "tirt-two-marker-20261106-r3/race_two_marker.ino",
-  "size": "28,251 bytes",
-  "source": "race_two_marker R3；同一控制來源另有行駛回傳版",
-  "sha256": "57D34CFA7B18D62281F8A1EAAE205F3476BCF8A1FD1D33DF21D6C86A68B2004C",
+  "title": "TIRT 兩次全白 R3.1（2026-11-07・低速離台暫停）",
+  "description": "練習前複核：修正全白前後的計時殘留。暫停專用低速離台，27 秒後全白用起步 PWM 100 前進，有線即正常循線；保留離台確認、防重複計數與 1.5 秒逾時。useSlowExit=true 可恢復 R2。尚須實車驗證。",
+  "file": "tirt-two-marker-20261107-r3-1/race_two_marker.ino",
+  "size": "28,373 bytes",
+  "source": "race_two_marker R3.1；同一控制來源另有行駛回傳版",
+  "sha256": "C8C8437EA7C4F031F3F50A0CE773BC6A064934D22B0D6CF74DF7D939BB20E221",
   "steps": [
     "下載 race_two_marker.ino，以 Arduino IDE 開啟並放在同名資料夾；不需安裝 Adafruit NeoPixel 或其他函式庫。",
     "選擇 Arduino Nano、ATmega328P (Old Bootloader) 與車子實際的 COM 埠，再燒錄。",
@@ -14,7 +14,7 @@
   "help": [
     {
       "summary": "驗證結果與現場限制",
-      "body": "Nano Old Bootloader 編譯 Flash 8738 bytes、全域 RAM 294 bytes。已做控制與回傳測試；軟體驗證不等於實車成功率。"
+      "body": "Nano Old Bootloader 編譯 Flash 8754 bytes、全域 RAM 294 bytes。已做控制與回傳測試；軟體驗證不等於實車成功率。"
     },
     {
       "summary": "離台如何避免重複計數",

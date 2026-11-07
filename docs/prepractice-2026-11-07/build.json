@@ -40,5 +40,7 @@
       "global_ram_bytes": 491,
       "url": "https://hina-tw.ddns.net/downloads/files/tirt-two-marker-20261107-r3-1/race_capture.ino"
     }
-  ]
+  ],
+  "https_download_hashes_verified": true,
+  "web_image": "sha256:87f1a7faa279f1bc6e74267fb144dfea865b421496e445156edc72daa6b54e45"
 }
